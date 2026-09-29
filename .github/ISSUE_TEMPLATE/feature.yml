@@ -1,0 +1,14 @@
+name: Feature request
+description: Suggest an improvement or a new adapter
+labels: [enhancement]
+body:
+  - type: textarea
+    id: need
+    attributes:
+      label: Need
+      description: What problem does this solve, and for whom?
+    validations: { required: true }
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposal

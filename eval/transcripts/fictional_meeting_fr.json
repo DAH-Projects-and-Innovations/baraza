@@ -1,0 +1,20 @@
+{
+  "schema_version": "1.0",
+  "meeting": {
+    "title": "Point hebdomadaire – équipe fictive",
+    "started_at": "2026-01-15T10:00:00+00:00",
+    "duration_seconds": 300,
+    "platform": "file",
+    "organizer": "Awa Exemple"
+  },
+  "participants": [{"name": "Awa Exemple"}, {"name": "Koffi Test"}],
+  "segments": [
+    {"speaker": "Awa Exemple", "start": 0, "end": 8, "text": "Bonjour à tous, on commence par le planning du lancement."},
+    {"speaker": "Koffi Test", "start": 8, "end": 20, "text": "Je propose de décaler le lancement au mois de mars."},
+    {"speaker": "Awa Exemple", "start": 20, "end": 30, "text": "D'accord, on valide mars. Koffi, tu prépares le rétroplanning pour vendredi ?"},
+    {"speaker": "Koffi Test", "start": 30, "end": 36, "text": "Oui, c'est noté."},
+    {"speaker": "Speaker 3", "start": 36, "end": 48, "text": "Il faudra aussi revoir le budget, mais on n'a pas les chiffres."}
+  ],
+  "language": "fr",
+  "source_adapter": "file_import"
+}

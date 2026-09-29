@@ -1,0 +1,20 @@
+{
+  "schema_version": "1.0",
+  "meeting": {
+    "title": "Weekly sync – fictional team",
+    "started_at": "2026-01-15T10:00:00+00:00",
+    "duration_seconds": 300,
+    "platform": "file",
+    "organizer": "Awa Example"
+  },
+  "participants": [{"name": "Awa Example"}, {"name": "Koffi Test"}],
+  "segments": [
+    {"speaker": "Awa Example", "start": 0, "end": 8, "text": "Hi everyone, let's start with the launch schedule."},
+    {"speaker": "Koffi Test", "start": 8, "end": 20, "text": "I suggest we move the launch to March."},
+    {"speaker": "Awa Example", "start": 20, "end": 30, "text": "Agreed, March it is. Koffi, can you prepare the backward plan by Friday?"},
+    {"speaker": "Koffi Test", "start": 30, "end": 36, "text": "Yes, noted."},
+    {"speaker": "Speaker 3", "start": 36, "end": 48, "text": "We will also need to review the budget, but we don't have the figures yet."}
+  ],
+  "language": "en",
+  "source_adapter": "file_import"
+}
