@@ -21,3 +21,12 @@ export interface Segment {
   end: number;
   text: string;
 }
+
+/** Proposed contract, to confirm with the backend (#125/#126): `POST /captures`. */
+export interface StartCaptureRequest {
+  meeting_url: string;
+}
+
+export interface StartCaptureResponse {
+  capture_id: string;
+}
