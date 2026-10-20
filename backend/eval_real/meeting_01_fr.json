@@ -1,0 +1,41 @@
+{
+  "name": "Point projet (FR, sortie piégée)",
+  "participants": [
+    "Alice",
+    "Bob Martin",
+    "Chloé",
+    "Denis"
+  ],
+  "segments": [
+    {
+      "index": 0,
+      "speaker": "Alice",
+      "text": "Bonjour, on commence le point projet."
+    },
+    {
+      "index": 1,
+      "speaker": "Alice",
+      "text": "On valide le lancement de la bêta pour la fin du mois."
+    },
+    {
+      "index": 2,
+      "speaker": "Alice",
+      "text": "Bob, tu peux envoyer le rapport avant le 15 octobre ?"
+    },
+    {
+      "index": 3,
+      "speaker": "Bob",
+      "text": "Oui, je m'en occupe."
+    },
+    {
+      "index": 4,
+      "speaker": "Chloé",
+      "text": "Je préparerai la démo."
+    },
+    {
+      "index": 5,
+      "speaker": "Alice",
+      "text": "Merci à tous, on se retrouve la semaine prochaine."
+    }
+  ]
+}

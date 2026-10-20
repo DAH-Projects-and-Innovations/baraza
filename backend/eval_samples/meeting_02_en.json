@@ -1,0 +1,66 @@
+{
+  "name": "Launch review (EN, crafted output)",
+  "meeting_date": "2026-10-12",
+  "participants": [
+    "Priya",
+    "Sam Carter",
+    "Lee"
+  ],
+  "segments": [
+    {
+      "index": 0,
+      "speaker": "Priya",
+      "text": "Let's review the launch checklist."
+    },
+    {
+      "index": 1,
+      "speaker": "Priya",
+      "text": "Sam will update the docs by October 15th."
+    },
+    {
+      "index": 2,
+      "speaker": "Sam",
+      "text": "Sure."
+    },
+    {
+      "index": 3,
+      "speaker": "Lee",
+      "text": "I'll fix the login bug next Friday."
+    }
+  ],
+  "model_output": {
+    "title": "Launch review",
+    "summary": "Checklist reviewed.",
+    "decisions": [],
+    "action_items": [
+      {
+        "description": "Update the docs",
+        "owner": "Sam",
+        "due_date": "15/10/2026",
+        "segment_indices": [
+          1
+        ]
+      },
+      {
+        "description": "Fix the login bug",
+        "owner": "Lee",
+        "due_date": "2026-12-01",
+        "segment_indices": [
+          3
+        ]
+      },
+      {
+        "description": "Deploy to production",
+        "owner": "Jordan",
+        "due_date": "next friday",
+        "segment_indices": [
+          3
+        ]
+      }
+    ]
+  },
+  "expected_corrections": {
+    "owner_nulled": 1,
+    "due_date_nulled": 1
+  }
+}
