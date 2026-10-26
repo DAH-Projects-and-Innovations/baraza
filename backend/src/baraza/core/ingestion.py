@@ -54,6 +54,27 @@ def _error_messages(error: ValidationError) -> list[str]:
     ]
 
 
+# Names used by capture sources, mapped to the common segment fields.
+_ALIASES = {"start_time": "start", "end_time": "end"}
+
+
+def normalize_raw_segment(raw: dict[str, Any]) -> dict[str, Any]:
+    """Map source field names to the common format and label unnamed speakers.
+
+    A segment with a ``speaker_id`` but no ``speaker`` is labelled "Speaker <id>": the identity
+    is never guessed, only the source's own identifier is reused.
+    """
+    segment = dict(raw)
+    for alias, field in _ALIASES.items():
+        if alias in segment:
+            segment.setdefault(field, segment.pop(alias))
+    speaker = segment.get("speaker")
+    speaker_id = segment.get("speaker_id")
+    if (speaker is None or speaker == "") and speaker_id not in (None, ""):
+        segment["speaker"] = f"Speaker {speaker_id}"
+    return segment
+
+
 async def ingest_segments(
     store: SegmentStore, meeting_id: str, raw_segments: Iterable[dict[str, Any]]
 ) -> IngestResult:
@@ -66,7 +87,11 @@ async def ingest_segments(
     rejected: list[RejectedSegment] = []
     for index, raw in enumerate(raw_segments):
         try:
-            valid.append(TranscriptSegment.model_validate({**raw, "meeting_id": meeting_id}))
+            valid.append(
+                TranscriptSegment.model_validate(
+                    {**normalize_raw_segment(raw), "meeting_id": meeting_id}
+                )
+            )
         except ValidationError as error:
             rejected.append(RejectedSegment(index=index, errors=_error_messages(error)))
     if valid:

@@ -29,6 +29,9 @@ class TranscriptSegment(BaseModel):
         "(a partial result is replaced by its final version)."
     )
     speaker: _Id = Field(description='Speaker name, or "Speaker 1" when unknown.')
+    speaker_id: _Id | None = Field(
+        default=None, description="Stable identifier of the speaker in the source, when available."
+    )
     start: float = Field(ge=0, description="Start time, in seconds from the meeting start.")
     end: float = Field(ge=0, description="End time, in seconds from the meeting start.")
     text: _Text
