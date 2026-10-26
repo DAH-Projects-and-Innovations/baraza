@@ -3,7 +3,7 @@
 For demos and integration tests when no real Vexa capture is available. This does NOT validate
 the real capture chain. Uses only the fictional fixture: never real transcripts.
 
-    python backend/scripts/simulate_meeting.py <meeting_id> [--api http://localhost:8000] [--delay 2]
+    python backend/scripts/simulate_meeting.py <meeting_id> [--api URL] [--delay SECONDS]
 """
 
 import argparse
