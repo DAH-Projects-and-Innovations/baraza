@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 import { getCaptureStatus, stopCapture } from "@/lib/api/captures";
 import type { CaptureStatus } from "@/lib/api/types";
+import { MinutesPanel } from "./MinutesPanel";
+import { TranscriptPanel } from "./TranscriptPanel";
 
 const POLL_INTERVAL_MS = 2000;
 
@@ -62,28 +64,32 @@ export function MeetingStatus({ captureId }: { captureId: string }) {
   const canStop = status === "waiting_admission" || status === "capturing";
 
   return (
-    <div className="flex flex-col gap-4">
-      <p className="text-xs text-zinc-500">
-        Capture <code>{captureId}</code>
-      </p>
-      <p role="status" aria-live="polite" className="text-lg font-medium">
-        {status ? LABELS[status] : "Loading status…"}
-      </p>
-      {error && (
-        <p role="alert" className="text-sm text-red-600">
-          {error}
+    <div className="flex flex-col gap-8">
+      <div className="flex flex-col gap-4">
+        <p className="text-xs text-zinc-500">
+          Capture <code>{captureId}</code>
         </p>
-      )}
-      {canStop && (
-        <button
-          type="button"
-          onClick={onStop}
-          disabled={stopping}
-          className="self-start rounded-md border border-red-600 px-4 py-2 text-sm text-red-600 disabled:opacity-50"
-        >
-          {stopping ? "Stopping…" : "Stop capture"}
-        </button>
-      )}
+        <p role="status" aria-live="polite" className="text-lg font-medium">
+          {status ? LABELS[status] : "Loading status…"}
+        </p>
+        {error && (
+          <p role="alert" className="text-sm text-red-600">
+            {error}
+          </p>
+        )}
+        {canStop && (
+          <button
+            type="button"
+            onClick={onStop}
+            disabled={stopping}
+            className="self-start rounded-md border border-red-600 px-4 py-2 text-sm text-red-600 disabled:opacity-50"
+          >
+            {stopping ? "Stopping…" : "Stop capture"}
+          </button>
+        )}
+      </div>
+      <TranscriptPanel meetingId={captureId} live={status !== null && !isFinal} />
+      <MinutesPanel meetingId={captureId} ready={status === "done"} />
     </div>
   );
 }
