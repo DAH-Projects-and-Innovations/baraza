@@ -30,3 +30,9 @@ export interface StartCaptureRequest {
 export interface StartCaptureResponse {
   capture_id: string;
 }
+
+/** Proposed contract: `GET /captures/{id}` and `POST /captures/{id}/stop`. */
+export interface CaptureStatusResponse {
+  capture_id: string;
+  status: CaptureStatus;
+}

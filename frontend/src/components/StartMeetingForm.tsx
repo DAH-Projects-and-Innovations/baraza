@@ -1,18 +1,18 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
 import { startCapture } from "@/lib/api/captures";
 import { isGoogleMeetUrl } from "@/lib/meet";
 
 export function StartMeetingForm() {
+  const router = useRouter();
   const [url, setUrl] = useState("");
   const [error, setError] = useState<string | null>(null);
-  const [captureId, setCaptureId] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
 
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    setCaptureId(null);
     if (!isGoogleMeetUrl(url)) {
       setError("Enter a valid Google Meet link, e.g. https://meet.google.com/abc-defg-hij");
       return;
@@ -21,7 +21,7 @@ export function StartMeetingForm() {
     setPending(true);
     try {
       const { capture_id } = await startCapture(url.trim());
-      setCaptureId(capture_id);
+      router.push(`/meetings/${encodeURIComponent(capture_id)}`);
     } catch {
       setError("Could not start the capture. Check that the API is reachable.");
     } finally {
@@ -56,11 +56,6 @@ export function StartMeetingForm() {
       >
         {pending ? "Starting…" : "Start capture"}
       </button>
-      {captureId && (
-        <p role="status" className="text-sm text-zinc-600 dark:text-zinc-400">
-          Capture started (<code>{captureId}</code>). Live status comes with #160.
-        </p>
-      )}
       <p className="text-xs text-zinc-500">
         Inform participants and get their consent before capturing a meeting. The bot joins as a
         visible participant.
