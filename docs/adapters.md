@@ -36,10 +36,13 @@ returning one `Transcript` at the end.
 | `meeting_id` | Meeting the segment belongs to |
 | `segment_id` | Unique within the meeting; re-sending an id replaces the segment (a partial result is replaced by its final version) |
 | `speaker` | Speaker name, or "Speaker 1", "Speaker 2"… when unknown |
+| `speaker_id` | Optional stable speaker identifier from the source. If `speaker` is missing it is labelled "Speaker <id>"; identity is never guessed |
 | `start`, `end` | Seconds from the meeting start (`end >= start`) |
 | `text` | Non-empty, trimmed text |
 | `language` | Optional ISO 639-1 code |
 | `is_final` | `false` for a partial result that may still be revised |
+
+The ingestion endpoint also accepts the source field names `start_time` and `end_time`.
 
 `segments_to_transcript()` assembles the final segments into the `Transcript` used by the minutes
 pipeline. Breaking changes bump `SEGMENT_SCHEMA_VERSION`.

@@ -108,3 +108,32 @@ def test_api_rejects_empty_and_oversized_batches(client: TestClient) -> None:
 def test_store_protocol_is_satisfied() -> None:
     store: SegmentStore = InMemorySegmentStore()
     assert store is not None
+
+
+async def test_sprint2_contract_field_names_are_accepted() -> None:
+    store = InMemorySegmentStore()
+    result = await ingest_segments(
+        store,
+        "m1",
+        [{"segment_id": "a", "speaker_id": "2", "start_time": 1.5, "end_time": 4, "text": "Hi."}],
+    )
+    assert result.accepted == 1
+    (segment,) = await store.list("m1")
+    assert (segment.start, segment.end) == (1.5, 4)
+    assert segment.speaker_id == "2"
+    assert segment.speaker == "Speaker 2"
+
+
+async def test_named_speaker_is_kept_with_its_id() -> None:
+    store = InMemorySegmentStore()
+    await ingest_segments(store, "m1", [raw("a", speaker="Awa Example", speaker_id="u7")])
+    (segment,) = await store.list("m1")
+    assert (segment.speaker, segment.speaker_id) == ("Awa Example", "u7")
+
+
+async def test_segment_without_any_speaker_is_rejected() -> None:
+    result = await ingest_segments(
+        InMemorySegmentStore(), "m1", [{"segment_id": "a", "start": 0, "end": 1, "text": "Hi."}]
+    )
+    assert result.accepted == 0
+    assert result.rejected[0].index == 0

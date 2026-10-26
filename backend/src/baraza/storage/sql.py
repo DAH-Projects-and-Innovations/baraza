@@ -17,6 +17,7 @@ class SegmentRow(Base):
     meeting_id: Mapped[str] = mapped_column(String(200), primary_key=True)
     segment_id: Mapped[str] = mapped_column(String(200), primary_key=True)
     speaker: Mapped[str] = mapped_column(String(200))
+    speaker_id: Mapped[str | None] = mapped_column(String(200), nullable=True)
     start: Mapped[float] = mapped_column(Float, index=True)
     end: Mapped[float] = mapped_column(Float)
     text: Mapped[str] = mapped_column(Text)
@@ -57,6 +58,7 @@ class SqlSegmentStore:
                 meeting_id=r.meeting_id,
                 segment_id=r.segment_id,
                 speaker=r.speaker,
+                speaker_id=r.speaker_id,
                 start=r.start,
                 end=r.end,
                 text=r.text,
