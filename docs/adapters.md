@@ -25,6 +25,25 @@ need to read two files:
 - If the adapter uses a bot, it must appear as a visible, clearly named participant.
 - Adapter tests must not depend on a real video conferencing account: mock the HTTP calls.
 
+## Streaming segments
+
+Adapters that capture a live meeting push `TranscriptSegment` objects
+([`core/segments.py`](../backend/src/baraza/core/segments.py)) while the meeting runs, instead of
+returning one `Transcript` at the end.
+
+| Field | Meaning |
+|---|---|
+| `meeting_id` | Meeting the segment belongs to |
+| `segment_id` | Unique within the meeting; re-sending an id replaces the segment (a partial result is replaced by its final version) |
+| `speaker` | Speaker name, or "Speaker 1", "Speaker 2"… when unknown |
+| `start`, `end` | Seconds from the meeting start (`end >= start`) |
+| `text` | Non-empty, trimmed text |
+| `language` | Optional ISO 639-1 code |
+| `is_final` | `false` for a partial result that may still be revised |
+
+`segments_to_transcript()` assembles the final segments into the `Transcript` used by the minutes
+pipeline. Breaking changes bump `SEGMENT_SCHEMA_VERSION`.
+
 ## Planned adapters
 
 | Adapter | Platforms | Transcription | Milestone |
