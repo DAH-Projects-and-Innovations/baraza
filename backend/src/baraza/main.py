@@ -3,12 +3,13 @@
 from fastapi import FastAPI
 
 from baraza import __version__
-from baraza.api import health
+from baraza.api import health, segments
 
 
 def create_app() -> FastAPI:
     app = FastAPI(title="Baraza", version=__version__)
     app.include_router(health.router)
+    app.include_router(segments.router)
     return app
 
 

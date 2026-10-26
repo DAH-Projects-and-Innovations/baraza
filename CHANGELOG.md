@@ -13,3 +13,5 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
   documentation and continuous integration.
 - Common transcript format (v1.0) and minutes schema.
 - Capture adapter contract.
+- Transcript segment format for live capture and segment ingestion (`POST/GET /meetings/{id}/segments`)
+  with validation and database storage.
