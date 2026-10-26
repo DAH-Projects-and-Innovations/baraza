@@ -14,12 +14,17 @@ export type CaptureStatus =
   | "done"
   | "failed";
 
-/** Mirrors `Segment` in backend/src/baraza/core/transcript.py. */
+/** Mirrors `TranscriptSegment` in backend/src/baraza/core/segments.py. */
 export interface Segment {
+  meeting_id: string;
+  segment_id: string;
   speaker: string;
+  speaker_id: string | null;
   start: number;
   end: number;
   text: string;
+  language: string | null;
+  is_final: boolean;
 }
 
 /** Proposed contract, to confirm with the backend (#125/#126): `POST /captures`. */
@@ -35,4 +40,17 @@ export interface StartCaptureResponse {
 export interface CaptureStatusResponse {
   capture_id: string;
   status: CaptureStatus;
+}
+
+/** Mirrors `Minutes` in backend/src/baraza/core/minutes.py. Missing info is `null`. */
+export interface SourceRef {
+  segment_indices: number[];
+}
+
+export interface Minutes {
+  summary: string;
+  topics: { title: string; summary: string; source: SourceRef }[];
+  decisions: { text: string; source: SourceRef }[];
+  actions: { text: string; owner: string | null; due_date: string | null; source: SourceRef }[];
+  open_points: { text: string; source: SourceRef }[];
 }
