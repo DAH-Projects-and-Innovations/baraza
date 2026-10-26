@@ -1,26 +1,71 @@
 @import "tailwindcss";
 
+/* DAH Labs palette: blue and orange. Semantic names, light mode by default. */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+  --background: #f7f8fa;
+  --surface: #ffffff;
+  --foreground: #14171f;
+  --muted: #5b6475;
+  --faint: #8a93a3;
+  --line: #e3e6ec;
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --blue: #1e6fe0;
+  --blue-strong: #0f4dab;
+  --blue-soft: #e8f0fd;
+  --blue-ink: #0f4dab;
+
+  --orange: #f26b21;
+  --orange-strong: #c2410c;
+  --orange-soft: #feefe6;
+  --orange-ink: #a8470f;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #0d1017;
+    --surface: #151a24;
+    --foreground: #eef1f6;
+    --muted: #a3acbc;
+    --faint: #7a8496;
+    --line: #262d3b;
+
+    --blue: #4a90f0;
+    --blue-strong: #7db0f7;
+    --blue-soft: #14284a;
+    --blue-ink: #a9ccfa;
+
+    --orange: #f58a4f;
+    --orange-strong: #f9a679;
+    --orange-soft: #3a2314;
+    --orange-ink: #f8bd9a;
   }
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-faint: var(--faint);
+  --color-line: var(--line);
+  --color-brand: var(--blue);
+  --color-brand-strong: var(--blue-strong);
+  --color-brand-soft: var(--blue-soft);
+  --color-brand-ink: var(--blue-ink);
+  --color-accent: var(--orange);
+  --color-accent-strong: var(--orange-strong);
+  --color-accent-soft: var(--orange-soft);
+  --color-accent-ink: var(--orange-ink);
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family:
+    system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+:focus-visible {
+  outline: 2px solid var(--blue);
+  outline-offset: 2px;
 }

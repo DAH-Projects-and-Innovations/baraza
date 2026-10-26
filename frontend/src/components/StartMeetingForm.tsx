@@ -30,36 +30,38 @@ export function StartMeetingForm() {
   }
 
   return (
-    <form onSubmit={onSubmit} className="flex flex-col gap-3" noValidate>
-      <label htmlFor="meeting-url" className="text-sm font-medium">
-        Google Meet link
-      </label>
-      <input
-        id="meeting-url"
-        type="url"
-        value={url}
-        onChange={(e) => setUrl(e.target.value)}
-        placeholder="https://meet.google.com/abc-defg-hij"
-        aria-invalid={error !== null}
-        aria-describedby={error ? "meeting-url-error" : undefined}
-        className="rounded-md border border-zinc-300 bg-transparent px-3 py-2 dark:border-zinc-700"
-      />
-      {error && (
-        <p id="meeting-url-error" role="alert" className="text-sm text-red-600">
-          {error}
-        </p>
-      )}
+    <form onSubmit={onSubmit} className="flex flex-col gap-4" noValidate>
+      <div className="flex flex-col gap-1.5">
+        <label htmlFor="meeting-url" className="text-sm font-medium">
+          Google Meet link
+        </label>
+        <input
+          id="meeting-url"
+          type="url"
+          value={url}
+          onChange={(e) => setUrl(e.target.value)}
+          placeholder="https://meet.google.com/abc-defg-hij"
+          aria-invalid={error !== null}
+          aria-describedby={error ? "meeting-url-error" : undefined}
+          className="rounded-lg border border-line bg-surface px-3 py-2.5 aria-invalid:border-red-500"
+        />
+        {error && (
+          <p id="meeting-url-error" role="alert" className="text-sm text-red-600 dark:text-red-400">
+            {error}
+          </p>
+        )}
+      </div>
+      <p className="flex gap-2 rounded-lg bg-accent-soft px-3 py-2.5 text-sm text-accent-ink">
+        <span aria-hidden="true">ⓘ</span>
+        Tell participants and get their consent before capturing a meeting.
+      </p>
       <button
         type="submit"
         disabled={pending}
-        className="self-start rounded-md bg-zinc-900 px-4 py-2 text-sm text-white disabled:opacity-50 dark:bg-zinc-100 dark:text-zinc-900"
+        className="self-start rounded-lg bg-brand px-5 py-2.5 text-sm font-medium text-white hover:bg-brand-strong disabled:opacity-60"
       >
         {pending ? "Starting…" : "Start capture"}
       </button>
-      <p className="text-xs text-zinc-500">
-        Inform participants and get their consent before capturing a meeting. The bot joins as a
-        visible participant.
-      </p>
     </form>
   );
 }
