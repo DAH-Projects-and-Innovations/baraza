@@ -7,6 +7,7 @@ services:
   api:
     build: ./backend
     env_file: .env
+    networks: [default, vexa-internal]
     ports:
       - "8000:8000"
     depends_on:
@@ -19,6 +20,7 @@ services:
     build: ./backend
     env_file: .env
     command: ["arq", "baraza.worker.WorkerSettings"]
+    networks: [default, vexa-internal]
     depends_on:
       - postgres
       - redis
@@ -57,6 +59,83 @@ services:
     ports:
       - "11434:11434"
 
+  # Official all-in-one control plane; no fork, Docker socket or published ports.
+  vexa:
+    image: vexaai/vexa-lite:v0.12.26@sha256:700340d418797499aeeb8c22bf7ae65a7607673c7f42bc1d07b22f36f8c30118
+    profiles: ["vexa"]
+    shm_size: "2gb"
+    environment:
+      DB_HOST: vexa-postgres
+      DB_PORT: "5432"
+      DB_NAME: vexa
+      DB_USER: vexa
+      DB_PASSWORD: ${VEXA_DB_PASSWORD:-vexa-local-only}
+      ADMIN_API_TOKEN: ${VEXA_ADMIN_TOKEN:-change-vexa-admin-token}
+      INTERNAL_API_SECRET: ${VEXA_INTERNAL_SECRET:-change-vexa-internal-secret}
+      DEFAULT_BOT_NAME: ${BARAZA_VEXA_BOT_NAME:-Baraza – note taker (transcribing)}
+      TRANSCRIPTION_SERVICE_URL: http://vexa-whisper:8000
+      TRANSCRIPTION_SERVICE_TOKEN: ""
+      TRANSCRIPTION_MODEL: whisper-1
+      RECORDING_ENABLED: "false"
+    volumes:
+      - vexa-redis:/var/lib/redis
+    depends_on:
+      vexa-postgres:
+        condition: service_healthy
+      vexa-whisper:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python3", "-c", "import urllib.request; [urllib.request.urlopen('http://localhost:' + str(p) + '/health', timeout=5) for p in (8056, 8001, 8080, 8090)]"]
+      interval: 15s
+      timeout: 25s
+      start_period: 120s
+      retries: 10
+    networks: [vexa-internal, vexa-egress]
+
+  vexa-postgres:
+    image: postgres:17.6-alpine@sha256:ef257d85f76e48da1c64832459b59fcaba1a4dac97bf5d7450c77753542eee94
+    profiles: ["vexa"]
+    environment:
+      POSTGRES_USER: vexa
+      POSTGRES_DB: vexa
+      POSTGRES_PASSWORD: ${VEXA_DB_PASSWORD:-vexa-local-only}
+    volumes:
+      - vexa-postgres:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "vexa", "-d", "vexa"]
+      interval: 5s
+      retries: 10
+    networks: [vexa-internal]
+
+  vexa-whisper:
+    image: fedirz/faster-whisper-server:0.5.0-cpu@sha256:760e5e43d427dc6cfbbc4731934b908b7de9c7e6d5309c6a1f0c8c923a5b6030
+    profiles: ["vexa"]
+    environment:
+      WHISPER__MODEL: ${VEXA_WHISPER_MODEL:-Systran/faster-whisper-small}
+      WHISPER__INFERENCE_DEVICE: ${VEXA_WHISPER_DEVICE:-cpu}
+      WHISPER__COMPUTE_TYPE: ${VEXA_WHISPER_COMPUTE_TYPE:-int8}
+      WHISPER__TTL: "-1"
+      LOG_LEVEL: info
+      ENABLE_UI: "false"
+    volumes:
+      - vexa-whisper-cache:/root/.cache/huggingface
+    healthcheck:
+      test: ["CMD", "/root/faster-whisper-server/.venv/bin/python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health', timeout=5)"]
+      interval: 15s
+      timeout: 10s
+      start_period: 120s
+      retries: 10
+    networks: [vexa-internal, vexa-egress]
+
 volumes:
   postgres-data:
   ollama-data:
+  vexa-postgres:
+  vexa-redis:
+  vexa-whisper-cache:
+
+networks:
+  vexa-internal:
+    internal: true
+  # Outbound access is required for Meet and downloading Whisper weights; no host ports.
+  vexa-egress:
