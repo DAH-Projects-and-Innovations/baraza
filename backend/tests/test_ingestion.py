@@ -1,8 +1,10 @@
 from typing import Any
+from unittest.mock import AsyncMock
 
 import pytest
 from fastapi.testclient import TestClient
 
+from baraza.api.dependencies import get_meeting_store
 from baraza.api.segments import MAX_BATCH, get_segment_store
 from baraza.core.ingestion import InMemorySegmentStore, SegmentStore, ingest_segments
 from baraza.main import create_app
@@ -86,6 +88,9 @@ def client() -> TestClient:
     app = create_app()
     store = InMemorySegmentStore()
     app.dependency_overrides[get_segment_store] = lambda: store
+    meetings = AsyncMock()
+    meetings.get.return_value = None
+    app.dependency_overrides[get_meeting_store] = lambda: meetings
     return TestClient(app)
 
 

@@ -15,6 +15,9 @@ const MOCK_ADMISSION_MS = 5000;
 
 export async function getSegments(meetingId: string): Promise<Segment[]> {
   if (USE_MOCK_API) {
+    if ((await getCaptureStatus(meetingId)).status === "done") {
+      return mockSegments(meetingId, MOCK_SEGMENT_COUNT);
+    }
     const startedAt = Number(meetingId.slice(MOCK_PREFIX.length));
     if (Number.isNaN(startedAt)) return [];
     const elapsed = Date.now() - startedAt - MOCK_ADMISSION_MS;
@@ -27,7 +30,7 @@ export async function getSegments(meetingId: string): Promise<Segment[]> {
 }
 
 /**
- * Proposed contract, to confirm with the AI pipeline (#89): `GET /meetings/{id}/minutes` returns
+ * `GET /meetings/{id}/minutes` returns
  * the minutes, or 404 while they are not generated yet.
  */
 export async function getMinutes(meetingId: string): Promise<Minutes | null> {

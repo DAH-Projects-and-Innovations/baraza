@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { USE_MOCK_API } from "@/lib/config";
 
 function LogoMark() {
   return (
@@ -32,6 +33,11 @@ export function Header() {
           New meeting
         </Link>
       </nav>
+      {USE_MOCK_API && (
+        <p role="status" className="bg-accent-soft px-4 py-2 text-center text-sm text-accent-ink">
+          Browser simulation: fictional transcript and minutes. No bot joins Google Meet.
+        </p>
+      )}
     </header>
   );
 }

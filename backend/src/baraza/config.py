@@ -14,6 +14,9 @@ class Settings(BaseSettings):
 
     database_url: str = "postgresql+asyncpg://baraza:baraza@localhost:5432/baraza"
     redis_url: str = "redis://localhost:6379/0"
+    # Real capture is supplied through CaptureAdapter. Fake capture is opt-in for the demo.
+    capture_mode: str = "disabled"
+    cors_origins: list[str] = ["http://localhost:3000", "http://127.0.0.1:3000"]
 
     # OpenAI-compatible LLM gateway (LiteLLM, Ollama, vLLM, hosted provider...).
     llm_base_url: str = "http://localhost:4000/v1"

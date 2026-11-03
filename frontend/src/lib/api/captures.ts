@@ -1,5 +1,5 @@
 import { USE_MOCK_API } from "@/lib/config";
-import { apiFetch } from "./client";
+import { ApiError, apiFetch } from "./client";
 import type {
   CaptureStatus,
   CaptureStatusResponse,
@@ -36,12 +36,13 @@ function mockStatus(id: string): CaptureStatus {
 }
 // -------------------------------------------------------------------------------------------
 
-export async function startCapture(meetingUrl: string): Promise<StartCaptureResponse> {
+export async function startCapture(body: StartCaptureRequest): Promise<StartCaptureResponse> {
   if (USE_MOCK_API) {
     await delay(500);
-    return { capture_id: `${MOCK_PREFIX}${Date.now()}` };
+    const capture_id = `${MOCK_PREFIX}${Date.now()}`;
+    sessionStorage.setItem(`baraza-mock-title-${capture_id}`, body.title);
+    return { capture_id };
   }
-  const body: StartCaptureRequest = { meeting_url: meetingUrl };
   return apiFetch<StartCaptureResponse>("/captures", {
     method: "POST",
     body: JSON.stringify(body),
@@ -50,22 +51,27 @@ export async function startCapture(meetingUrl: string): Promise<StartCaptureResp
 
 export async function getCaptureStatus(captureId: string): Promise<CaptureStatusResponse> {
   if (USE_MOCK_API) {
-    return { capture_id: captureId, status: mockStatus(captureId) };
+    if (!/^mock-\d+$/.test(captureId)) throw new ApiError(404, "Meeting not found");
+    return {
+      capture_id: captureId, meeting_id: captureId, status: mockStatus(captureId),
+      title: sessionStorage.getItem(`baraza-mock-title-${captureId}`) ?? "Fictional meeting",
+      simulated: true,
+    };
   }
   return apiFetch<CaptureStatusResponse>(`/captures/${encodeURIComponent(captureId)}`, {
     cache: "no-store",
   });
 }
 
-export async function stopCapture(captureId: string): Promise<void> {
+export async function retryGeneration(meetingId: string): Promise<void> {
+  await apiFetch(`/meetings/${encodeURIComponent(meetingId)}/retry`, { method: "POST" });
+}
+
+export async function stopCapture(captureId: string): Promise<CaptureStatusResponse | void> {
   if (USE_MOCK_API) {
     await delay(300);
-    try {
-      sessionStorage.setItem(mockStopKey(captureId), String(Date.now()));
-    } catch {
-      // sessionStorage unavailable: the mock simply keeps running.
-    }
+    sessionStorage.setItem(mockStopKey(captureId), String(Date.now()));
     return;
   }
-  await apiFetch<unknown>(`/captures/${encodeURIComponent(captureId)}/stop`, { method: "POST" });
+  return apiFetch<CaptureStatusResponse>(`/captures/${encodeURIComponent(captureId)}/stop`, { method: "POST" });
 }
