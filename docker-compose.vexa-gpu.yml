@@ -1,0 +1,8 @@
+# Set COMPOSE_FILE=docker-compose.yml:docker-compose.vexa-gpu.yml in .env on Linux/NVIDIA.
+services:
+  vexa-whisper:
+    image: fedirz/faster-whisper-server:0.5.0-cuda@sha256:0b64050ad0b9244745746b652473ee42a8d5454d501877a252c3e65f631ffc99
+    gpus: all
+    environment:
+      WHISPER__INFERENCE_DEVICE: ${VEXA_WHISPER_DEVICE:-cuda}
+      WHISPER__COMPUTE_TYPE: ${VEXA_WHISPER_COMPUTE_TYPE:-float16}

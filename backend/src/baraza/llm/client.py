@@ -18,7 +18,12 @@ class LLMClient(Protocol):
 
 class OpenAICompatibleClient:
     def __init__(self, settings: Settings) -> None:
-        self._client = AsyncOpenAI(base_url=settings.llm_base_url, api_key=settings.llm_api_key)
+        self._client = AsyncOpenAI(
+            base_url=settings.llm_base_url,
+            api_key=settings.llm_api_key,
+            timeout=60,
+            max_retries=1,
+        )
         self._model = settings.llm_model
 
     async def complete_json(self, system: str, user: str) -> str:

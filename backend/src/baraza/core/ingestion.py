@@ -13,6 +13,9 @@ from baraza.core.segments import TranscriptSegment
 
 
 class SegmentStore(Protocol):
+    async def replace(self, meeting_id: str, segments: list[TranscriptSegment]) -> None:
+        """Atomically replace live segments with the canonical final transcript."""
+
     async def upsert(self, segments: list[TranscriptSegment]) -> None:
         """Insert segments, replacing any with the same (meeting_id, segment_id)."""
 
@@ -38,9 +41,16 @@ class InMemorySegmentStore:
     def __init__(self) -> None:
         self._segments: dict[tuple[str, str], TranscriptSegment] = {}
 
+    async def replace(self, meeting_id: str, segments: list[TranscriptSegment]) -> None:
+        self._segments = {k: v for k, v in self._segments.items() if k[0] != meeting_id}
+        await self.upsert(segments)
+
     async def upsert(self, segments: list[TranscriptSegment]) -> None:
         for segment in segments:
-            self._segments[(segment.meeting_id, segment.segment_id)] = segment
+            key = (segment.meeting_id, segment.segment_id)
+            current = self._segments.get(key)
+            if current is None or not current.is_final or segment.is_final:
+                self._segments[key] = segment
 
     async def list(self, meeting_id: str) -> list[TranscriptSegment]:
         found = (s for (m, _), s in self._segments.items() if m == meeting_id)

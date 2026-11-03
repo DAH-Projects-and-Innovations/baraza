@@ -2,7 +2,7 @@
 
 import { useEffect, useState, type ReactNode } from "react";
 import { getMinutes } from "@/lib/api/meetings";
-import type { Minutes } from "@/lib/api/types";
+import type { Minutes, SourceRef } from "@/lib/api/types";
 
 const NOT_SPECIFIED = "Not specified";
 const POLL_INTERVAL_MS = 3000;
@@ -15,8 +15,11 @@ export function MinutesPanel({ meetingId, ready }: { meetingId: string; ready: b
   useEffect(() => {
     if (!ready || loaded) return;
     let cancelled = false;
+    let loading = false;
 
     async function load() {
+      if (loading) return;
+      loading = true;
       try {
         const result = await getMinutes(meetingId);
         if (cancelled) return;
@@ -24,6 +27,8 @@ export function MinutesPanel({ meetingId, ready }: { meetingId: string; ready: b
         setError(false);
       } catch {
         if (!cancelled) setError(true);
+      } finally {
+        loading = false;
       }
     }
 
@@ -81,7 +86,7 @@ export function MinutesPanel({ meetingId, ready }: { meetingId: string; ready: b
               ) : (
                 <ul className="flex flex-col gap-2">
                   {minutes.decisions.map((d) => (
-                    <li key={d.text}>{d.text}</li>
+                    <li key={d.text}>{d.text} <Sources source={d.source} /></li>
                   ))}
                 </ul>
               )}
@@ -93,7 +98,7 @@ export function MinutesPanel({ meetingId, ready }: { meetingId: string; ready: b
                 <ul className="flex flex-col gap-3">
                   {minutes.actions.map((a) => (
                     <li key={a.text}>
-                      <p>{a.text}</p>
+                      <p>{a.text} <Sources source={a.source} /></p>
                       <p className="text-xs text-muted">
                         <Field label="Owner" value={a.owner} /> · <Field label="Due" value={a.due_date} />
                       </p>
@@ -109,7 +114,7 @@ export function MinutesPanel({ meetingId, ready }: { meetingId: string; ready: b
             ) : (
               <ul className="flex flex-col gap-2">
                 {minutes.open_points.map((p) => (
-                  <li key={p.text}>{p.text}</li>
+                  <li key={p.text}>{p.text} <Sources source={p.source} /></li>
                 ))}
               </ul>
             )}
@@ -130,6 +135,15 @@ function Field({ label, value }: { label: string; value: string | null }) {
       {label}: {NOT_SPECIFIED.toLowerCase()}
     </span>
   );
+}
+
+function Sources({ source }: { source: SourceRef }) {
+  return <span className="text-xs text-brand">
+    {[...new Set(source.segment_indices)].map((index) => (
+      <a key={index} href={`#segment-${index}`} className="ml-1 underline"
+        aria-label={`Read transcript segment ${index + 1}`}>[{index + 1}]</a>
+    ))}
+  </span>;
 }
 
 function Missing() {

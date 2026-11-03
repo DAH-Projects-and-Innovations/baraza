@@ -24,3 +24,8 @@ src/baraza/
 ├── prompts/           # versioned prompts, one folder per language
 └── worker.py          # background tasks
 ```
+
+## Optional Vexa backend
+
+See [Vexa setup, polling, meeting states and validation](../docs/vexa-backend.md)
+for issues #124–#128 and #77.

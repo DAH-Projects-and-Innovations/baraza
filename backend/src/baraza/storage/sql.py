@@ -1,9 +1,10 @@
 """SQLAlchemy storage for transcript segments (PostgreSQL in production)."""
 
-from sqlalchemy import Boolean, Float, String, Text, select
+from sqlalchemy import Boolean, Float, String, Text, delete, select, update
 from sqlalchemy.ext.asyncio import AsyncEngine, async_sessionmaker
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 
+from baraza.core.meeting_record import Meeting
 from baraza.core.segments import TranscriptSegment
 
 
@@ -31,6 +32,12 @@ class SqlSegmentStore:
         self._sessions = async_sessionmaker(engine, expire_on_commit=False)
         self._ready = False
 
+    async def replace(self, meeting_id: str, segments: list[TranscriptSegment]) -> None:
+        await self._ensure_schema()
+        async with self._sessions() as session, session.begin():
+            await session.execute(delete(SegmentRow).where(SegmentRow.meeting_id == meeting_id))
+            session.add_all(SegmentRow(**segment.model_dump()) for segment in segments)
+
     async def _ensure_schema(self) -> None:
         # TODO: replace with an Alembic migration once the migrations setup exists.
         if not self._ready:
@@ -42,7 +49,9 @@ class SqlSegmentStore:
         await self._ensure_schema()
         async with self._sessions() as session, session.begin():
             for segment in segments:
-                await session.merge(SegmentRow(**segment.model_dump()))
+                current = await session.get(SegmentRow, (segment.meeting_id, segment.segment_id))
+                if current is None or not current.is_final or segment.is_final:
+                    await session.merge(SegmentRow(**segment.model_dump()))
 
     async def list(self, meeting_id: str) -> list[TranscriptSegment]:
         await self._ensure_schema()
@@ -67,3 +76,47 @@ class SqlSegmentStore:
             )
             for r in rows
         ]
+
+
+class MeetingRecordRow(Base):
+    __tablename__ = "meeting_records"
+
+    capture_id: Mapped[str] = mapped_column(String(200), primary_key=True)
+    payload: Mapped[str] = mapped_column(Text)
+
+
+class SqlMeetingStore:
+    def __init__(self, engine: AsyncEngine) -> None:
+        self._engine = engine
+        self._sessions = async_sessionmaker(engine, expire_on_commit=False)
+
+    async def _ensure_schema(self) -> None:
+        async with self._engine.begin() as connection:
+            await connection.run_sync(Base.metadata.create_all)
+
+    async def get(self, capture_id: str) -> Meeting | None:
+        await self._ensure_schema()
+        async with self._sessions() as session:
+            row = await session.get(MeetingRecordRow, capture_id)
+            return Meeting.model_validate_json(row.payload) if row else None
+
+    async def save(self, meeting: Meeting) -> None:
+        await self._ensure_schema()
+        async with self._sessions() as session, session.begin():
+            await session.merge(
+                MeetingRecordRow(capture_id=meeting.capture_id, payload=meeting.model_dump_json())
+            )
+
+    async def replace_if_unchanged(self, meeting: Meeting, previous: str) -> bool:
+        """Claim a transition without overwriting a concurrent stop or worker result."""
+        await self._ensure_schema()
+        async with self._engine.begin() as connection:
+            result = await connection.execute(
+                update(MeetingRecordRow)
+                .where(
+                    MeetingRecordRow.capture_id == meeting.capture_id,
+                    MeetingRecordRow.payload == previous,
+                )
+                .values(payload=meeting.model_dump_json())
+            )
+            return result.rowcount == 1

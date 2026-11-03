@@ -1,0 +1,87 @@
+{
+  "properties": {
+    "meeting_id": {
+      "description": "Identifier of the meeting this segment belongs to.",
+      "maxLength": 200,
+      "minLength": 1,
+      "title": "Meeting Id",
+      "type": "string"
+    },
+    "segment_id": {
+      "description": "Unique within the meeting. Re-sending the same id replaces the segment (a partial result is replaced by its final version).",
+      "maxLength": 200,
+      "minLength": 1,
+      "title": "Segment Id",
+      "type": "string"
+    },
+    "speaker": {
+      "description": "Speaker name, or \"Speaker 1\" when unknown.",
+      "maxLength": 200,
+      "minLength": 1,
+      "title": "Speaker",
+      "type": "string"
+    },
+    "speaker_id": {
+      "anyOf": [
+        {
+          "maxLength": 200,
+          "minLength": 1,
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Stable identifier of the speaker in the source, when available.",
+      "title": "Speaker Id"
+    },
+    "start": {
+      "description": "Start time in seconds.",
+      "minimum": 0,
+      "title": "Start",
+      "type": "number"
+    },
+    "end": {
+      "description": "End time in seconds.",
+      "minimum": 0,
+      "title": "End",
+      "type": "number"
+    },
+    "text": {
+      "minLength": 1,
+      "title": "Text",
+      "type": "string"
+    },
+    "language": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "ISO 639-1 code (e.g. \"fr\"), when known for this segment.",
+      "title": "Language"
+    },
+    "is_final": {
+      "default": true,
+      "description": "False for a partial result that may still be revised.",
+      "title": "Is Final",
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "meeting_id",
+    "segment_id",
+    "speaker",
+    "start",
+    "end",
+    "text"
+  ],
+  "title": "TranscriptSegment",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema"
+}

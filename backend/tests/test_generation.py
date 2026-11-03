@@ -49,3 +49,13 @@ def test_missing_owner_and_due_date_are_none() -> None:
 @pytest.mark.parametrize("language", ["en", "fr"])
 def test_prompt_exists_for_supported_languages(language: str) -> None:
     assert "segment_indices" in load_prompt("minutes", language)
+
+
+async def test_unknown_language_keeps_source_metadata_and_uses_a_supported_prompt(
+    transcript: Transcript,
+) -> None:
+    transcript.language = "und"
+    llm = FakeLLMClient(FAKE_RESPONSE)
+    await generate_minutes(transcript, llm)
+    assert transcript.language == "und"
+    assert "Never invent" in llm.calls[0][0]
