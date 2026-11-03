@@ -1,0 +1,106 @@
+{
+  "name": "Point projet (FR, sortie piégée)",
+  "meeting_date": "2026-10-12",
+  "participants": [
+    "Alice",
+    "Bob Martin",
+    "Chloé",
+    "Denis"
+  ],
+  "segments": [
+    {
+      "index": 0,
+      "speaker": "Alice",
+      "text": "Bonjour, on commence le point projet."
+    },
+    {
+      "index": 1,
+      "speaker": "Alice",
+      "text": "On valide le lancement de la bêta pour la fin du mois."
+    },
+    {
+      "index": 2,
+      "speaker": "Alice",
+      "text": "Bob, tu peux envoyer le rapport avant le 15 octobre ?"
+    },
+    {
+      "index": 3,
+      "speaker": "Bob",
+      "text": "Oui, je m'en occupe."
+    },
+    {
+      "index": 4,
+      "speaker": "Chloé",
+      "text": "Je préparerai la démo."
+    },
+    {
+      "index": 5,
+      "speaker": "Alice",
+      "text": "Merci à tous, on se retrouve la semaine prochaine."
+    }
+  ],
+  "model_output": {
+    "title": "Point projet",
+    "summary": "Lancement de la bêta validé.",
+    "decisions": [
+      {
+        "text": "Lancer la bêta",
+        "segment_indices": [
+          1
+        ]
+      },
+      {
+        "text": "Embaucher un développeur",
+        "segment_indices": [
+          42
+        ]
+      }
+    ],
+    "action_items": [
+      {
+        "description": "Envoyer le rapport",
+        "owner": "Bob",
+        "due_date": "2026-10-15",
+        "segment_indices": [
+          2,
+          3
+        ]
+      },
+      {
+        "description": "Préparer la démo",
+        "owner": "Chloé",
+        "due_date": "2026-11-02",
+        "segment_indices": [
+          4
+        ]
+      },
+      {
+        "description": "Contacter le client",
+        "owner": "Zoé",
+        "due_date": null,
+        "segment_indices": [
+          5
+        ]
+      },
+      {
+        "description": "Réserver la salle",
+        "owner": "Denis",
+        "due_date": null,
+        "segment_indices": [
+          5
+        ]
+      },
+      {
+        "description": "Écrire le budget",
+        "owner": null,
+        "due_date": null,
+        "segment_indices": []
+      }
+    ]
+  },
+  "expected_corrections": {
+    "item_rejected": 2,
+    "owner_nulled": 1,
+    "due_date_nulled": 1
+  }
+}

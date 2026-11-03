@@ -1,0 +1,30 @@
+{
+  "name": "Launch review (EN, crafted output)",
+  "participants": [
+    "Priya",
+    "Sam Carter",
+    "Lee"
+  ],
+  "segments": [
+    {
+      "index": 0,
+      "speaker": "Priya",
+      "text": "Let's review the launch checklist."
+    },
+    {
+      "index": 1,
+      "speaker": "Priya",
+      "text": "Sam will update the docs by October 15th."
+    },
+    {
+      "index": 2,
+      "speaker": "Sam",
+      "text": "Sure."
+    },
+    {
+      "index": 3,
+      "speaker": "Lee",
+      "text": "I'll fix the login bug next Friday."
+    }
+  ]
+}

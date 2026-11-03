@@ -1,0 +1,51 @@
+{
+  "name": "Point projet (année inventée par le modèle)",
+  "meeting_date": "2026-10-12",
+  "participants": [
+    "Alice",
+    "Bob"
+  ],
+  "segments": [
+    {
+      "index": 0,
+      "speaker": "Alice",
+      "text": "On valide le lancement de la bêta pour la fin du mois."
+    },
+    {
+      "index": 1,
+      "speaker": "Alice",
+      "text": "Bob, tu peux envoyer le rapport avant le 15 octobre ?"
+    },
+    {
+      "index": 2,
+      "speaker": "Bob",
+      "text": "Oui, je m'en occupe."
+    }
+  ],
+  "model_output": {
+    "title": "Point projet",
+    "summary": "Bêta validée.",
+    "decisions": [
+      {
+        "text": "Lancer la bêta",
+        "segment_indices": [
+          0
+        ]
+      }
+    ],
+    "action_items": [
+      {
+        "description": "Envoyer le rapport avant le 15 octobre.",
+        "owner": "Bob",
+        "due_date": "2023-10-15",
+        "segment_indices": [
+          1,
+          2
+        ]
+      }
+    ]
+  },
+  "expected_corrections": {
+    "due_date_year_adjusted": 1
+  }
+}
