@@ -1,15 +1,13 @@
 """Endpoints receiving and returning a meeting's transcript segments."""
 
-from functools import lru_cache
 from typing import Annotated, Any
 
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import Field
-from sqlalchemy.ext.asyncio import create_async_engine
 
-from baraza.config import get_settings
 from baraza.core.ingestion import IngestResult, SegmentStore, ingest_segments
 from baraza.core.segments import TranscriptSegment
+from baraza.db.session import DatabaseDep
 from baraza.storage.sql import SqlSegmentStore
 
 MAX_BATCH = 500
@@ -17,9 +15,8 @@ MAX_BATCH = 500
 router = APIRouter(prefix="/meetings/{meeting_id}/segments", tags=["segments"])
 
 
-@lru_cache
-def get_segment_store() -> SegmentStore:
-    return SqlSegmentStore(create_async_engine(get_settings().database_url))
+def get_segment_store(database: DatabaseDep) -> SegmentStore:
+    return SqlSegmentStore(database.engine)
 
 
 StoreDep = Annotated[SegmentStore, Depends(get_segment_store)]

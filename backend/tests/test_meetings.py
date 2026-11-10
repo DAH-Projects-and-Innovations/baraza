@@ -4,6 +4,7 @@ import pytest
 from sqlalchemy.ext.asyncio import create_async_engine
 
 from baraza.core.meetings import InvalidMeetingTransition, MeetingStatus, check_transition
+from baraza.db.migrations import upgrade_database
 from baraza.storage.captures import SqlCaptureStore
 
 # Explicit expectations independent from the implementation's transition table.
@@ -32,6 +33,7 @@ def test_all_transitions(source, target):
 
 async def test_transition_history_survives_store_restart(tmp_path):
     engine = create_async_engine(f"sqlite+aiosqlite:///{tmp_path / 'meetings.db'}")
+    await upgrade_database(engine)
     store = SqlCaptureStore(engine)
     await store.create("m1")
     for state in ["capturing", "processing", "draft_ready", "validated"]:

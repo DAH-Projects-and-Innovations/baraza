@@ -70,6 +70,11 @@ Capture adapters        ──►  Core                ──►  Outputs
 
 Details in [docs/architecture.md](docs/architecture.md).
 
+## Bilan des contributions de Thierry
+
+La [documentation en français des sprints 01 à 04](docs/bilan-thierry-sprints-01-04.fr.md)
+présente les réalisations backend et Vexa, les vérifications effectuées et les validations restantes.
+
 ## License
 
 [Apache-2.0](LICENSE).

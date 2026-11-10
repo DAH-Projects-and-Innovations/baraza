@@ -1,6 +1,6 @@
 # ADR 0001: Capture approach for the proof of concept (Vexa)
 
-- **Status**: proposed (to be validated by the team at kickoff)
+- **Status**: accepted (issue #32 closed with the Vexa decision merged in #182)
 - **Issue**: #32
 - **Date**: 2026-10-13
 

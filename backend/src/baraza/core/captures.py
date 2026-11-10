@@ -53,6 +53,12 @@ class VexaCaptureService:
             return
         if status == CaptureStatus.WAITING_ADMISSION:
             return
+        if status == CaptureStatus.CAPTURING:
+            # Transcript availability can lag behind admission. Expose capture immediately,
+            # even when the following transcript request fails and is retried next sweep.
+            await self.captures.transition(
+                capture.meeting_id, MeetingStatus.CAPTURING, if_changed=True
+            )
         payload = await self.adapter.transcript_payload(capture_id)
         # State may advance between the two GETs; only completed means the final flush is ready.
         if payload.status == "failed":

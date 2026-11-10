@@ -48,6 +48,7 @@ select = ["E", "F", "W", "I", "B", "UP", "SIM", "RUF"]
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 asyncio_mode = "auto"
+markers = ["integration: requires an explicitly configured test Postgres/Redis"]
 
 [tool.mypy]
 python_version = "3.12"

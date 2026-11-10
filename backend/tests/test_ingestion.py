@@ -5,6 +5,7 @@ from fastapi.testclient import TestClient
 
 from baraza.api.segments import MAX_BATCH, get_segment_store
 from baraza.core.ingestion import InMemorySegmentStore, SegmentStore, ingest_segments
+from baraza.db.migrations import upgrade_database
 from baraza.main import create_app
 
 
@@ -67,6 +68,7 @@ async def test_sql_store_upserts_and_orders() -> None:
     from baraza.storage.sql import SqlSegmentStore
 
     engine = create_async_engine("sqlite+aiosqlite://")
+    await upgrade_database(engine)
     store = SqlSegmentStore(engine)
     await ingest_segments(
         store, "m1", [raw("b", start=5, end=8), raw("a", text="Hel", is_final=False)]

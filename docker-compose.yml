@@ -6,7 +6,7 @@ name: baraza
 services:
   api:
     build: ./backend
-    env_file: .env
+    env_file: ${BARAZA_ENV_FILE:-.env}
     networks: [default, vexa-internal]
     ports:
       - "8000:8000"
@@ -15,20 +15,36 @@ services:
         condition: service_healthy
       redis:
         condition: service_started
+      migrate:
+        condition: service_completed_successfully
+
+  migrate:
+    build: ./backend
+    env_file: ${BARAZA_ENV_FILE:-.env}
+    command: ["alembic", "upgrade", "head"]
+    depends_on:
+      postgres:
+        condition: service_healthy
 
   worker:
     build: ./backend
-    env_file: .env
+    env_file: ${BARAZA_ENV_FILE:-.env}
     command: ["arq", "baraza.worker.WorkerSettings"]
     networks: [default, vexa-internal]
     depends_on:
-      - postgres
-      - redis
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      migrate:
+        condition: service_completed_successfully
 
   frontend:
-    build: ./frontend
-    environment:
-      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:8000}
+    build:
+      context: ./frontend
+      args:
+        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:8000}
+        NEXT_PUBLIC_USE_MOCK_API: ${NEXT_PUBLIC_USE_MOCK_API:-true}
     ports:
       - "3000:3000"
     depends_on:

@@ -11,6 +11,27 @@ permissions:
 jobs:
   backend:
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_USER: baraza_test
+          POSTGRES_PASSWORD: test-only
+          POSTGRES_DB: baraza_test
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U baraza_test -d baraza_test"
+          --health-interval 5s --health-timeout 5s --health-retries 10
+      redis:
+        image: redis:7-alpine
+        ports: ["6379:6379"]
+        options: >-
+          --health-cmd "redis-cli ping" --health-interval 5s
+          --health-timeout 5s --health-retries 10
+    env:
+      BARAZA_DATABASE_URL: postgresql+asyncpg://baraza_test:test-only@localhost:5432/baraza_test
+      BARAZA_TEST_DATABASE_URL: postgresql+asyncpg://baraza_test:test-only@localhost:5432/baraza_test
+      BARAZA_TEST_REDIS_URL: redis://localhost:6379/15
     defaults:
       run:
         working-directory: backend
@@ -23,6 +44,8 @@ jobs:
       - run: uv run ruff check .
       - run: uv run ruff format --check .
       - run: uv run mypy src
+      - run: uv run alembic upgrade head
+      - run: uv run alembic check
       - run: uv run pytest
 
   frontend:
@@ -49,6 +72,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      - name: Validate optional Vexa CPU and GPU profiles
+        run: |
+          python3 backend/scripts/check_vexa.py --env-file .env.example
+          python3 backend/scripts/check_vexa.py --env-file .env.example --gpu
       - run: docker build backend
       - run: docker build frontend
 

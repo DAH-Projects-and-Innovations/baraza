@@ -10,11 +10,11 @@ import structlog
 from arq import cron
 from arq.connections import RedisSettings
 from arq.worker import func
-from sqlalchemy.ext.asyncio import create_async_engine
 
 from baraza.adapters.vexa import VexaAdapter
 from baraza.config import get_settings
 from baraza.core.captures import VexaCaptureService
+from baraza.db.session import Database
 from baraza.storage.captures import SqlCaptureStore
 from baraza.storage.sql import SqlSegmentStore
 from baraza.vexa.client import VexaClient
@@ -27,10 +27,17 @@ async def generate_minutes_task(ctx: dict[str, Any], meeting_id: str) -> None:
 
 async def startup(ctx: dict[str, Any]) -> None:
     settings = get_settings()
+    database = Database(settings.database_url)
+    ctx["database"] = database
     if not settings.vexa_enabled:
         return
-    engine = create_async_engine(settings.database_url)
-    client = VexaClient(settings)
+    try:
+        client = VexaClient(settings)
+    except Exception:
+        await database.dispose()
+        ctx.pop("database")
+        raise
+    engine = database.engine
     ctx["vexa_engine"] = engine
     ctx["vexa_client"] = client
     ctx["vexa_service"] = VexaCaptureService(
@@ -41,9 +48,12 @@ async def startup(ctx: dict[str, Any]) -> None:
 
 
 async def shutdown(ctx: dict[str, Any]) -> None:
-    if "vexa_client" in ctx:
-        await ctx["vexa_client"].aclose()
-        await ctx["vexa_engine"].dispose()
+    try:
+        if "vexa_client" in ctx:
+            await ctx["vexa_client"].aclose()
+    finally:
+        if "database" in ctx:
+            await ctx["database"].dispose()
 
 
 async def start_vexa_capture_task(
