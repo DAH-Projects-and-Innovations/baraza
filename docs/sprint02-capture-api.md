@@ -63,7 +63,7 @@ polling and trusted stored bot IDs.
 
 - #77: all 36 status pairs tested, including forbidden transitions; history persists.
 - #126: reusable adapter contract and mocked meeting ingestion tested.
-- #127: authenticated polling, unknown/mismatched bot rejection and absent webhook tested.
+- #127: polling checks bot identifiers and rejects mismatches; the webhook route is absent.
 - #128: configured bot name verified in the outbound request. Visible rendering in a
   real Meet meeting remains unverified. Chat notice is unavailable in the pinned
   open-source Vexa core; participant information remains an organizer responsibility.

@@ -1,0 +1,3 @@
+# Confirmed prose-only false positive in the historical Sprint 02 documentation.
+# Ignore this exact finding; keep every file and detection rule enabled.
+29baaccb6e7cc9553a10530abb20b3cfe412de3a:docs/sprint02-capture-api.md:generic-api-key:66
