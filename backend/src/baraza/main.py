@@ -10,6 +10,7 @@ from fastapi.responses import JSONResponse
 
 from baraza import __version__
 from baraza.api import captures, health, meetings, minutes, segments, vexa_capture
+from baraza.api.dependencies import close_capture_adapter
 from baraza.config import get_settings
 from baraza.db.session import Database
 
@@ -23,6 +24,7 @@ def create_app() -> FastAPI:
             yield
         finally:
             await database.dispose()
+            await close_capture_adapter()
 
     app = FastAPI(title="Baraza", version=__version__, lifespan=lifespan)
     app.add_middleware(

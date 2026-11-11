@@ -55,6 +55,18 @@ def map_segments(payload: TranscriptResponse, meeting_id: str) -> list[Transcrip
     return result
 
 
+def meet_native_id(meeting_url: str) -> str:
+    """Return the Meet code (abc-defg-hij) of an https://meet.google.com/ URL."""
+    url = urlparse(meeting_url)
+    if (
+        url.scheme != "https"
+        or url.netloc != "meet.google.com"
+        or not re.fullmatch(r"/[a-z]{3}-[a-z]{4}-[a-z]{3}/?", url.path)
+    ):
+        raise ValueError("Expected a Google Meet HTTPS meeting URL")
+    return url.path.strip("/")
+
+
 class VexaAdapter(CaptureAdapter):
     name = "vexa"
 
@@ -74,6 +86,24 @@ class VexaAdapter(CaptureAdapter):
         """Register a handle from trusted storage, never from an event body."""
         self._known[str(bot.id)] = bot
 
+    def restore_capture(self, capture_id: str, meeting_url: str) -> None:
+        """Rebuild the handle of a capture started before an API restart.
+
+        ``meeting_url`` comes from our own database and is validated again; the status is
+        refreshed from Vexa on the next call.
+        """
+        if capture_id in self._known:
+            return
+        native_id = meet_native_id(meeting_url)
+        self.restore(
+            BotResponse(
+                id=capture_id,
+                platform="google_meet",
+                native_meeting_id=native_id,
+                status="requested",
+            )
+        )
+
     def handle(self, capture_id: str) -> BotResponse:
         try:
             return self._known[capture_id]
@@ -90,22 +120,16 @@ class VexaAdapter(CaptureAdapter):
             raise ValueError("Vexa response does not match the registered capture")
 
     async def start(self, meeting_url: str) -> str:
-        url = urlparse(meeting_url)
-        if (
-            url.scheme != "https"
-            or url.netloc != "meet.google.com"
-            or not re.fullmatch(r"/[a-z]{3}-[a-z]{4}-[a-z]{3}/?", url.path)
-        ):
-            raise ValueError("Expected a Google Meet HTTPS meeting URL")
+        native_id = meet_native_id(meeting_url)
         bot = await self.client.request_bot(
             BotRequest(
                 platform="google_meet",
-                native_meeting_id=url.path.strip("/"),
+                native_meeting_id=native_id,
                 meeting_url=meeting_url,
                 bot_name=self.settings.vexa_bot_name,
             )
         )
-        if bot.platform != "google_meet" or bot.native_meeting_id != url.path.strip("/"):
+        if bot.platform != "google_meet" or bot.native_meeting_id != native_id:
             raise ValueError("Vexa returned a different meeting")
         self.restore(bot)
         return str(bot.id)

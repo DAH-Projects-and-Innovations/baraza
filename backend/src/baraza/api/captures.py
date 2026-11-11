@@ -116,6 +116,7 @@ async def get_capture(
         previous = meeting.model_dump_json()
         adapter = require_adapter(adapter)
         try:
+            adapter.restore_capture(capture_id, meeting.meeting_url)
             status = await adapter.status(capture_id)
             if status in (CaptureStatus.DONE, CaptureStatus.PROCESSING):
                 transcript = await adapter.fetch_transcript(capture_id)
@@ -155,6 +156,7 @@ async def stop_capture(
     adapter = require_adapter(adapter)
     previous = meeting.model_dump_json()
     try:
+        adapter.restore_capture(capture_id, meeting.meeting_url)
         await adapter.stop(capture_id)
         if adapter.name != "fake":
             # Vexa acknowledges the request before its final transcript is flushed.

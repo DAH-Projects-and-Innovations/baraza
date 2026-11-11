@@ -7,8 +7,10 @@ from sqlalchemy.ext.asyncio import AsyncEngine, create_async_engine
 
 from baraza.adapters.base import CaptureAdapter
 from baraza.adapters.fake import FakeCaptureAdapter
+from baraza.adapters.vexa import VexaAdapter
 from baraza.config import get_settings
 from baraza.storage.sql import SqlMeetingStore
+from baraza.vexa.client import VexaClient
 
 
 @lru_cache
@@ -23,9 +25,22 @@ def get_meeting_store() -> SqlMeetingStore:
 
 @lru_cache
 def get_capture_adapter() -> CaptureAdapter | None:
-    if get_settings().capture_mode == "fake":
+    settings = get_settings()
+    if settings.capture_mode == "fake":
         return FakeCaptureAdapter()
+    if settings.capture_mode == "vexa" and settings.vexa_api_key.get_secret_value():
+        return VexaAdapter(VexaClient(settings), settings)
+    # "disabled", or "vexa" without an API key: the API answers 503 instead of guessing.
     return None
+
+
+async def close_capture_adapter() -> None:
+    """Release the Vexa HTTP client at shutdown, if one was created."""
+    if get_capture_adapter.cache_info().currsize:
+        adapter = get_capture_adapter()
+        if isinstance(adapter, VexaAdapter):
+            await adapter.client.aclose()
+        get_capture_adapter.cache_clear()
 
 
 class GenerationQueue:

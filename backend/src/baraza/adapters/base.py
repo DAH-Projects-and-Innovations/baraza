@@ -35,6 +35,12 @@ class CaptureAdapter(ABC):
     @abstractmethod
     def capabilities(self) -> AdapterCapabilities: ...
 
+    def restore_capture(self, capture_id: str, meeting_url: str) -> None:  # noqa: B027
+        """Re-register a capture started before a restart, from trusted storage.
+
+        Adapters that keep in-memory handles override this; others need nothing.
+        """
+
     @abstractmethod
     async def start(self, meeting_url: str) -> str:
         """Start capturing and return a capture identifier."""
