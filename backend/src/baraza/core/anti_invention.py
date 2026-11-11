@@ -8,9 +8,9 @@ from __future__ import annotations
 
 import re
 import unicodedata
-from collections.abc import Sequence
+from collections.abc import Callable, Sequence
 from datetime import date
-from typing import Literal, Protocol
+from typing import Any, Literal, Protocol
 
 from pydantic import BaseModel
 
@@ -96,6 +96,9 @@ def _parse_date(due: str) -> tuple[int, int, int | None] | None:
     jj/mm est lu jour d'abord (convention française).
     """
     d = normalize(due)
+    day: int
+    month: int
+    year: int | None
     if m := _ISO.fullmatch(d):
         day, month, year = int(m.group(3)), int(m.group(2)), int(m.group(1))
     elif m := _DMY.fullmatch(d):
@@ -140,7 +143,9 @@ def _resolve_year(day: int, month: int, meeting_date: date) -> int:
     return meeting_date.year if candidate >= meeting_date else meeting_date.year + 1
 
 
-def _year_check(due: str, cited_text: str, meeting_date: date):
+def _year_check(
+    due: str, cited_text: str, meeting_date: date
+) -> tuple[str | None, str, str] | None:
     """None si l'année est acceptable, sinon (nouvelle_valeur|None, kind, raison).
 
     - Année écrite dans le texte cité : celle de la date doit en faire partie, sinon null.
@@ -204,7 +209,7 @@ def apply_anti_invention(
     participants = sorted({s.speaker for s in segments if s.speaker})
     corrections: list[Correction] = []
 
-    def reject(item_type, pos, label):
+    def reject(item_type: str, pos: int, label: str | None) -> None:
         corrections.append(
             Correction(
                 kind="item_rejected",
@@ -215,8 +220,10 @@ def apply_anti_invention(
             )
         )
 
-    def keep_valid(items, item_type, label_of):
-        kept = []
+    def keep_valid(
+        items: list[Any], item_type: str, label_of: Callable[[Any], str | None]
+    ) -> list[Any]:
+        kept: list[Any] = []
         for pos, item in enumerate(items):
             if _valid_indices(item.source.segment_indices, count):
                 kept.append(item)

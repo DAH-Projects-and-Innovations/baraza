@@ -18,7 +18,7 @@ from collections import Counter
 from contextlib import AbstractAsyncContextManager
 from dataclasses import dataclass, field
 from datetime import date
-from typing import Protocol
+from typing import Any, Protocol
 
 from pydantic import ValidationError
 
@@ -92,7 +92,7 @@ class GenerationResult:
 # ---------------- sortie JSON robuste (#82) ----------------
 
 
-def extract_json(text: str) -> dict:
+def extract_json(text: str) -> dict[str, Any]:
     """Tolère les balises ```json et le texte autour de l'objet JSON."""
     t = text.strip()
     fenced = re.search(r"```(?:json)?\s*(.*?)```", t, re.DOTALL)
@@ -101,7 +101,8 @@ def extract_json(text: str) -> dict:
     start, end = t.find("{"), t.rfind("}")
     if start == -1 or end <= start:
         raise ValueError("no JSON object found")
-    return json.loads(t[start : end + 1])
+    parsed: dict[str, Any] = json.loads(t[start : end + 1])
+    return parsed
 
 
 def describe_error(exc: Exception, limit: int = 5) -> str:
@@ -128,8 +129,8 @@ def prompt_version_of(system_prompt: str, language: str) -> str:
 
 
 async def generate_checked_minutes(
-    transcript,
-    llm,
+    transcript: Any,
+    llm: Any,
     *,
     meeting_date: date | None = None,
     max_repairs: int = 1,
@@ -178,7 +179,7 @@ async def _fail(
     return GenerationResult("failed", error_code=code)
 
 
-def _model_name(llm) -> str:
+def _model_name(llm: Any) -> str:
     return str(getattr(llm, "model_name", None) or getattr(llm, "_model", None) or "unknown")
 
 
@@ -186,7 +187,7 @@ async def run_generation(
     meeting_id: str,
     *,
     repo: MinutesRepository,
-    llm,
+    llm: Any,
     notifier: Notifier,
     force: bool = False,
 ) -> GenerationResult:

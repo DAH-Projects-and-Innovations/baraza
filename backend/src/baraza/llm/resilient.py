@@ -14,7 +14,7 @@ import random
 import time
 from collections.abc import Awaitable, Callable
 from dataclasses import dataclass
-from typing import Literal
+from typing import Any, Literal
 
 import httpx
 
@@ -80,10 +80,10 @@ class ResilientLLMClient:
 
     async def complete(
         self,
-        messages: list[dict],
+        messages: list[dict[str, Any]],
         *,
         json_mode: bool = False,
-        json_schema: dict | None = None,
+        json_schema: dict[str, Any] | None = None,
     ) -> str:
         """json_schema (si fourni) implique une sortie structurée ; json_mode seul = json_object."""
         s = self.settings
@@ -122,13 +122,13 @@ class ResilientLLMClient:
         return self.settings.model
 
     @classmethod
-    def from_settings(cls, settings, **kwargs) -> ResilientLLMClient:
+    def from_settings(cls, settings: Any, **kwargs: Any) -> ResilientLLMClient:
         """Construit le client depuis baraza.config.Settings.
 
         Les réglages optionnels (llm_timeout_s, llm_max_output_tokens, llm_max_retries,
         llm_structured_output, llm_debug_log_content) sont lus s'ils existent dans Settings.
         """
-        key = getattr(settings, "llm_api_key", None)
+        key: Any = getattr(settings, "llm_api_key", None)
         if hasattr(key, "get_secret_value"):
             key = key.get_secret_value()
         return cls(
@@ -145,13 +145,15 @@ class ResilientLLMClient:
             **kwargs,
         )
 
-    async def complete_json(self, system: str, user: str, *, schema: dict | None = None) -> str:
+    async def complete_json(
+        self, system: str, user: str, *, schema: dict[str, Any] | None = None
+    ) -> str:
         messages = [{"role": "system", "content": system}, {"role": "user", "content": user}]
         return await self.complete(messages, json_mode=True, json_schema=schema)
 
     # --- choix du format de sortie (#82) -----------------------------------------
 
-    def _candidate_formats(self, json_mode: bool, json_schema: dict | None) -> list[str]:
+    def _candidate_formats(self, json_mode: bool, json_schema: dict[str, Any] | None) -> list[str]:
         mode = self.settings.structured_output
         if mode == "none" or (not json_mode and json_schema is None):
             return [FORMAT_NONE]
@@ -162,7 +164,7 @@ class ResilientLLMClient:
         return ([FORMAT_SCHEMA] if json_schema else []) + [FORMAT_OBJECT, FORMAT_NONE]
 
     @staticmethod
-    def _response_format(fmt: str, json_schema: dict | None) -> dict | None:
+    def _response_format(fmt: str, json_schema: dict[str, Any] | None) -> dict[str, Any] | None:
         if fmt == FORMAT_SCHEMA:
             return {
                 "type": "json_schema",
@@ -174,7 +176,7 @@ class ResilientLLMClient:
 
     # --- appel HTTP avec retries (#81) --------------------------------------------
 
-    async def _send_with_retries(self, payload: dict) -> str:
+    async def _send_with_retries(self, payload: dict[str, Any]) -> str:
         s = self.settings
         headers = {"Authorization": f"Bearer {s.api_key}"} if s.api_key else {}
         url = s.base_url.rstrip("/") + "/chat/completions"
@@ -225,7 +227,7 @@ class ResilientLLMClient:
         if retry_after is not None:
             return min(retry_after, s.backoff_max_s)
         delay = min(s.backoff_max_s, s.backoff_base_s * (2**attempt))
-        return delay * random.uniform(0.5, 1.0) if s.jitter else delay
+        return float(delay * random.uniform(0.5, 1.0) if s.jitter else delay)
 
     @staticmethod
     def _parse_retry_after(resp: httpx.Response) -> float | None:

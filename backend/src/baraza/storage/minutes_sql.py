@@ -13,9 +13,11 @@ TODO (comme storage/sql.py) : remplacer create_all par une migration Alembic.
 from __future__ import annotations
 
 from collections import Counter
+from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 from contextvars import ContextVar
 from datetime import UTC, datetime
+from typing import Any
 
 from baraza.storage.sql import Base, SqlSegmentStore
 from sqlalchemy import JSON, DateTime, Integer, String, Text, select
@@ -50,8 +52,8 @@ class MinutesDraftRow(Base):
 
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     meeting_id: Mapped[str] = mapped_column(String(200), index=True)
-    minutes: Mapped[dict] = mapped_column(JSON)
-    corrections: Mapped[list] = mapped_column(JSON)
+    minutes: Mapped[dict[str, Any]] = mapped_column(JSON)
+    corrections: Mapped[list[Any]] = mapped_column(JSON)
     model: Mapped[str] = mapped_column(String(200))
     prompt_version: Mapped[str] = mapped_column(String(64))
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), default=_now)
@@ -66,14 +68,14 @@ class DraftActionItemRow(Base):
     text: Mapped[str] = mapped_column(Text)
     owner: Mapped[str | None] = mapped_column(String(200), nullable=True)
     due_date: Mapped[str | None] = mapped_column(String(64), nullable=True)
-    segment_indices: Mapped[list] = mapped_column(JSON)
+    segment_indices: Mapped[list[Any]] = mapped_column(JSON)
 
 
 # Une session par tâche asyncio : plusieurs jobs peuvent partager le même dépôt sans conflit.
 _current_session: ContextVar[AsyncSession | None] = ContextVar("minutes_session", default=None)
 
 
-def engine_from_settings(settings) -> AsyncEngine:
+def engine_from_settings(settings: Any) -> AsyncEngine:
     """Crée l'engine depuis Settings. HYPOTHÈSE : le champ s'appelle database_url."""
     for name in ("database_url", "db_url", "postgres_url", "sql_url"):
         url = getattr(settings, name, None)
@@ -96,7 +98,7 @@ class SqlMinutesRepository:
             self._ready = True
 
     @asynccontextmanager
-    async def _session(self):
+    async def _session(self) -> AsyncIterator[AsyncSession]:
         """Session de la transaction en cours si elle existe, sinon une session autonome."""
         await self._ensure_schema()
         current = _current_session.get()
@@ -107,7 +109,7 @@ class SqlMinutesRepository:
             yield session
 
     @asynccontextmanager
-    async def transaction(self):
+    async def transaction(self) -> AsyncIterator[None]:
         await self._ensure_schema()
         if _current_session.get() is not None:  # transaction déjà ouverte : on la réutilise
             yield
@@ -187,7 +189,7 @@ class SqlMinutesRepository:
 
     # --- lecture pour l'API ---
 
-    async def get_latest_draft(self, meeting_id: str) -> dict | None:
+    async def get_latest_draft(self, meeting_id: str) -> dict[str, Any] | None:
         async with self._session() as s:
             row = (
                 await s.scalars(
