@@ -31,11 +31,15 @@ function initials(name: string) {
 export function TranscriptPanel({ meetingId, live }: { meetingId: string; live: boolean }) {
   const [segments, setSegments] = useState<Segment[]>([]);
   const [error, setError] = useState(false);
+  const [refresh, setRefresh] = useState(0);
 
   useEffect(() => {
     let cancelled = false;
+    let loading = false;
 
     async function load() {
+      if (loading) return;
+      loading = true;
       try {
         const result = await getSegments(meetingId);
         if (cancelled) return;
@@ -43,6 +47,8 @@ export function TranscriptPanel({ meetingId, live }: { meetingId: string; live: 
         setError(false);
       } catch {
         if (!cancelled) setError(true);
+      } finally {
+        loading = false;
       }
     }
 
@@ -57,7 +63,7 @@ export function TranscriptPanel({ meetingId, live }: { meetingId: string; live: 
       cancelled = true;
       clearInterval(timer);
     };
-  }, [meetingId, live]);
+  }, [meetingId, live, refresh]);
 
   // Named speakers alternate blue and orange by order of first appearance; unknown speakers stay neutral.
   const styles = useMemo(() => {
@@ -89,7 +95,8 @@ export function TranscriptPanel({ meetingId, live }: { meetingId: string; live: 
       </h2>
       {error && (
         <p role="alert" className="mb-3 text-sm text-red-600 dark:text-red-400">
-          Cannot load the transcript. Retrying…
+          {live ? "Cannot load the transcript. Retrying…" : "Cannot load the transcript."}{" "}
+          <button type="button" onClick={() => setRefresh((value) => value + 1)} className="underline">Try again</button>
         </p>
       )}
       {segments.length === 0 ? (
@@ -98,8 +105,8 @@ export function TranscriptPanel({ meetingId, live }: { meetingId: string; live: 
         </p>
       ) : (
         <ol className="flex flex-col gap-4">
-          {segments.map((segment) => (
-            <li key={segment.segment_id} className="flex gap-3">
+          {segments.map((segment, index) => (
+            <li id={`segment-${index}`} key={segment.segment_id} className="flex scroll-mt-6 gap-3 target:rounded-lg target:bg-accent-soft">
               <span
                 aria-hidden="true"
                 className={`flex h-8 w-8 flex-none items-center justify-center rounded-full text-xs font-semibold ${styles.get(segment.speaker) ?? UNKNOWN_STYLE}`}

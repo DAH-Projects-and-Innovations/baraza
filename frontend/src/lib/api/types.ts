@@ -27,9 +27,12 @@ export interface Segment {
   is_final: boolean;
 }
 
-/** Proposed contract, to confirm with the backend (#125/#126): `POST /captures`. */
+/** `POST /captures`. Consent is checked again by the backend. */
 export interface StartCaptureRequest {
   meeting_url: string;
+  title: string;
+  template: "standard";
+  participants_informed: true;
 }
 
 export interface StartCaptureResponse {
@@ -40,6 +43,13 @@ export interface StartCaptureResponse {
 export interface CaptureStatusResponse {
   capture_id: string;
   status: CaptureStatus;
+  meeting_id?: string;
+  title?: string;
+  simulated?: boolean;
+  stop_requested?: boolean;
+  phase?: string;
+  error?: string | null;
+  can_retry?: boolean;
 }
 
 /** Mirrors `Minutes` in backend/src/baraza/core/minutes.py. Missing info is `null`. */
