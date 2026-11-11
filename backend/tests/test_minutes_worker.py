@@ -1,12 +1,13 @@
 """Tâche arq generate_minutes_task et branchement de démarrage."""
+
 import pytest
+from minutes_fakes import MemRepo, Notifier
+from test_minutes_pipeline import ANSWER, transcript
 
 from baraza import worker
 from baraza.llm.client import FakeLLMClient
 from baraza.llm.resilient import ResilientLLMClient
 from baraza.storage.minutes_sql import SqlMinutesRepository
-from minutes_fakes import MemRepo, Notifier
-from test_minutes_pipeline import ANSWER, transcript
 
 
 @pytest.mark.asyncio
@@ -32,6 +33,8 @@ async def test_startup_builds_llm_repo_notifier_and_shutdown_disposes(monkeypatc
     monkeypatch.setattr(worker, "get_settings", lambda: S())
     ctx = {}
     await worker.startup(ctx)
-    assert isinstance(ctx["llm"], ResilientLLMClient) and isinstance(ctx["repo"], SqlMinutesRepository)
+    assert isinstance(ctx["llm"], ResilientLLMClient) and isinstance(
+        ctx["repo"], SqlMinutesRepository
+    )
     assert ctx["notifier"] is not None
     await worker.shutdown(ctx)

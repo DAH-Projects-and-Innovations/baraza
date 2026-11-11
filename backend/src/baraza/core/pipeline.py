@@ -15,9 +15,10 @@ import json
 import logging
 import re
 from collections import Counter
+from contextlib import AbstractAsyncContextManager
 from dataclasses import dataclass, field
 from datetime import date
-from typing import AsyncContextManager, Protocol
+from typing import Protocol
 
 from pydantic import ValidationError
 
@@ -53,14 +54,18 @@ class MinutesRepository(Protocol):
     async def set_status(self, meeting_id: str, status: str, reason: str | None = None) -> None: ...
     async def load_transcript(self, meeting_id: str) -> LoadedTranscript: ...
     async def save_draft(
-        self, meeting_id: str, minutes: Minutes, corrections: list[Correction],
-        model: str, prompt_version: str,
+        self,
+        meeting_id: str,
+        minutes: Minutes,
+        corrections: list[Correction],
+        model: str,
+        prompt_version: str,
     ) -> int: ...
     async def create_action_items(
         self, meeting_id: str, draft_id: int, items: list[ActionItem]
     ) -> None: ...
 
-    def transaction(self) -> AsyncContextManager[None]:
+    def transaction(self) -> AbstractAsyncContextManager[None]:
         """Brouillon, actions et statut réussissent ou échouent ensemble."""
         ...
 
@@ -85,6 +90,7 @@ class GenerationResult:
 
 
 # ---------------- sortie JSON robuste (#82) ----------------
+
 
 def extract_json(text: str) -> dict:
     """Tolère les balises ```json et le texte autour de l'objet JSON."""
@@ -163,7 +169,10 @@ async def generate_checked_minutes(
 
 # ---------------- le job de bout en bout (#89) ----------------
 
-async def _fail(repo: MinutesRepository, meeting_id: str, code: str, reason: str) -> GenerationResult:
+
+async def _fail(
+    repo: MinutesRepository, meeting_id: str, code: str, reason: str
+) -> GenerationResult:
     await repo.set_status(meeting_id, STATUS_GENERATION_FAILED, reason)
     logger.warning("generation failed meeting=%s code=%s", meeting_id, code)
     return GenerationResult("failed", error_code=code)
@@ -207,7 +216,9 @@ async def run_generation(
         # Erreur inattendue (base, bug...) : statut lisible puis on relance pour qu'arq réessaie.
         logger.error("generation crashed meeting=%s error=%s", meeting_id, type(exc).__name__)
         with contextlib.suppress(Exception):
-            await repo.set_status(meeting_id, STATUS_GENERATION_FAILED, "Erreur interne de génération.")
+            await repo.set_status(
+                meeting_id, STATUS_GENERATION_FAILED, "Erreur interne de génération."
+            )
         raise
 
     try:  # le brouillon est enregistré : une notification qui échoue ne le remet pas en cause
@@ -216,5 +227,7 @@ async def run_generation(
         logger.warning("notification failed meeting=%s error=%s", meeting_id, type(exc).__name__)
     counts = Counter(c.kind for c in corrections)
     return GenerationResult(
-        "draft_ready", draft_id=draft_id, corrections=tuple(f"{k}:{v}" for k, v in sorted(counts.items()))
+        "draft_ready",
+        draft_id=draft_id,
+        corrections=tuple(f"{k}:{v}" for k, v in sorted(counts.items())),
     )

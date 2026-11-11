@@ -1,4 +1,5 @@
 """Schéma du compte rendu (issue #82) et types d'entrée."""
+
 from __future__ import annotations
 
 from dataclasses import dataclass, field

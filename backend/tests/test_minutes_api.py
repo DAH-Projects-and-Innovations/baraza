@@ -1,17 +1,17 @@
 """Routes GET /meetings/{id}/minutes et POST /meetings/{id}/generate."""
+
 import httpx
 import pytest
 import pytest_asyncio
+from baraza.storage.sql import SqlSegmentStore
+from minutes_fakes import Notifier
 from sqlalchemy.ext.asyncio import create_async_engine
+from test_minutes_pipeline import ANSWER, SEGMENTS, Scripted
 
 from baraza.api import minutes as api
 from baraza.core.pipeline import run_generation
-from baraza.core.segments import TranscriptSegment
 from baraza.main import create_app
 from baraza.storage.minutes_sql import SqlMinutesRepository
-from baraza.storage.sql import SqlSegmentStore
-from minutes_fakes import Notifier
-from test_minutes_pipeline import ANSWER, SEGMENTS, Scripted
 
 
 class FakeQueue:
@@ -39,7 +39,12 @@ async def client(tmp_path):
 async def test_unknown_meeting_is_not_started_not_404(client):
     r = await client.get("/meetings/inconnue/minutes")
     assert r.status_code == 200
-    assert r.json() == {"meeting_id": "inconnue", "status": "not_started", "reason": None, "draft": None}
+    assert r.json() == {
+        "meeting_id": "inconnue",
+        "status": "not_started",
+        "reason": None,
+        "draft": None,
+    }
 
 
 @pytest.mark.asyncio
@@ -58,7 +63,7 @@ async def test_draft_ready_returns_minutes_and_corrections(client):
     assert body["status"] == "draft_ready" and body["reason"] is None
     d = body["draft"]
     assert d["minutes"]["summary"] == "Bêta validée." and d["model"] == "scripted-model"
-    assert d["minutes"]["actions"][1]["owner"] is None            # null : à afficher « Non précisé »
+    assert d["minutes"]["actions"][1]["owner"] is None  # null : à afficher « Non précisé »
     assert {c["kind"] for c in d["corrections"]} == {"item_rejected", "owner_nulled"}
 
 

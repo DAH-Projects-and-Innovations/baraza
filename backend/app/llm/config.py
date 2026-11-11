@@ -1,8 +1,9 @@
 """Lecture de la configuration du client LLM depuis les variables d'environnement (.env)."""
+
 from __future__ import annotations
 
 import os
-from typing import Mapping
+from collections.abc import Mapping
 
 from .client import LLMSettings
 

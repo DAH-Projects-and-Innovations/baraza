@@ -3,6 +3,7 @@
 Règle dure : on n'invente jamais une décision, un responsable ou une échéance.
 Principe : en cas de doute, on met à null (ou on rejette) et on le trace.
 """
+
 from __future__ import annotations
 
 import re
@@ -11,8 +12,34 @@ from datetime import date
 
 from .schema import ActionItem, Correction, Decision, Minutes, Segment
 
-_FR_MONTHS = "janvier|fevrier|mars|avril|mai|juin|juillet|aout|septembre|octobre|novembre|decembre".split("|")
-_EN_MONTHS = "january|february|march|april|may|june|july|august|september|october|november|december".split("|")
+_FR_MONTHS = [
+    "janvier",
+    "fevrier",
+    "mars",
+    "avril",
+    "mai",
+    "juin",
+    "juillet",
+    "aout",
+    "septembre",
+    "octobre",
+    "novembre",
+    "decembre",
+]
+_EN_MONTHS = [
+    "january",
+    "february",
+    "march",
+    "april",
+    "may",
+    "june",
+    "july",
+    "august",
+    "september",
+    "october",
+    "november",
+    "december",
+]
 
 
 def normalize(s: str) -> str:
@@ -159,47 +186,68 @@ def apply_anti_invention(
     decisions: list[Decision] = []
     for pos, d in enumerate(minutes.decisions):
         if not _valid_indices(d.segment_indices, by_index):
-            corrections.append(Correction(
-                kind="item_rejected", item_type="decision", item_position=pos,
-                original_value=d.text,
-                reason="segment_indices vides ou hors limites",
-            ))
+            corrections.append(
+                Correction(
+                    kind="item_rejected",
+                    item_type="decision",
+                    item_position=pos,
+                    original_value=d.text,
+                    reason="segment_indices vides ou hors limites",
+                )
+            )
             continue
         decisions.append(d)
 
     actions: list[ActionItem] = []
     for pos, a in enumerate(minutes.action_items):
         if not _valid_indices(a.segment_indices, by_index):
-            corrections.append(Correction(
-                kind="item_rejected", item_type="action_item", item_position=pos,
-                original_value=a.description,
-                reason="segment_indices vides ou hors limites",
-            ))
+            corrections.append(
+                Correction(
+                    kind="item_rejected",
+                    item_type="action_item",
+                    item_position=pos,
+                    original_value=a.description,
+                    reason="segment_indices vides ou hors limites",
+                )
+            )
             continue
         text = _cited(a.segment_indices, by_index)
         owner, due = a.owner, a.due_date
         if owner and not owner_is_supported(owner, text, participants):
-            corrections.append(Correction(
-                kind="owner_nulled", item_type="action_item", item_position=pos,
-                original_value=owner,
-                reason="nom absent des segments cités et des participants",
-            ))
+            corrections.append(
+                Correction(
+                    kind="owner_nulled",
+                    item_type="action_item",
+                    item_position=pos,
+                    original_value=owner,
+                    reason="nom absent des segments cités et des participants",
+                )
+            )
             owner = None
         if due and not due_date_is_supported(due, text):
-            corrections.append(Correction(
-                kind="due_date_nulled", item_type="action_item", item_position=pos,
-                original_value=due,
-                reason="échéance introuvable dans les segments cités",
-            ))
+            corrections.append(
+                Correction(
+                    kind="due_date_nulled",
+                    item_type="action_item",
+                    item_position=pos,
+                    original_value=due,
+                    reason="échéance introuvable dans les segments cités",
+                )
+            )
             due = None
         elif due and meeting_date is not None:
             fix = _year_check(due, text, meeting_date)
             if fix is not None:
                 new_due, kind, reason = fix
-                corrections.append(Correction(
-                    kind=kind, item_type="action_item", item_position=pos,
-                    original_value=due, reason=reason,
-                ))
+                corrections.append(
+                    Correction(
+                        kind=kind,
+                        item_type="action_item",
+                        item_position=pos,
+                        original_value=due,
+                        reason=reason,
+                    )
+                )
                 due = new_due
         actions.append(a.model_copy(update={"owner": owner, "due_date": due}))
 

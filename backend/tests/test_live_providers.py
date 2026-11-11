@@ -7,6 +7,7 @@ Ignorés par défaut. Pour les activer, définir les variables puis lancer :
   Hébergé : LIVE_HOSTED_URL=https://... LIVE_HOSTED_MODEL=... LIVE_HOSTED_KEY=...
 Ne JAMAIS committer de clé : passer les variables dans le terminal uniquement.
 """
+
 import os
 
 import pytest
@@ -26,13 +27,27 @@ SEGMENTS = [
 def providers():
     out = []
     if os.getenv("LIVE_OLLAMA_MODEL"):
-        out.append(("ollama", LLMSettings(
-            base_url=os.getenv("LIVE_OLLAMA_URL", "http://localhost:11434/v1"),
-            model=os.environ["LIVE_OLLAMA_MODEL"], timeout_s=180)))
+        out.append(
+            (
+                "ollama",
+                LLMSettings(
+                    base_url=os.getenv("LIVE_OLLAMA_URL", "http://localhost:11434/v1"),
+                    model=os.environ["LIVE_OLLAMA_MODEL"],
+                    timeout_s=180,
+                ),
+            )
+        )
     if os.getenv("LIVE_HOSTED_URL"):
-        out.append(("hosted", LLMSettings(
-            base_url=os.environ["LIVE_HOSTED_URL"], model=os.environ["LIVE_HOSTED_MODEL"],
-            api_key=os.getenv("LIVE_HOSTED_KEY"))))
+        out.append(
+            (
+                "hosted",
+                LLMSettings(
+                    base_url=os.environ["LIVE_HOSTED_URL"],
+                    model=os.environ["LIVE_HOSTED_MODEL"],
+                    api_key=os.getenv("LIVE_HOSTED_KEY"),
+                ),
+            )
+        )
     return out
 
 
@@ -40,6 +55,8 @@ def providers():
 @pytest.mark.parametrize("name,settings", providers() or [("none", None)])
 async def test_real_provider_returns_valid_minutes(name, settings):
     client = LLMClient(settings)
-    minutes = await generate_minutes_json(client, build_messages(SEGMENTS, ["Alice", "Bob"], "Standard"))
+    minutes = await generate_minutes_json(
+        client, build_messages(SEGMENTS, ["Alice", "Bob"], "Standard")
+    )
     print(f"\n[{name}] format utilisé: {client.last_response_format}")
     assert minutes.summary or minutes.decisions or minutes.action_items

@@ -4,12 +4,14 @@ Le job ne connaît ni la base de données ni le système de notification : il pa
 deux interfaces (MeetingRepository, Notifier) que le projet implémente, ce qui permet
 de le tester avec un faux LLM et un dépôt en mémoire (voir app/minutes/testing.py).
 """
+
 from __future__ import annotations
 
 import contextlib
 import logging
+from contextlib import AbstractAsyncContextManager
 from dataclasses import dataclass, replace
-from typing import AsyncContextManager, Protocol
+from typing import Protocol
 
 from app.llm.errors import LLMError
 
@@ -34,13 +36,17 @@ class MeetingRepository(Protocol):
     async def load_transcript(self, meeting_id: str) -> Transcript: ...
     async def load_template(self, meeting_id: str) -> str | None: ...
     async def save_draft(
-        self, meeting_id: str, minutes: Minutes, corrections: list[Correction],
-        model: str, prompt_version: str,
+        self,
+        meeting_id: str,
+        minutes: Minutes,
+        corrections: list[Correction],
+        model: str,
+        prompt_version: str,
     ) -> str: ...
     async def create_action_items(self, meeting_id: str, items: list[ActionItem]) -> None: ...
 
-    def transaction(self) -> AsyncContextManager[None]:
-        """Les écritures du brouillon, des actions et du statut doivent réussir ou échouer ensemble."""
+    def transaction(self) -> AbstractAsyncContextManager[None]:
+        """Écritures du brouillon, des actions et du statut : réussir ou échouer ensemble."""
         ...
 
 
@@ -57,12 +63,13 @@ class GenerationResult:
 
 def apply_speaker_renames(segments: list[Segment], renames: dict[str, str]) -> list[Segment]:
     return [
-        replace(s, speaker=renames.get(s.speaker, s.speaker)) if s.speaker else s
-        for s in segments
+        replace(s, speaker=renames.get(s.speaker, s.speaker)) if s.speaker else s for s in segments
     ]
 
 
-async def _fail(repo: MeetingRepository, meeting_id: str, code: str, reason: str) -> GenerationResult:
+async def _fail(
+    repo: MeetingRepository, meeting_id: str, code: str, reason: str
+) -> GenerationResult:
     await repo.set_status(meeting_id, STATUS_GENERATION_FAILED, reason)
     logger.warning("generation failed meeting=%s code=%s", meeting_id, code)
     return GenerationResult("failed", error_code=code)
@@ -86,7 +93,9 @@ async def run_generation(
         transcript = await repo.load_transcript(meeting_id)
         template = (await repo.load_template(meeting_id)) or DEFAULT_TEMPLATE
         renames = transcript.speaker_renames
-        segments = sorted(apply_speaker_renames(transcript.segments, renames), key=lambda s: s.index)
+        segments = sorted(
+            apply_speaker_renames(transcript.segments, renames), key=lambda s: s.index
+        )
         participants = [renames.get(p, p) for p in transcript.participants]
         if not segments:
             return await _fail(repo, meeting_id, "empty_transcript", "La transcription est vide.")
@@ -110,7 +119,9 @@ async def run_generation(
         # l'exception pour que le worker (arq) la voie et puisse réessayer.
         logger.error("generation crashed meeting=%s error=%s", meeting_id, type(exc).__name__)
         with contextlib.suppress(Exception):
-            await repo.set_status(meeting_id, STATUS_GENERATION_FAILED, "Erreur interne de génération.")
+            await repo.set_status(
+                meeting_id, STATUS_GENERATION_FAILED, "Erreur interne de génération."
+            )
         raise
 
     # Le brouillon est enregistré : un échec de notification ne doit pas le remettre en cause.

@@ -1,4 +1,5 @@
 """Évaluation « zéro invention » sur les réunions d'exemple (critère d'acceptation #83)."""
+
 import json
 from datetime import date
 from pathlib import Path

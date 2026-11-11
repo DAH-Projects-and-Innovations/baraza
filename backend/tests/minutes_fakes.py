@@ -1,4 +1,5 @@
 """Dépôt en mémoire et notifier de test (même interface que SqlMinutesRepository)."""
+
 import copy
 from contextlib import asynccontextmanager
 from dataclasses import dataclass

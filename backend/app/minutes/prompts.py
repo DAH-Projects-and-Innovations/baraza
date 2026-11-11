@@ -1,4 +1,5 @@
 """Prompt de génération. Incrémenter PROMPT_VERSION à chaque changement."""
+
 from __future__ import annotations
 
 from datetime import date
@@ -35,9 +36,7 @@ def build_messages(
     template: str,
     meeting_date: date | None = None,
 ) -> list[dict]:
-    lines = "\n".join(
-        f"[{s.index}] {s.speaker or 'Unknown'}: {s.text}" for s in segments
-    )
+    lines = "\n".join(f"[{s.index}] {s.speaker or 'Unknown'}: {s.text}" for s in segments)
     user = (
         f"Meeting date: {meeting_date.isoformat() if meeting_date else 'unknown'}\n"
         f"Participants: {', '.join(participants) or 'unknown'}\n"

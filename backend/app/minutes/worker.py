@@ -15,6 +15,7 @@ Pour déclencher la génération (à la fin de l'ingestion, issue #78) :
 
     await redis.enqueue_job("generate_minutes_job", meeting_id)
 """
+
 from __future__ import annotations
 
 from app.llm.client import LLMClient

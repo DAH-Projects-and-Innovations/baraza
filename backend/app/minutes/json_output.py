@@ -1,4 +1,5 @@
 """Sorties JSON robustes quel que soit le modèle (issue #82)."""
+
 from __future__ import annotations
 
 import json
@@ -39,9 +40,7 @@ def describe_error(exc: Exception, limit: int = 5) -> str:
     return str(exc)
 
 
-async def generate_minutes_json(
-    client, messages: list[dict], *, max_repairs: int = 1
-) -> Minutes:
+async def generate_minutes_json(client, messages: list[dict], *, max_repairs: int = 1) -> Minutes:
     """Appelle le LLM, valide avec Pydantic, puis tente UNE réparation (max_repairs=1).
 
     Le client choisit json_schema / json_object / aucun selon ce que le fournisseur accepte.
@@ -56,7 +55,8 @@ async def generate_minutes_json(
             summary = describe_error(exc)
             if attempt == max_repairs:
                 raise InvalidModelOutputError(summary) from exc
-            msgs = msgs + [
+            msgs = [
+                *msgs,
                 {"role": "assistant", "content": raw},
                 {
                     "role": "user",

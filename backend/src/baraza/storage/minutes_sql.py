@@ -17,14 +17,19 @@ from contextlib import asynccontextmanager
 from contextvars import ContextVar
 from datetime import UTC, datetime
 
+from baraza.storage.sql import Base, SqlSegmentStore
 from sqlalchemy import JSON, DateTime, Integer, String, Text, select
-from sqlalchemy.ext.asyncio import AsyncEngine, AsyncSession, async_sessionmaker, create_async_engine
+from sqlalchemy.ext.asyncio import (
+    AsyncEngine,
+    AsyncSession,
+    async_sessionmaker,
+    create_async_engine,
+)
 from sqlalchemy.orm import Mapped, mapped_column
 
 from baraza.core.anti_invention import Correction
 from baraza.core.minutes import ActionItem, Minutes
 from baraza.core.pipeline import LoadedTranscript, normalize_language
-from baraza.storage.sql import Base, SqlSegmentStore
 
 
 def _now() -> datetime:
@@ -127,9 +132,11 @@ class SqlMinutesRepository:
 
     async def set_status(self, meeting_id: str, status: str, reason: str | None = None) -> None:
         async with self._session() as s:
-            await s.merge(MinutesStateRow(
-                meeting_id=meeting_id, status=status, reason=reason, updated_at=_now()
-            ))
+            await s.merge(
+                MinutesStateRow(
+                    meeting_id=meeting_id, status=status, reason=reason, updated_at=_now()
+                )
+            )
 
     # --- lecture de la transcription (segments stockés par l'ingestion, #78) ---
 
@@ -143,8 +150,12 @@ class SqlMinutesRepository:
     # --- écriture du brouillon ---
 
     async def save_draft(
-        self, meeting_id: str, minutes: Minutes, corrections: list[Correction],
-        model: str, prompt_version: str,
+        self,
+        meeting_id: str,
+        minutes: Minutes,
+        corrections: list[Correction],
+        model: str,
+        prompt_version: str,
     ) -> int:
         async with self._session() as s:
             row = MinutesDraftRow(
@@ -163,23 +174,36 @@ class SqlMinutesRepository:
     ) -> None:
         async with self._session() as s:
             for item in items:
-                s.add(DraftActionItemRow(
-                    meeting_id=meeting_id, draft_id=draft_id, text=item.text, owner=item.owner,
-                    due_date=item.due_date, segment_indices=list(item.source.segment_indices),
-                ))
+                s.add(
+                    DraftActionItemRow(
+                        meeting_id=meeting_id,
+                        draft_id=draft_id,
+                        text=item.text,
+                        owner=item.owner,
+                        due_date=item.due_date,
+                        segment_indices=list(item.source.segment_indices),
+                    )
+                )
 
     # --- lecture pour l'API ---
 
     async def get_latest_draft(self, meeting_id: str) -> dict | None:
         async with self._session() as s:
-            row = (await s.scalars(
-                select(MinutesDraftRow).where(MinutesDraftRow.meeting_id == meeting_id)
-                .order_by(MinutesDraftRow.id.desc()).limit(1)
-            )).first()
+            row = (
+                await s.scalars(
+                    select(MinutesDraftRow)
+                    .where(MinutesDraftRow.meeting_id == meeting_id)
+                    .order_by(MinutesDraftRow.id.desc())
+                    .limit(1)
+                )
+            ).first()
             if row is None:
                 return None
             return {
-                "id": row.id, "created_at": row.created_at, "model": row.model,
-                "prompt_version": row.prompt_version, "minutes": row.minutes,
+                "id": row.id,
+                "created_at": row.created_at,
+                "model": row.model,
+                "prompt_version": row.prompt_version,
+                "minutes": row.minutes,
                 "corrections": row.corrections,
             }

@@ -1,4 +1,5 @@
 """Évaluation « zéro invention » (issue #83)."""
+
 from __future__ import annotations
 
 from collections import Counter

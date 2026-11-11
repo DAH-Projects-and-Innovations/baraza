@@ -2,14 +2,16 @@
 
 Fonctionne avec LiteLLM, Ollama (/v1), vLLM, OpenAI... : seule la config change.
 """
+
 from __future__ import annotations
 
 import asyncio
 import logging
 import random
 import time
+from collections.abc import Awaitable, Callable
 from dataclasses import dataclass
-from typing import Awaitable, Callable, Literal
+from typing import Literal
 
 import httpx
 
@@ -161,7 +163,10 @@ class LLMClient:
                 # Métadonnées seulement : jamais le contenu.
                 logger.info(
                     "llm call model=%s attempt=%d status=%d duration=%.2fs",
-                    s.model, attempt, resp.status_code, time.monotonic() - started,
+                    s.model,
+                    attempt,
+                    resp.status_code,
+                    time.monotonic() - started,
                 )
                 if resp.status_code == 200:
                     return self._extract(resp)

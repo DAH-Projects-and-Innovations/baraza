@@ -1,11 +1,11 @@
-import json
-
 import pytest
 
 from app.llm.errors import InvalidModelOutputError
 from app.minutes.json_output import describe_error, extract_json, generate_minutes_json
 
-VALID = '{"title":"T","summary":"S","decisions":[{"text":"D","segment_indices":[0]}],"action_items":[]}'
+VALID = (
+    '{"title":"T","summary":"S","decisions":[{"text":"D","segment_indices":[0]}],"action_items":[]}'
+)
 MISSING_TEXT = '{"decisions": [{"segment_indices": [0]}]}'  # champ "text" manquant
 
 
@@ -55,16 +55,16 @@ async def test_schema_error_is_repaired_with_validation_error_in_prompt():
     m = await generate_minutes_json(llm, [])
     assert m.decisions[0].text == "D"
     repair = llm.calls[1][-1]["content"]
-    assert "decisions.0.text" in repair          # le chemin du champ fautif
-    assert "Field required" in repair            # le message Pydantic
+    assert "decisions.0.text" in repair  # le chemin du champ fautif
+    assert "Field required" in repair  # le message Pydantic
 
 
 async def test_second_failure_raises_readable_error_after_exactly_two_calls():
     llm = ScriptedLLM(MISSING_TEXT, MISSING_TEXT)
     with pytest.raises(InvalidModelOutputError) as err:
         await generate_minutes_json(llm, [])
-    assert len(llm.calls) == 2                    # un seul réessai
-    assert err.value.user_message                 # message lisible
+    assert len(llm.calls) == 2  # un seul réessai
+    assert err.value.user_message  # message lisible
     assert err.value.code == "invalid_model_output"
 
 

@@ -5,8 +5,10 @@ Usage :
 
   (sans option)  sorties de modèle ENREGISTRÉES dans les fichiers ("model_output") : aucun LLM.
   --live         appelle le VRAI modèle sur chaque réunion (ignore "model_output").
-                 Variables : LLM_BASE_URL, LLM_MODEL, LLM_API_KEY (si besoin), LLM_TIMEOUT_S (ex. 180 pour Ollama).
-  --show         affiche la transcription et le compte rendu généré (lisible), pas seulement les compteurs.
+                 Variables : LLM_BASE_URL, LLM_MODEL, LLM_API_KEY (si besoin),
+                 LLM_TIMEOUT_S (ex. 180 pour Ollama).
+  --show         affiche la transcription et le compte rendu généré (lisible),
+                 pas seulement les compteurs.
 
 Exemples :
   py scripts/eval_invention.py                          # démo rapide, sans modèle
@@ -16,6 +18,7 @@ Format d'un fichier : {name, meeting_date?, participants, segments[{index,speake
                        model_output?, expected_corrections?}
 Pour utiliser les réunions fictives de eval/, adapter seulement load_meeting().
 """
+
 import asyncio
 import json
 import os
@@ -26,13 +29,16 @@ from pathlib import Path
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
 
-from app.minutes.evaluation import evaluate  # noqa: E402
-from app.minutes.schema import Minutes, Segment  # noqa: E402
+from app.minutes.evaluation import evaluate
+from app.minutes.schema import Minutes, Segment
 
 
 def load_meeting(path: Path):
     data = json.loads(path.read_text(encoding="utf-8"))
-    segments = [Segment(index=s["index"], text=s["text"], speaker=s.get("speaker")) for s in data["segments"]]
+    segments = [
+        Segment(index=s["index"], text=s["text"], speaker=s.get("speaker"))
+        for s in data["segments"]
+    ]
     meeting_date = date.fromisoformat(data["meeting_date"]) if data.get("meeting_date") else None
     return data, segments, meeting_date
 
@@ -47,9 +53,13 @@ async def get_minutes(data, segments, meeting_date=None, live=False):
 
     for var in ("LLM_BASE_URL", "LLM_MODEL"):
         if not os.getenv(var):
-            sys.exit(f"Variable {var} non définie dans cette fenêtre (voir l'aide en tête du script).")
+            sys.exit(
+                f"Variable {var} non définie dans cette fenêtre (voir l'aide en tête du script)."
+            )
     client = LLMClient(load_llm_settings())  # lit aussi LLM_TIMEOUT_S, LLM_MAX_OUTPUT_TOKENS...
-    return await generate_minutes_json(client, build_messages(segments, data["participants"], "Standard", meeting_date))
+    return await generate_minutes_json(
+        client, build_messages(segments, data["participants"], "Standard", meeting_date)
+    )
 
 
 def show(segments, minutes):
@@ -62,8 +72,10 @@ def show(segments, minutes):
     for d in minutes.decisions:
         print(f"   Décision : {d.text}  (segments {d.segment_indices})")
     for a in minutes.action_items:
-        print(f"   Action   : {a.description}  | responsable={a.owner} | échéance={a.due_date}"
-              f"  (segments {a.segment_indices})")
+        print(
+            f"   Action   : {a.description}  | responsable={a.owner} | échéance={a.due_date}"
+            f"  (segments {a.segment_indices})"
+        )
     print("   --- Contrôles")
 
 
@@ -99,4 +111,6 @@ async def main(folder: str, live: bool, display: bool) -> int:
 if __name__ == "__main__":
     args = [a for a in sys.argv[1:] if not a.startswith("--")]
     flags = {a for a in sys.argv[1:] if a.startswith("--")}
-    sys.exit(asyncio.run(main(args[0] if args else "eval_samples", "--live" in flags, "--show" in flags)))
+    sys.exit(
+        asyncio.run(main(args[0] if args else "eval_samples", "--live" in flags, "--show" in flags))
+    )

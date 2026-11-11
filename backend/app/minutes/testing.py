@@ -1,4 +1,5 @@
 """Doubles de test : dépôt en mémoire et notifier enregistreur (tests et démonstration)."""
+
 from __future__ import annotations
 
 import copy
@@ -17,7 +18,9 @@ class DraftRecord:
 
 
 class InMemoryRepository:
-    def __init__(self, transcript: Transcript, template: str | None = "Standard", status: str | None = None):
+    def __init__(
+        self, transcript: Transcript, template: str | None = "Standard", status: str | None = None
+    ):
         self.transcript, self.template, self.status = transcript, template, status
         self.reason: str | None = None
         self.status_history: list[str] = []
@@ -49,7 +52,9 @@ class InMemoryRepository:
 
     @asynccontextmanager
     async def transaction(self):
-        snapshot = copy.deepcopy((self.drafts, self.action_items, self.status, self.reason, self.status_history))
+        snapshot = copy.deepcopy(
+            (self.drafts, self.action_items, self.status, self.reason, self.status_history)
+        )
         try:
             yield
         except BaseException:

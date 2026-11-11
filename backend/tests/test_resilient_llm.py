@@ -4,12 +4,17 @@ import logging
 import httpx
 import pytest
 
+from baraza.llm.errors import (
+    ContextTooLongError,
+    LLMAuthError,
+    LLMServerError,
+    LLMTimeoutError,
+    ModelUnreachableError,
+    OutputTruncatedError,
+    QuotaExceededError,
+)
 from baraza.llm.resilient import LLMSettings
 from baraza.llm.resilient import ResilientLLMClient as LLMClient
-from baraza.llm.errors import (
-    ContextTooLongError, LLMAuthError, LLMServerError, LLMTimeoutError,
-    ModelUnreachableError, OutputTruncatedError, QuotaExceededError,
-)
 
 OK = {"choices": [{"message": {"content": "bonjour"}, "finish_reason": "stop"}]}
 MSGS = [{"role": "user", "content": "SECRET-PROMPT"}]
@@ -186,7 +191,9 @@ def format_recorder(reject=()):
         kind = rf["type"] if rf else "none"
         seen.append(kind)
         if kind in reject:
-            return httpx.Response(400, json={"error": {"message": f"response_format {kind} is not supported"}})
+            return httpx.Response(
+                400, json={"error": {"message": f"response_format {kind} is not supported"}}
+            )
         return httpx.Response(200, json=OK)
 
     return handler, seen
@@ -218,7 +225,7 @@ async def test_fallback_to_json_object_when_schema_rejected():
     handler, seen = format_recorder(reject=("json_schema",))
     client, sleeps = make_client(handler)
     assert await client.complete(MSGS, json_mode=True, json_schema=SCHEMA) == "bonjour"
-    assert seen == ["json_schema", "json_object"] and sleeps == []   # pas de retry inutile
+    assert seen == ["json_schema", "json_object"] and sleeps == []  # pas de retry inutile
     assert client.last_response_format == "json_object"
 
 
@@ -260,13 +267,18 @@ async def test_none_mode_sends_no_response_format():
 
 @pytest.mark.asyncio
 async def test_context_error_is_not_mistaken_for_format_error():
-    handler = lambda r: httpx.Response(400, json={"error": {"message": "context_length_exceeded for response_format call"}})
+    def handler(_request):
+        return httpx.Response(
+            400, json={"error": {"message": "context_length_exceeded for response_format call"}}
+        )
+
     client, _ = make_client(handler)
     with pytest.raises(ContextTooLongError):
         await client.complete(MSGS, json_mode=True, json_schema=SCHEMA)
 
 
 # ---------------- interface du projet : complete_json + from_settings ----------------
+
 
 @pytest.mark.asyncio
 async def test_complete_json_sends_system_and_user_and_schema():
@@ -303,7 +315,12 @@ def test_from_settings_reads_project_settings_and_optional_fields():
         llm_api_key = "k"
 
     c = LLMClient.from_settings(S())
-    assert (c.settings.base_url, c.settings.model, c.settings.api_key, c.model_name) == ("http://x/v1", "m", "k", "m")
+    assert (c.settings.base_url, c.settings.model, c.settings.api_key, c.model_name) == (
+        "http://x/v1",
+        "m",
+        "k",
+        "m",
+    )
     assert c.settings.timeout_s == 60.0 and c.settings.max_retries == 3
 
     class S2(S):

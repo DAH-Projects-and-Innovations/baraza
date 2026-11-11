@@ -5,14 +5,16 @@ Apports par rapport à OpenAICompatibleClient : timeouts et max tokens configura
 backoff (429/5xx/timeouts), erreurs lisibles, repli json_schema -> json_object -> prompt seul,
 aucun log de contenu hors flag de debug.
 """
+
 from __future__ import annotations
 
 import asyncio
 import logging
 import random
 import time
+from collections.abc import Awaitable, Callable
 from dataclasses import dataclass
-from typing import Awaitable, Callable, Literal
+from typing import Literal
 
 import httpx
 
@@ -120,7 +122,7 @@ class ResilientLLMClient:
         return self.settings.model
 
     @classmethod
-    def from_settings(cls, settings, **kwargs) -> "ResilientLLMClient":
+    def from_settings(cls, settings, **kwargs) -> ResilientLLMClient:
         """Construit le client depuis baraza.config.Settings.
 
         Les réglages optionnels (llm_timeout_s, llm_max_output_tokens, llm_max_retries,
@@ -198,7 +200,10 @@ class ResilientLLMClient:
                 # Métadonnées seulement : jamais le contenu.
                 logger.info(
                     "llm call model=%s attempt=%d status=%d duration=%.2fs",
-                    s.model, attempt, resp.status_code, time.monotonic() - started,
+                    s.model,
+                    attempt,
+                    resp.status_code,
+                    time.monotonic() - started,
                 )
                 if resp.status_code == 200:
                     return self._extract(resp)

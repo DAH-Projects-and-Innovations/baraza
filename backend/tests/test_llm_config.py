@@ -13,9 +13,21 @@ def test_defaults():
 
 
 def test_overrides():
-    s = load_llm_settings({**BASE, "LLM_API_KEY": "k", "LLM_TIMEOUT_S": "120",
-                           "LLM_MAX_OUTPUT_TOKENS": "4096", "LLM_STRUCTURED_OUTPUT": "json_object"})
-    assert (s.api_key, s.timeout_s, s.max_output_tokens, s.structured_output) == ("k", 120.0, 4096, "json_object")
+    s = load_llm_settings(
+        {
+            **BASE,
+            "LLM_API_KEY": "k",
+            "LLM_TIMEOUT_S": "120",
+            "LLM_MAX_OUTPUT_TOKENS": "4096",
+            "LLM_STRUCTURED_OUTPUT": "json_object",
+        }
+    )
+    assert (s.api_key, s.timeout_s, s.max_output_tokens, s.structured_output) == (
+        "k",
+        120.0,
+        4096,
+        "json_object",
+    )
 
 
 def test_missing_variables_are_listed():
@@ -23,7 +35,9 @@ def test_missing_variables_are_listed():
         load_llm_settings({"LLM_MODEL": "m"})
 
 
-@pytest.mark.parametrize("bad", [{"LLM_TIMEOUT_S": "abc"}, {"LLM_MAX_RETRIES": "x"}, {"LLM_STRUCTURED_OUTPUT": "xml"}])
+@pytest.mark.parametrize(
+    "bad", [{"LLM_TIMEOUT_S": "abc"}, {"LLM_MAX_RETRIES": "x"}, {"LLM_STRUCTURED_OUTPUT": "xml"}]
+)
 def test_invalid_values_are_rejected(bad):
     with pytest.raises(ConfigError):
         load_llm_settings({**BASE, **bad})

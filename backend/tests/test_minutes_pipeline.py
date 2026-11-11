@@ -1,4 +1,5 @@
 """Pipeline de génération (#81-#89) : faux LLM, dépôt en mémoire, puis vraie base SQLite."""
+
 import asyncio
 import json
 import logging
@@ -6,23 +7,36 @@ from datetime import date
 
 import pytest
 import pytest_asyncio
+from baraza.core.segments import TranscriptSegment
+from baraza.storage.sql import SqlSegmentStore
+from minutes_fakes import MemRepo, Notifier
 from sqlalchemy.ext.asyncio import create_async_engine
 
 from baraza.core.pipeline import (
-    STATUS_DRAFT_READY, STATUS_GENERATING, STATUS_GENERATION_FAILED, LoadedTranscript,
-    extract_json, generate_checked_minutes, run_generation,
+    STATUS_DRAFT_READY,
+    STATUS_GENERATING,
+    STATUS_GENERATION_FAILED,
+    LoadedTranscript,
+    extract_json,
+    generate_checked_minutes,
+    run_generation,
 )
-from baraza.core.segments import TranscriptSegment
 from baraza.llm.client import FakeLLMClient
 from baraza.llm.errors import InvalidModelOutputError, QuotaExceededError
 from baraza.storage.minutes_sql import DraftActionItemRow, SqlMinutesRepository
-from baraza.storage.sql import SqlSegmentStore
-from minutes_fakes import MemRepo, Notifier
 
 
 def seg(i, speaker, text, **kw):
-    return TranscriptSegment(meeting_id="m1", segment_id=f"s{i}", speaker=speaker, start=float(i * 5),
-                             end=float(i * 5 + 4), text=text, language=kw.pop("language", "fr"), **kw)
+    return TranscriptSegment(
+        meeting_id="m1",
+        segment_id=f"s{i}",
+        speaker=speaker,
+        start=float(i * 5),
+        end=float(i * 5 + 4),
+        text=text,
+        language=kw.pop("language", "fr"),
+        **kw,
+    )
 
 
 SEGMENTS = [
@@ -30,22 +44,37 @@ SEGMENTS = [
     seg(1, "Alice", "Bob, tu peux envoyer le rapport avant le 15 octobre ?"),
     seg(2, "Bob", "Oui, je m'en occupe."),
 ]
-ANSWER = json.dumps({
-    "summary": "Bêta validée.",
-    "topics": [{"title": "Bêta", "summary": "Lancement", "source": {"segment_indices": [0]}}],
-    "decisions": [{"text": "Lancer la bêta", "source": {"segment_indices": [0]}},
-                  {"text": "Inventée", "source": {"segment_indices": [9]}}],
-    "actions": [
-        {"text": "Envoyer le rapport", "owner": "Bob", "due_date": "2023-10-15", "source": {"segment_indices": [1, 2]}},
-        {"text": "Contacter le client", "owner": "Zoé", "due_date": None, "source": {"segment_indices": [0]}},
-    ],
-    "open_points": [],
-})
+ANSWER = json.dumps(
+    {
+        "summary": "Bêta validée.",
+        "topics": [{"title": "Bêta", "summary": "Lancement", "source": {"segment_indices": [0]}}],
+        "decisions": [
+            {"text": "Lancer la bêta", "source": {"segment_indices": [0]}},
+            {"text": "Inventée", "source": {"segment_indices": [9]}},
+        ],
+        "actions": [
+            {
+                "text": "Envoyer le rapport",
+                "owner": "Bob",
+                "due_date": "2023-10-15",
+                "source": {"segment_indices": [1, 2]},
+            },
+            {
+                "text": "Contacter le client",
+                "owner": "Zoé",
+                "due_date": None,
+                "source": {"segment_indices": [0]},
+            },
+        ],
+        "open_points": [],
+    }
+)
 
 
 def transcript(segments=None, **kw):
-    return LoadedTranscript(meeting_id="m1", segments=SEGMENTS if segments is None else segments,
-                            language="fr", **kw)
+    return LoadedTranscript(
+        meeting_id="m1", segments=SEGMENTS if segments is None else segments, language="fr", **kw
+    )
 
 
 class Scripted:
@@ -65,6 +94,7 @@ class Scripted:
 
 # ---------------- sortie JSON robuste (#82) ----------------
 
+
 def test_extract_json_tolerates_fences_and_noise():
     assert extract_json('Voici :\n```json\n{"a": 1}\n```\nmerci') == {"a": 1}
     assert extract_json('blabla {"a": 1} fin') == {"a": 1}
@@ -76,16 +106,20 @@ def test_extract_json_tolerates_fences_and_noise():
 async def test_valid_answer_schema_is_requested_and_checks_applied():
     llm = Scripted(ANSWER)
     minutes, corrections, version = await generate_checked_minutes(transcript(), llm)
-    assert llm.calls[0][2]["properties"]["actions"]            # schéma JSON envoyé au client
-    assert [d.text for d in minutes.decisions] == ["Lancer la bêta"]      # citation hors limites rejetée
-    assert minutes.actions[1].owner is None                    # "Zoé" inventée
+    assert llm.calls[0][2]["properties"]["actions"]  # schéma JSON envoyé au client
+    assert [d.text for d in minutes.decisions] == [
+        "Lancer la bêta"
+    ]  # citation hors limites rejetée
+    assert minutes.actions[1].owner is None  # "Zoé" inventée
     assert {c.kind for c in corrections} == {"item_rejected", "owner_nulled"}
     assert version.startswith("fr-") and len(version) == 11
 
 
 @pytest.mark.asyncio
 async def test_fenced_answer_accepted():
-    minutes, _, _ = await generate_checked_minutes(transcript(), Scripted(f"```json\n{ANSWER}\n```"))
+    minutes, _, _ = await generate_checked_minutes(
+        transcript(), Scripted(f"```json\n{ANSWER}\n```")
+    )
     assert minutes.summary == "Bêta validée."
 
 
@@ -94,12 +128,17 @@ async def test_invalid_json_repaired_once():
     llm = Scripted("pas du json", ANSWER)
     minutes, _, _ = await generate_checked_minutes(transcript(), llm)
     assert minutes.summary and len(llm.calls) == 2
-    assert "previous answer was invalid" in llm.calls[1][1] and "no JSON object found" in llm.calls[1][1]
+    assert (
+        "previous answer was invalid" in llm.calls[1][1]
+        and "no JSON object found" in llm.calls[1][1]
+    )
 
 
 @pytest.mark.asyncio
 async def test_schema_error_repaired_with_field_path_in_prompt():
-    bad = json.dumps({"summary": "s", "decisions": [{"source": {"segment_indices": [0]}}]})   # "text" manquant
+    bad = json.dumps(
+        {"summary": "s", "decisions": [{"source": {"segment_indices": [0]}}]}
+    )  # "text" manquant
     llm = Scripted(bad, ANSWER)
     await generate_checked_minutes(transcript(), llm)
     assert "decisions.0.text" in llm.calls[1][1] and "Field required" in llm.calls[1][1]
@@ -107,7 +146,9 @@ async def test_schema_error_repaired_with_field_path_in_prompt():
 
 @pytest.mark.asyncio
 async def test_empty_segment_indices_triggers_repair_because_schema_requires_one():
-    bad = json.dumps({"summary": "s", "decisions": [{"text": "d", "source": {"segment_indices": []}}]})
+    bad = json.dumps(
+        {"summary": "s", "decisions": [{"text": "d", "source": {"segment_indices": []}}]}
+    )
     llm = Scripted(bad, ANSWER)
     await generate_checked_minutes(transcript(), llm)
     assert len(llm.calls) == 2
@@ -118,13 +159,17 @@ async def test_second_failure_gives_readable_error_after_exactly_two_calls():
     llm = Scripted("pas du json")
     with pytest.raises(InvalidModelOutputError) as err:
         await generate_checked_minutes(transcript(), llm)
-    assert len(llm.calls) == 2 and err.value.user_message and err.value.code == "invalid_model_output"
+    assert (
+        len(llm.calls) == 2 and err.value.user_message and err.value.code == "invalid_model_output"
+    )
 
 
 @pytest.mark.asyncio
 async def test_meeting_date_is_given_to_the_model_and_year_is_fixed():
     llm = Scripted(ANSWER)
-    minutes, corrections, _ = await generate_checked_minutes(transcript(), llm, meeting_date=date(2026, 10, 12))
+    minutes, corrections, _ = await generate_checked_minutes(
+        transcript(), llm, meeting_date=date(2026, 10, 12)
+    )
     assert "Meeting date: 2026-10-12" in llm.calls[0][1]
     assert minutes.actions[0].due_date == "2026-10-15"
     assert "due_date_year_adjusted" in {c.kind for c in corrections}
@@ -138,9 +183,19 @@ async def test_works_with_the_projects_own_fake_client():
 
 # ---------------- job de bout en bout (#89), dépôt en mémoire ----------------
 
+
 async def run(repo=None, llm=None, notifier=None, **kw):
-    repo, llm, notifier = repo or MemRepo(transcript()), llm or Scripted(ANSWER), notifier or Notifier()
-    return await run_generation("m1", repo=repo, llm=llm, notifier=notifier, **kw), repo, llm, notifier
+    repo, llm, notifier = (
+        repo or MemRepo(transcript()),
+        llm or Scripted(ANSWER),
+        notifier or Notifier(),
+    )
+    return (
+        await run_generation("m1", repo=repo, llm=llm, notifier=notifier, **kw),
+        repo,
+        llm,
+        notifier,
+    )
 
 
 @pytest.mark.asyncio
@@ -171,7 +226,7 @@ async def test_invalid_output_after_repair_sets_readable_error():
 
 @pytest.mark.asyncio
 async def test_empty_transcript_fails_without_calling_llm():
-    result, repo, llm, _ = await run(repo=MemRepo(transcript(segments=[])))
+    result, _repo, llm, _ = await run(repo=MemRepo(transcript(segments=[])))
     assert result.error_code == "empty_transcript" and llm.calls == []
 
 
@@ -219,11 +274,12 @@ async def test_job_never_logs_transcript_content(caplog):
 
 # ---------------- vraie base SQLite : segments -> job -> brouillon ----------------
 
+
 @pytest_asyncio.fixture
 async def sql_repo(tmp_path):
     engine = create_async_engine(f"sqlite+aiosqlite:///{tmp_path}/t.db")
     repo = SqlMinutesRepository(engine)
-    await SqlSegmentStore(engine).upsert(SEGMENTS + [seg(3, "Bob", "partiel...", is_final=False)])
+    await SqlSegmentStore(engine).upsert([*SEGMENTS, seg(3, "Bob", "partiel...", is_final=False)])
     yield repo, engine
     await engine.dispose()
 
@@ -239,10 +295,13 @@ async def test_sql_end_to_end_from_stored_segments(sql_repo):
     assert [c["kind"] for c in draft["corrections"]] == ["item_rejected", "owner_nulled"]
     from sqlalchemy import select
     from sqlalchemy.ext.asyncio import async_sessionmaker
+
     async with async_sessionmaker(engine)() as s:
         rows = (await s.scalars(select(DraftActionItemRow).order_by(DraftActionItemRow.id))).all()
-    assert [(r.text, r.owner, r.draft_id) for r in rows] == [("Envoyer le rapport", "Bob", draft["id"]),
-                                                              ("Contacter le client", None, draft["id"])]
+    assert [(r.text, r.owner, r.draft_id) for r in rows] == [
+        ("Envoyer le rapport", "Bob", draft["id"]),
+        ("Contacter le client", None, draft["id"]),
+    ]
 
 
 @pytest.mark.asyncio
@@ -271,7 +330,7 @@ async def test_sql_transaction_rolls_back_draft_when_actions_fail(sql_repo):
     boom = Boom(repo._engine)
     with pytest.raises(RuntimeError):
         await run_generation("m1", repo=boom, llm=Scripted(ANSWER), notifier=Notifier())
-    assert await repo.get_latest_draft("m1") is None            # pas de brouillon orphelin
+    assert await repo.get_latest_draft("m1") is None  # pas de brouillon orphelin
     assert (await repo.get_state("m1"))[0] == "generation_failed"
 
 
@@ -279,8 +338,19 @@ async def test_sql_transaction_rolls_back_draft_when_actions_fail(sql_repo):
 async def test_sql_two_meetings_in_parallel_do_not_mix(sql_repo):
     repo, engine = sql_repo
     store = SqlSegmentStore(engine)
-    await store.upsert([TranscriptSegment(meeting_id="m2", segment_id="a", speaker="Bob", start=0.0, end=1.0,
-                                          text="Bob enverra le rapport avant le 15 octobre.", language="fr")])
+    await store.upsert(
+        [
+            TranscriptSegment(
+                meeting_id="m2",
+                segment_id="a",
+                speaker="Bob",
+                start=0.0,
+                end=1.0,
+                text="Bob enverra le rapport avant le 15 octobre.",
+                language="fr",
+            )
+        ]
+    )
     a, b = await asyncio.gather(
         run_generation("m1", repo=repo, llm=Scripted(ANSWER), notifier=Notifier()),
         run_generation("m2", repo=repo, llm=Scripted(ANSWER), notifier=Notifier()),

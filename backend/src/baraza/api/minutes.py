@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from datetime import datetime
 from functools import lru_cache
-from typing import Any, Literal
+from typing import Annotated, Any, Literal
 
 from arq import create_pool
 from arq.connections import RedisSettings
@@ -24,7 +24,8 @@ class DraftOut(BaseModel):
     created_at: datetime | None = None
     model: str
     prompt_version: str
-    minutes: Minutes  # un champ None doit être affiché « Non précisé » / « Not specified » par l'interface
+    # Un champ None doit être affiché « Non précisé » / « Not specified » par l'interface.
+    minutes: Minutes
     corrections: list[dict[str, Any]]  # ce que les contrôles anti-invention ont modifié
 
 
@@ -57,19 +58,25 @@ async def get_queue() -> Any:
 
 
 @router.get("/{meeting_id}/minutes", response_model=MinutesOut)
-async def read_minutes(meeting_id: str, repo: SqlMinutesRepository = Depends(get_repo)) -> MinutesOut:
+async def read_minutes(
+    meeting_id: str, repo: Annotated[SqlMinutesRepository, Depends(get_repo)]
+) -> MinutesOut:
     """Interrogeable en boucle par l'interface (polling) : ne renvoie jamais 404."""
     state = await repo.get_state(meeting_id)
     draft = await repo.get_latest_draft(meeting_id)
     status, reason = state if state else (STATUS_NOT_STARTED, None)
     return MinutesOut(
-        meeting_id=meeting_id, status=status, reason=reason,
+        meeting_id=meeting_id,
+        status=status,
+        reason=reason,
         draft=DraftOut(**draft) if draft else None,
     )
 
 
 @router.post("/{meeting_id}/generate", status_code=202, response_model=QueuedOut)
-async def generate(meeting_id: str, force: bool = False, queue: Any = Depends(get_queue)) -> QueuedOut:
-    """Déclenche la génération (manuellement, ou en secours si le déclenchement automatique échoue)."""
+async def generate(
+    meeting_id: str, queue: Annotated[Any, Depends(get_queue)], force: bool = False
+) -> QueuedOut:
+    """Déclenche la génération (à la main, ou en secours si le déclenchement auto échoue)."""
     await queue.enqueue_job("generate_minutes_task", meeting_id, force)
     return QueuedOut(meeting_id=meeting_id)
