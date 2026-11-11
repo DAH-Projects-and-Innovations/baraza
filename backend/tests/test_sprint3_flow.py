@@ -303,7 +303,7 @@ def test_alternate_meet_url_is_canonicalized(
     assert meeting.meeting_url == "https://meet.google.com/abc-defg-hij?authuser=0"
 
 
-def test_out_of_range_model_sources_fail_safely(
+def test_out_of_range_model_sources_are_removed_and_traced(
     flow: tuple[TestClient, SqlMeetingStore, RecordingQueue],
 ) -> None:
     client, store, _ = flow
@@ -313,6 +313,23 @@ def test_out_of_range_model_sources_fail_safely(
         '{"summary":"Invalid sources","decisions":[{"text":"Example",'
         '"source":{"segment_indices":[99]}}]}'
     )
+    asyncio.run(generate_minutes_task({"meeting_store": store, "llm": llm}, capture_id))
+    assert client.get(f"/captures/{capture_id}").json()["status"] == "done"
+    minutes = client.get(f"/meetings/{capture_id}/minutes").json()
+    assert minutes["decisions"] == []  # never shown as a fact without a valid source
+    meeting = asyncio.run(store.get(capture_id))
+    assert meeting is not None
+    assert [c.kind for c in meeting.corrections] == ["item_rejected"]
+    assert meeting.prompt_version is not None
+
+
+def test_unusable_model_output_fails_safely(
+    flow: tuple[TestClient, SqlMeetingStore, RecordingQueue],
+) -> None:
+    client, store, _ = flow
+    capture_id = start(client)
+    client.post(f"/captures/{capture_id}/stop")
+    llm = FakeLLMClient("not json")
     asyncio.run(generate_minutes_task({"meeting_store": store, "llm": llm}, capture_id))
     assert client.get(f"/captures/{capture_id}").json()["status"] == "failed"
     assert client.get(f"/meetings/{capture_id}/minutes").status_code == 404
