@@ -56,3 +56,9 @@ pipeline. Breaking changes bump `SEGMENT_SCHEMA_VERSION`.
 | Vexa bot | Meet, Teams, Zoom (experimental) | Self-hosted Whisper | MVP, option B |
 | Native Teams transcript | Teams | Microsoft | After MVP |
 | Native Zoom transcript | Zoom | Zoom | After MVP |
+
+## Vexa implementation
+
+The optional Google Meet adapter, pinned service deployment, polling and lifecycle mapping are
+implemented. See [vexa-backend.md](vexa-backend.md) for configuration and remaining live checks.
+The reusable mock-based contract is in `backend/tests/adapters/contract.py`.
