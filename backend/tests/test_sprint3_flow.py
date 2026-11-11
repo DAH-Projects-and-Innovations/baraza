@@ -19,6 +19,7 @@ from baraza.api.dependencies import (
 )
 from baraza.api.segments import get_segment_store
 from baraza.core.transcript import Transcript
+from baraza.db.migrations import upgrade_database
 from baraza.llm.client import FakeLLMClient
 from baraza.main import create_app
 from baraza.storage.sql import SqlMeetingStore, SqlSegmentStore
@@ -46,6 +47,7 @@ class RecordingQueue(GenerationQueue):
 @pytest.fixture
 def flow(tmp_path: Path) -> Iterator[tuple[TestClient, SqlMeetingStore, RecordingQueue]]:
     engine = create_async_engine(f"sqlite+aiosqlite:///{tmp_path / 'demo.db'}")
+    asyncio.run(upgrade_database(engine))
     store = SqlMeetingStore(engine)
     queue = RecordingQueue()
     adapter = FakeCaptureAdapter()

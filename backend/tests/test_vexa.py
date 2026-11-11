@@ -12,6 +12,7 @@ from sqlalchemy.ext.asyncio import create_async_engine
 from baraza.adapters.vexa import STATUS_MAP, VexaAdapter, map_segments
 from baraza.config import Settings
 from baraza.core.captures import VexaCaptureService
+from baraza.db.migrations import upgrade_database
 from baraza.main import create_app
 from baraza.storage.captures import SqlCaptureStore
 from baraza.storage.sql import SqlSegmentStore
@@ -203,6 +204,7 @@ def test_invalid_segment_is_rejected(updates):
 @respx.mock
 async def test_full_meeting_ingestion_and_restart(client, tmp_path):
     engine = create_async_engine(f"sqlite+aiosqlite:///{tmp_path / 'capture.db'}")
+    await upgrade_database(engine)
     store = SqlCaptureStore(engine)
     segments = SqlSegmentStore(engine)
     service = VexaCaptureService(VexaAdapter(client, Settings(_env_file=None)), store, segments)
@@ -253,6 +255,17 @@ def test_api_key_is_required_and_hidden():
     assert "do-not-print" not in settings.model_dump_json()
 
 
+@pytest.mark.parametrize("name", ["", " ", "\t\n"])
+def test_bot_name_cannot_be_blank(name):
+    with pytest.raises(ValidationError):
+        Settings(_env_file=None, vexa_bot_name=name)
+
+
+def test_bot_name_preserves_visible_text():
+    settings = Settings(_env_file=None, vexa_bot_name="  Baraza demo  ")
+    assert settings.vexa_bot_name == "Baraza demo"
+
+
 @pytest.mark.parametrize(
     "url",
     [
@@ -301,6 +314,7 @@ async def test_final_transcript_excludes_partial_segments(client):
 @respx.mock
 async def test_terminal_state_without_observed_active(client, tmp_path, state):
     engine = create_async_engine(f"sqlite+aiosqlite:///{tmp_path / 'fast.db'}")
+    await upgrade_database(engine)
     captures = SqlCaptureStore(engine)
     segments = SqlSegmentStore(engine)
     service = VexaCaptureService(VexaAdapter(client, Settings(_env_file=None)), captures, segments)
@@ -321,6 +335,7 @@ async def test_terminal_state_without_observed_active(client, tmp_path, state):
 @respx.mock
 async def test_bad_transcript_does_not_finish_or_ingest(client, tmp_path):
     engine = create_async_engine(f"sqlite+aiosqlite:///{tmp_path / 'bad.db'}")
+    await upgrade_database(engine)
     captures = SqlCaptureStore(engine)
     segments = SqlSegmentStore(engine)
     service = VexaCaptureService(VexaAdapter(client, Settings(_env_file=None)), captures, segments)

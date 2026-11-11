@@ -2,14 +2,11 @@
 
 from sqlalchemy import Boolean, Float, String, Text, delete, select, update
 from sqlalchemy.ext.asyncio import AsyncEngine, async_sessionmaker
-from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
+from sqlalchemy.orm import Mapped, mapped_column
 
 from baraza.core.meeting_record import Meeting
 from baraza.core.segments import TranscriptSegment
-
-
-class Base(DeclarativeBase):
-    pass
+from baraza.db.base import Base
 
 
 class SegmentRow(Base):
@@ -30,23 +27,13 @@ class SqlSegmentStore:
     def __init__(self, engine: AsyncEngine) -> None:
         self._engine = engine
         self._sessions = async_sessionmaker(engine, expire_on_commit=False)
-        self._ready = False
 
     async def replace(self, meeting_id: str, segments: list[TranscriptSegment]) -> None:
-        await self._ensure_schema()
         async with self._sessions() as session, session.begin():
             await session.execute(delete(SegmentRow).where(SegmentRow.meeting_id == meeting_id))
             session.add_all(SegmentRow(**segment.model_dump()) for segment in segments)
 
-    async def _ensure_schema(self) -> None:
-        # TODO: replace with an Alembic migration once the migrations setup exists.
-        if not self._ready:
-            async with self._engine.begin() as connection:
-                await connection.run_sync(Base.metadata.create_all)
-            self._ready = True
-
     async def upsert(self, segments: list[TranscriptSegment]) -> None:
-        await self._ensure_schema()
         async with self._sessions() as session, session.begin():
             for segment in segments:
                 current = await session.get(SegmentRow, (segment.meeting_id, segment.segment_id))
@@ -54,7 +41,6 @@ class SqlSegmentStore:
                     await session.merge(SegmentRow(**segment.model_dump()))
 
     async def list(self, meeting_id: str) -> list[TranscriptSegment]:
-        await self._ensure_schema()
         statement = (
             select(SegmentRow)
             .where(SegmentRow.meeting_id == meeting_id)
@@ -90,18 +76,12 @@ class SqlMeetingStore:
         self._engine = engine
         self._sessions = async_sessionmaker(engine, expire_on_commit=False)
 
-    async def _ensure_schema(self) -> None:
-        async with self._engine.begin() as connection:
-            await connection.run_sync(Base.metadata.create_all)
-
     async def get(self, capture_id: str) -> Meeting | None:
-        await self._ensure_schema()
         async with self._sessions() as session:
             row = await session.get(MeetingRecordRow, capture_id)
             return Meeting.model_validate_json(row.payload) if row else None
 
     async def save(self, meeting: Meeting) -> None:
-        await self._ensure_schema()
         async with self._sessions() as session, session.begin():
             await session.merge(
                 MeetingRecordRow(capture_id=meeting.capture_id, payload=meeting.model_dump_json())
@@ -109,7 +89,6 @@ class SqlMeetingStore:
 
     async def replace_if_unchanged(self, meeting: Meeting, previous: str) -> bool:
         """Claim a transition without overwriting a concurrent stop or worker result."""
-        await self._ensure_schema()
         async with self._engine.begin() as connection:
             result = await connection.execute(
                 update(MeetingRecordRow)

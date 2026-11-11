@@ -1,5 +1,8 @@
 # Backend Vexa et cycle de vie des réunions
 
+API compatible frontend et vérification Docker : [livrable sprint 03](sprint03-thierry.md).
+Sessions, migrations et comptes rendus persistés : [livrable sprint 04](sprint04-thierry.md).
+
 Périmètre : #124, #125, #126, #127, #128 et #77. Implémentation dans
 `backend/src/baraza`, sans modification du frontend, fork de Vexa ni déploiement distant.
 
@@ -18,11 +21,11 @@ Périmètre : #124, #125, #126, #127, #128 et #77. Implémentation dans
   Le client sait typer les plateformes Vexa, sans activer de nouveaux adaptateurs Teams/Zoom.
 - Le dépôt Vexa porte une licence Apache-2.0 à ce tag. Aucun code Vexa n'est incorporé à Baraza.
 
-L'ADR 0001 est encore « proposed » et #32 reste ouverte : cette implémentation optionnelle
-ne constitue pas une validation de cette décision par l'équipe.
+La décision Vexa est confirmée dans #32, clôturée le 3 novembre 2026 avec référence à la PR #182.
 Les dépendances #52, #97, #106 et #110 ne sont pas entièrement présentes dans le dépôt :
 ce travail ajoute un stockage minimal des états, les tâches worker et un contrat de test
-réutilisable. Il n'implémente pas les API publiques de capture, le modèle métier Meeting complet
+réutilisable. Une [API de contrôle pour le sprint 2](sprint02-capture-api.md) expose maintenant
+le lancement, le suivi et l'arrêt. Ce travail n'implémente pas le modèle métier Meeting complet
 ni le parcours d'information/consentement des participants.
 
 ## Démarrage CPU
@@ -186,9 +189,10 @@ async def start_test_capture():
 Limites de reprise : SQL et la création du bot distant ne forment pas une transaction distribuée.
 Un crash/timeout après la création distante mais avant la persistance du handle exige une
 réconciliation manuelle dans Vexa. Aucun second bot n'est créé par un retry automatique.
-Le stockage suit le mécanisme `create_all` existant ; son remplacement par des migrations
-Alembic reste à effectuer avec le chantier de migrations du dépôt.
-La génération des minutes et le passage à `draft_ready` ne sont pas implémentés ici.
+Le schéma est désormais géré par Alembic ; le service Compose `migrate` doit réussir avant
+le démarrage de l'API et du worker. Le service `MinutesService` du sprint 04 enregistre
+le passage à `draft_ready` lors de la sauvegarde d'un brouillon. Son appel depuis le pipeline
+de génération reste à brancher avec le chantier LLM.
 
 ## Nom visible et information des participants
 

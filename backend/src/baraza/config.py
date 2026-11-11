@@ -2,7 +2,7 @@
 
 from functools import lru_cache
 
-from pydantic import Field, SecretStr
+from pydantic import Field, SecretStr, field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -35,6 +35,14 @@ class Settings(BaseSettings):
     )
     vexa_timeout_seconds: float = Field(default=15, gt=0, le=120)
     vexa_retries: int = Field(default=2, ge=0, le=5)
+
+    @field_validator("vexa_bot_name")
+    @classmethod
+    def visible_bot_name(cls, value: str) -> str:
+        name = value.strip()
+        if not name:
+            raise ValueError("Vexa bot name must contain visible text")
+        return name
 
     # Retention period for transcripts and minutes, in days (0 = unlimited).
     retention_days: int = 0
