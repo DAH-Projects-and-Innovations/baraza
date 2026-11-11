@@ -13,7 +13,7 @@ async def test_disabled_worker_does_not_open_vexa():
     context = {}
     with patch("baraza.worker.get_settings", return_value=Settings(_env_file=None)):
         await startup(context)
-    assert context == {}
+    assert set(context) == {"database"}
     await poll_vexa_captures(context)
     await shutdown(context)
 

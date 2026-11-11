@@ -1,7 +1,4 @@
-"""Durable meeting state and Vexa capture handles, sharing the segment database.
-
-Like SqlSegmentStore, schema creation is temporary until the Alembic setup exists.
-"""
+"""Durable meeting state and Vexa capture handles; schema managed by Alembic."""
 
 from datetime import UTC, datetime
 
@@ -11,7 +8,7 @@ from sqlalchemy.ext.asyncio import AsyncEngine, async_sessionmaker
 from sqlalchemy.orm import Mapped, mapped_column
 
 from baraza.core.meetings import MeetingStatus, Transition, check_transition
-from baraza.storage.sql import Base
+from baraza.db.base import Base
 from baraza.vexa.client import BotResponse
 
 
@@ -51,16 +48,8 @@ class SqlCaptureStore:
     def __init__(self, engine: AsyncEngine) -> None:
         self._engine = engine
         self._sessions = async_sessionmaker(engine, expire_on_commit=False)
-        self._ready = False
-
-    async def _ensure_schema(self) -> None:
-        if not self._ready:
-            async with self._engine.begin() as connection:
-                await connection.run_sync(Base.metadata.create_all)
-            self._ready = True
 
     async def create(self, meeting_id: str) -> None:
-        await self._ensure_schema()
         initial = Transition(from_status=None, to_status=MeetingStatus.PENDING)
         async with self._sessions() as session, session.begin():
             session.add(
@@ -74,7 +63,6 @@ class SqlCaptureStore:
             )
 
     async def get(self, meeting_id: str) -> StoredMeeting:
-        await self._ensure_schema()
         async with self._sessions() as session:
             row = await session.get(MeetingRow, meeting_id)
             if row is None:
@@ -86,7 +74,6 @@ class SqlCaptureStore:
             )
 
     async def attach(self, meeting_id: str, bot: BotResponse) -> None:
-        await self._ensure_schema()
         async with self._sessions() as session, session.begin():
             if await session.get(MeetingRow, meeting_id) is None:
                 raise ValueError("Unknown meeting id")
@@ -100,7 +87,6 @@ class SqlCaptureStore:
             )
 
     async def captures(self, *, active_only: bool = True) -> list[StoredCapture]:
-        await self._ensure_schema()
         statement = select(CaptureRow)
         if active_only:
             statement = statement.where(CaptureRow.finished.is_(False))
@@ -119,7 +105,6 @@ class SqlCaptureStore:
         finish_capture: bool = False,
         if_changed: bool = False,
     ) -> None:
-        await self._ensure_schema()
         async with self._sessions() as session, session.begin():
             row = await session.get(MeetingRow, meeting_id)
             if row is None:
