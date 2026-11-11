@@ -16,9 +16,9 @@ from baraza.adapters.vexa import VexaAdapter
 from baraza.api.dependencies import get_meeting_store
 from baraza.config import get_settings
 from baraza.core.captures import VexaCaptureService
-from baraza.core.generation import generate_minutes
+from baraza.core.pipeline import generate_checked_minutes
 from baraza.db.session import Database
-from baraza.llm.client import OpenAICompatibleClient
+from baraza.llm.resilient import ResilientLLMClient
 from baraza.storage.captures import SqlCaptureStore
 from baraza.storage.sql import SqlSegmentStore
 from baraza.vexa.client import VexaClient
@@ -35,21 +35,15 @@ async def generate_minutes_task(ctx: dict[str, Any], meeting_id: str) -> None:
         await store.save(meeting)
         return
     try:
-        llm = ctx.get("llm") or OpenAICompatibleClient(get_settings())
-        minutes = await generate_minutes(meeting.transcript, llm)
-        references = (
-            [topic.source for topic in minutes.topics]
-            + [decision.source for decision in minutes.decisions]
-            + [action.source for action in minutes.actions]
-            + [point.source for point in minutes.open_points]
+        llm = ctx.get("llm") or ResilientLLMClient.from_settings(get_settings())
+        # Out-of-range sources, unsupported owners and unsupported deadlines are removed and
+        # traced in ``corrections`` rather than shown as facts.
+        minutes, corrections, prompt_version = await generate_checked_minutes(
+            meeting.transcript, llm, meeting_date=meeting.started_at.date()
         )
-        if any(
-            index < 0 or index >= len(meeting.transcript.segments)
-            for source in references
-            for index in source.segment_indices
-        ):
-            raise ValueError("Draft refers to a segment outside the transcript")
         meeting.minutes = minutes
+        meeting.corrections = corrections
+        meeting.prompt_version = prompt_version
         meeting.status = CaptureStatus.DONE
         meeting.error = None
     except Exception:

@@ -22,6 +22,13 @@ class Settings(BaseSettings):
     llm_base_url: str = "http://localhost:4000/v1"
     llm_api_key: str = Field(default="changeme", repr=False)
     llm_model: str = "ollama/mistral"
+    llm_timeout_s: float = Field(default=60.0, gt=0)
+    llm_max_output_tokens: int = Field(default=2048, gt=0)
+    llm_max_retries: int = Field(default=3, ge=0, le=10)
+    # auto | json_schema | json_object | none
+    llm_structured_output: str = "auto"
+    # Logs prompts and model answers: local debugging only, never in production.
+    llm_debug_log_content: bool = False
     # True when the gateway routes to an external provider: shown to administrators.
     llm_is_external: bool = False
 

@@ -14,3 +14,16 @@ branches defined the same thing, the Sprint 3 public contract wins.
 - Tables are created only by Alembic. `0003_meeting_records` adds the MVP meeting record;
   the runtime `create_all` calls were removed. Tests build their schema with `upgrade_database`.
 - The worker keeps Sprint 3 draft generation and Sprint 4 database lifecycle.
+
+## LLM pipeline (#81 to #89, from the Sprint 1 LLM branch)
+
+- Kept: `ResilientLLMClient` (retries, structured-output fallback, readable errors),
+  `generate_checked_minutes` (tolerant JSON, one repair attempt) and the anti-invention checks.
+- `generate_minutes_task` keeps the meeting-record flow and now calls
+  `generate_checked_minutes`. Unsupported owners and deadlines are nulled, and items with
+  invalid sources are removed. Every change is stored in `Meeting.corrections`.
+- Not carried over: the standalone `app/` prototype, its tests and eval samples, the separate
+  draft tables (`minutes_sql.py`), its `/meetings/{id}/minutes` polling router and the
+  repository-based job. They stay in the `lucas-sprint1` history.
+- New settings: `BARAZA_LLM_TIMEOUT_S`, `..._MAX_OUTPUT_TOKENS`, `..._MAX_RETRIES`,
+  `..._STRUCTURED_OUTPUT`, `..._DEBUG_LOG_CONTENT`.

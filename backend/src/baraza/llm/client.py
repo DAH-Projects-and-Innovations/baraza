@@ -3,7 +3,7 @@
 The model is chosen through configuration (``BARAZA_LLM_*``), never in code.
 """
 
-from typing import Protocol
+from typing import Any, Protocol
 
 from openai import AsyncOpenAI
 
@@ -11,8 +11,13 @@ from baraza.config import Settings
 
 
 class LLMClient(Protocol):
-    async def complete_json(self, system: str, user: str) -> str:
-        """Return the raw model response, expected to be JSON."""
+    async def complete_json(
+        self, system: str, user: str, *, schema: dict[str, Any] | None = None
+    ) -> str:
+        """Return the raw model response, expected to be JSON.
+
+        ``schema`` (optional JSON schema) lets clients use structured outputs when available.
+        """
         ...
 
 
@@ -26,7 +31,9 @@ class OpenAICompatibleClient:
         )
         self._model = settings.llm_model
 
-    async def complete_json(self, system: str, user: str) -> str:
+    async def complete_json(
+        self, system: str, user: str, *, schema: dict[str, Any] | None = None
+    ) -> str:
         response = await self._client.chat.completions.create(
             model=self._model,
             messages=[
@@ -46,6 +53,8 @@ class FakeLLMClient:
         self.response = response
         self.calls: list[tuple[str, str]] = []
 
-    async def complete_json(self, system: str, user: str) -> str:
+    async def complete_json(
+        self, system: str, user: str, *, schema: dict[str, Any] | None = None
+    ) -> str:
         self.calls.append((system, user))
         return self.response

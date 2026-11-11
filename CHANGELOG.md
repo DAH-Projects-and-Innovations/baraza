@@ -9,6 +9,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ### Added
 
+- Resilient LLM client and anti-invention checks in minutes generation; corrections are kept
+  with the draft so reviewers can see what was removed or nulled.
 - Sprint 3 capture API integration with explicit consent, meeting persistence, validated final
   transcript ingestion, queued draft generation, retrieval and failed-generation retry.
 - Published transcript/segment JSON Schemas with a CI drift check and a segment-export converter.
