@@ -43,6 +43,12 @@ interface renders “Not specified”. Generation quality and JSON robustness re
 
 Capture providers implement `CaptureAdapter`. The included `fake` provider never joins Meet.
 Default `BARAZA_CAPTURE_MODE=disabled` returns 503 rather than silently simulating live capture.
+
+`BARAZA_CAPTURE_MODE=vexa` routes `POST /captures` to the real `VexaAdapter` (Google Meet bot).
+It needs the Vexa profile running and `BARAZA_VEXA_API_KEY`; without a key the API answers 503.
+After an API restart, an in-progress capture is re-registered from its meeting record, so status
+and stop keep working. Stop only requests the end: the transcript is ingested once Vexa reports
+the meeting as completed. Not yet exercised against a live Google Meet call.
 Thierry's Vexa adapter must be wired into `get_capture_adapter()`; this branch does not claim to
 deliver or validate it. Authenticated provider polling/event intake remains with that integration.
 The MVP record is kept separately in `core/meeting_record.py` and the `meeting_records` table to

@@ -9,6 +9,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ### Added
 
+- `BARAZA_CAPTURE_MODE=vexa`: `POST /captures` now starts the real Vexa bot through `VexaAdapter`;
+  in-progress captures survive an API restart and the Vexa HTTP client is closed at shutdown.
 - Resilient LLM client and anti-invention checks in minutes generation; corrections are kept
   with the draft so reviewers can see what was removed or nulled.
 - Sprint 3 capture API integration with explicit consent, meeting persistence, validated final
