@@ -9,6 +9,17 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ### Added
 
+- Email notifications (#148, #71): the person who started a meeting is emailed when the draft is
+  ready or could not be generated. Emails hold the title and a link only, are sent with retries and
+  never block a generation. SMTP settings with TLS required, and an optional Mailpit service
+  (`--profile mail`). See `docs/notifications.md`.
+- Minutes templates (#132): `standard`, `team_meeting`, `committee` and `general_assembly`, chosen
+  when starting a capture (default `BARAZA_DEFAULT_TEMPLATE`) or when regenerating a draft;
+  `GET /templates` lists them. A template only adds instructions; the structure and the
+  anti-invention rules do not change.
+- Regenerate a draft (#136): `POST /meetings/{id}/minutes/regenerate` asks the model again; the
+  previous draft and any manual edits stay in the revisions, validated minutes are refused, and a
+  failed regeneration keeps the previous draft. The model that wrote the draft is recorded (#89).
 - Sign in: email and password, server-side sessions in an HttpOnly cookie, every route except
   `/health` protected, login throttling, writes from unknown origins refused, accounts created
   with `python -m baraza.cli`. The frontend has a sign in page and a sign out button, and
