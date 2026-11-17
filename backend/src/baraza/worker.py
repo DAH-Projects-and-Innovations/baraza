@@ -16,6 +16,7 @@ from baraza.adapters.vexa import VexaAdapter
 from baraza.api.dependencies import get_meeting_store
 from baraza.config import get_settings
 from baraza.core.captures import VexaCaptureService
+from baraza.core.minutes_review import record_generated
 from baraza.core.pipeline import generate_checked_minutes
 from baraza.db.session import Database
 from baraza.llm.resilient import ResilientLLMClient
@@ -41,7 +42,7 @@ async def generate_minutes_task(ctx: dict[str, Any], meeting_id: str) -> None:
         minutes, corrections, prompt_version = await generate_checked_minutes(
             meeting.transcript, llm, meeting_date=meeting.started_at.date()
         )
-        meeting.minutes = minutes
+        record_generated(meeting, minutes)
         meeting.corrections = corrections
         meeting.prompt_version = prompt_version
         meeting.status = CaptureStatus.DONE

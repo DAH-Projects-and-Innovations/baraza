@@ -74,7 +74,29 @@ Response `200` with any JSON (e.g. `{}`).
   `speaker_id`, `start_time`, `end_time`, `text`). The format actually exposed by Vexa must be mapped
   there; check it against a demo meeting.
 - **Minutes**: `GET /meetings/{id}/minutes` returns the `Minutes` JSON
-  (`backend/src/baraza/core/minutes.py`), or `404` until generated. Owned by the AI pipeline (#89).
+  (`backend/src/baraza/core/minutes.py`), or `404` until generated. It carries an `ETag` (the
+  version) and `X-Minutes-Status` (`draft` or `validated`).
+
+## Meeting history and minutes review
+
+There is no user authentication yet: every action is attributed to `local-user`.
+
+| Endpoint | What it does |
+|---|---|
+| `GET /meetings?status=&needs_review=&limit=&offset=` | History, most recent first. Each item has the title, capture status, duration, participants, minutes status and version, and counts (decisions, actions, actions without owner or deadline). `needs_review=true` lists drafts waiting for a person. |
+| `GET /meetings/{id}/minutes/meta` | Minutes status, version, who validated and when, prompt version, the anti-invention corrections and the counts. |
+| `PUT /meetings/{id}/minutes` | Save an edit of the draft. Body is the `Minutes` JSON. Send the version you started from in `If-Match`. |
+| `POST /meetings/{id}/minutes/validate` | Validate the draft. `If-Match` is required. |
+| `GET /meetings/{id}/minutes/revisions` | Every saved version: who, when, draft or validated. |
+| `GET /meetings/{id}/minutes/revisions/{version}` | The full minutes of one version. Version 1 is always the assistant's original. |
+
+Errors: `428` no `If-Match`, `400` it is not a number, `412` stale version (the response `ETag`
+is the current one: reload, then retry), `409` the minutes are validated and locked, `404` no
+minutes yet, `422` an item cites a transcript segment that does not exist. Saving identical
+content does not create a version.
+
+The `status` of a listed meeting is the stored one, refreshed when the capture is read through
+`GET /captures/{id}`.
 
 ## Rules
 

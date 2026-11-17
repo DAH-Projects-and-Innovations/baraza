@@ -59,3 +59,13 @@ class GenerationQueue:
 
 def get_generation_queue() -> GenerationQueue:
     return GenerationQueue()
+
+
+def get_actor() -> str:
+    """Who is acting, for the revision history.
+
+    There is no user authentication yet, so every action is attributed to one placeholder.
+    Replace this single dependency with the authenticated user when sign in lands; nothing
+    else needs to change.
+    """
+    return "local-user"
