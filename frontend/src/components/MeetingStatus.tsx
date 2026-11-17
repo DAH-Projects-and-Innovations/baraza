@@ -19,6 +19,8 @@ export function MeetingStatus({ captureId }: { captureId: string }) {
   const [stopping, setStopping] = useState(false);
   const [details, setDetails] = useState<CaptureStatusResponse | null>(null);
   const [missing, setMissing] = useState(false);
+  // Bumped when a speaker is named: the minutes then pick up the new owners.
+  const [minutesReload, setMinutesReload] = useState(0);
 
   const isFinal = missing || (status !== null && FINAL.includes(status));
   const meetingId = details?.meeting_id ?? captureId;
@@ -138,8 +140,16 @@ export function MeetingStatus({ captureId }: { captureId: string }) {
           {error}
         </p>
       )}
-      <TranscriptPanel meetingId={meetingId} live={status === "waiting_admission" || status === "capturing"} />
-      <MinutesPanel meetingId={meetingId} ready={status === "processing" || status === "done"} />
+      <TranscriptPanel
+        meetingId={meetingId}
+        live={status === "waiting_admission" || status === "capturing"}
+        onSpeakerRenamed={() => setMinutesReload((n) => n + 1)}
+      />
+      <MinutesPanel
+        meetingId={meetingId}
+        ready={status === "processing" || status === "done"}
+        reloadKey={minutesReload}
+      />
     </div>
   );
 }

@@ -89,6 +89,7 @@ There is no user authentication yet: every action is attributed to `local-user`.
 | `POST /meetings/{id}/minutes/validate` | Validate the draft. `If-Match` is required. |
 | `GET /meetings/{id}/minutes/revisions` | Every saved version: who, when, draft or validated. |
 | `GET /meetings/{id}/minutes/revisions/{version}` | The full minutes of one version. Version 1 is always the assistant's original. |
+| `POST /meetings/{id}/speakers/rename` | `{from_name, to_name}`. Names a speaker the capture could not name (`Speaker 3`). Applied to every line of that speaker and to the draft's action owners (a new minutes version when an owner changed). `404` unknown speaker, `409` the minutes are validated and locked, `422` empty, identical or too long name. Naming a speaker with the name of another one merges them. |
 
 Errors: `428` no `If-Match`, `400` it is not a number, `412` stale version (the response `ETag`
 is the current one: reload, then retry), `409` the minutes are validated and locked, `404` no

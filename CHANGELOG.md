@@ -18,6 +18,9 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
   deadlines, open points), save, and validate with a confirmation. Validated minutes are shown
   locked, with the history and the checks the assistant applied. The browser simulation stays
   read-only. The API now accepts cross-origin `PUT` with `If-Match`.
+- Speaker naming (#138): give a name to a speaker the capture could not name; the transcript and
+  the draft's action owners follow. The transcript shows the speakers that still need a name,
+  and the links from decisions and actions land on the highlighted line (#141).
 - Minutes review (#135): edit a draft with optimistic locking, validate and lock it, keep every
   revision (the assistant's original stays as version 1).
 - Meeting history: `GET /meetings` with status and needs-review filters, pagination and counts.

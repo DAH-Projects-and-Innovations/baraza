@@ -130,3 +130,17 @@ export async function listMeetings(
   const suffix = query.size > 0 ? `?${query}` : "";
   return apiFetch<MeetingList>(`/meetings${suffix}`, { cache: "no-store" });
 }
+
+export interface RenameResult {
+  renamed_segments: number;
+  /** Set when the draft's action owners changed too: the minutes have a new version. */
+  minutes_version: number | null;
+}
+
+/** Give a name to a speaker the capture could not name. Not available in the simulation. */
+export function renameSpeaker(meetingId: string, from: string, to: string) {
+  return apiFetch<RenameResult>(`/meetings/${encodeURIComponent(meetingId)}/speakers/rename`, {
+    method: "POST",
+    body: JSON.stringify({ from_name: from, to_name: to }),
+  });
+}
