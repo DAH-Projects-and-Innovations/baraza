@@ -45,12 +45,18 @@ async def generate_minutes_task(ctx: dict[str, Any], meeting_id: str) -> None:
         record_generated(meeting, minutes)
         meeting.corrections = corrections
         meeting.prompt_version = prompt_version
+        meeting.model_name = get_settings().llm_model
         meeting.status = CaptureStatus.DONE
         meeting.error = None
     except Exception:
         # No model response or transcript text in logs or user-facing errors.
-        meeting.status = CaptureStatus.FAILED
-        meeting.error = "Draft generation failed. Check the model service, then retry."
+        if meeting.minutes is not None:
+            # A regeneration failed: the draft that was there stays, with a note.
+            meeting.status = CaptureStatus.DONE
+            meeting.error = "Regeneration failed. The previous draft is kept; try again later."
+        else:
+            meeting.status = CaptureStatus.FAILED
+            meeting.error = "Draft generation failed. Check the model service, then retry."
     await store.save(meeting)
 
 

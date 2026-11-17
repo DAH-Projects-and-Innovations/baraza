@@ -9,6 +9,9 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ### Added
 
+- Regenerate a draft (#136): `POST /meetings/{id}/minutes/regenerate` asks the model again; the
+  previous draft and any manual edits stay in the revisions, validated minutes are refused, and a
+  failed regeneration keeps the previous draft. The model that wrote the draft is recorded (#89).
 - Sign in: email and password, server-side sessions in an HttpOnly cookie, every route except
   `/health` protected, login throttling, writes from unknown origins refused, accounts created
   with `python -m baraza.cli`. The frontend has a sign in page and a sign out button, and
