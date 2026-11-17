@@ -9,6 +9,10 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ### Added
 
+- Sign in: email and password, server-side sessions in an HttpOnly cookie, every route except
+  `/health` protected, login throttling, writes from unknown origins refused, accounts created
+  with `python -m baraza.cli`. The frontend has a sign in page and a sign out button, and
+  revisions record the signed in person's email. See `docs/authentication.md`.
 - Frontend (#104): the home page is a meeting dashboard (waiting for review, in progress,
   recent). The meeting page lets a person edit the draft (summary, decisions, actions, owners,
   deadlines, open points), save, and validate with a confirmation. Validated minutes are shown

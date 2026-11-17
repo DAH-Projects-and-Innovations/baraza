@@ -2,7 +2,7 @@
 
 from functools import lru_cache
 
-from pydantic import Field, SecretStr, field_validator
+from pydantic import Field, SecretStr, field_validator, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -17,6 +17,27 @@ class Settings(BaseSettings):
     # Real capture is supplied through CaptureAdapter. Fake capture is opt-in for the demo.
     capture_mode: str = "disabled"
     cors_origins: list[str] = ["http://localhost:3000", "http://127.0.0.1:3000"]
+
+    # Sign in. Switching it off is for local rehearsals and tests only: the API then trusts every
+    # caller, so it is refused outside development.
+    auth_enabled: bool = True
+    session_ttl_days: int = Field(default=14, ge=1, le=90)
+    # None = secure cookie everywhere except development (plain http on localhost).
+    cookie_secure: bool | None = None
+    login_max_failures: int = Field(default=5, ge=1, le=50)
+    login_lockout_minutes: int = Field(default=15, ge=1, le=240)
+
+    @property
+    def secure_cookies(self) -> bool:
+        return self.cookie_secure if self.cookie_secure is not None else self.env != "development"
+
+    @model_validator(mode="after")
+    def auth_stays_on_in_production(self) -> "Settings":
+        if not self.auth_enabled and self.env != "development":
+            raise ValueError(
+                "BARAZA_AUTH_ENABLED=false is only allowed when BARAZA_ENV=development"
+            )
+        return self
 
     # OpenAI-compatible LLM gateway (LiteLLM, Ollama, vLLM, hosted provider...).
     llm_base_url: str = "http://localhost:4000/v1"
