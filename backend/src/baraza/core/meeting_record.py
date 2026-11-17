@@ -11,6 +11,16 @@ from baraza.core.minutes import Minutes
 from baraza.core.transcript import Transcript
 
 
+class MinutesRevision(BaseModel):
+    """One saved version of the minutes: the assistant's draft, then each human save."""
+
+    version: int
+    saved_by: str
+    saved_at: datetime
+    status: Literal["draft", "validated"]
+    content: Minutes
+
+
 class Meeting(BaseModel):
     capture_id: str
     title: str
@@ -25,6 +35,12 @@ class Meeting(BaseModel):
     # Traces des contrôles anti-invention, montrées aux relecteurs avec le brouillon.
     corrections: list[Correction] = Field(default_factory=list)
     prompt_version: str | None = None
+    # Review state of the minutes (see baraza.core.minutes_review).
+    minutes_status: Literal["draft", "validated"] = "draft"
+    minutes_version: int = 0
+    validated_by: str | None = None
+    validated_at: datetime | None = None
+    revisions: list[MinutesRevision] = Field(default_factory=list)
     error: str | None = None
     simulated: bool = False
     stop_requested: bool = False

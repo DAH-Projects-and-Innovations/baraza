@@ -87,6 +87,12 @@ class SqlMeetingStore:
                 MeetingRecordRow(capture_id=meeting.capture_id, payload=meeting.model_dump_json())
             )
 
+    async def list_all(self) -> list[Meeting]:
+        """Every meeting record. Fine for a pilot; add indexed columns before it grows."""
+        async with self._sessions() as session:
+            rows = (await session.scalars(select(MeetingRecordRow))).all()
+        return [Meeting.model_validate_json(row.payload) for row in rows]
+
     async def replace_if_unchanged(self, meeting: Meeting, previous: str) -> bool:
         """Claim a transition without overwriting a concurrent stop or worker result."""
         async with self._engine.begin() as connection:
