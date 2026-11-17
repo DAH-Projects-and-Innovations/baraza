@@ -26,7 +26,7 @@ class Meeting(BaseModel):
     title: str
     meeting_url: str
     adapter: str
-    template: Literal["standard"] = "standard"
+    template: str = "standard"
     participants_informed: Literal[True]
     started_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
     status: CaptureStatus = CaptureStatus.WAITING_ADMISSION

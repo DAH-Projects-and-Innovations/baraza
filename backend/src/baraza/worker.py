@@ -40,7 +40,10 @@ async def generate_minutes_task(ctx: dict[str, Any], meeting_id: str) -> None:
         # Out-of-range sources, unsupported owners and unsupported deadlines are removed and
         # traced in ``corrections`` rather than shown as facts.
         minutes, corrections, prompt_version = await generate_checked_minutes(
-            meeting.transcript, llm, meeting_date=meeting.started_at.date()
+            meeting.transcript,
+            llm,
+            meeting_date=meeting.started_at.date(),
+            template=meeting.template,
         )
         record_generated(meeting, minutes)
         meeting.corrections = corrections

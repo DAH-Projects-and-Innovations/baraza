@@ -5,7 +5,7 @@ from datetime import datetime
 from typing import Annotated, Any, Literal
 
 from fastapi import APIRouter, Depends, Header, HTTPException, Query, Response
-from pydantic import BaseModel, Field, ValidationError
+from pydantic import BaseModel, Field, ValidationError, field_validator
 
 from baraza.adapters.base import CaptureStatus
 from baraza.api.dependencies import (
@@ -31,6 +31,7 @@ from baraza.core.minutes_review import (
 )
 from baraza.core.segments import TranscriptSegment
 from baraza.core.speakers import InvalidSpeakerName, clean_name, rename_in_transcript, rename_owner
+from baraza.core.templates import TEMPLATES
 from baraza.core.transcript import Transcript
 from baraza.storage.sql import SqlMeetingStore
 
@@ -398,9 +399,28 @@ async def retry_generation(meeting_id: str, store: MeetingStoreDep, queue: Queue
     return meeting
 
 
+class RegenerateRequest(BaseModel):
+    template: str | None = None
+
+    @field_validator("template")
+    @classmethod
+    def known_template(cls, value: str | None) -> str | None:
+        if value is not None and value not in TEMPLATES:
+            raise ValueError("Unknown minutes template")
+        return value
+
+
 @router.post("/{meeting_id}/minutes/regenerate", status_code=202)
-async def regenerate_minutes(meeting_id: str, store: MeetingStoreDep, queue: QueueDep) -> Meeting:
-    """Ask the model for a new draft. The previous one stays in the revisions."""
+async def regenerate_minutes(
+    meeting_id: str,
+    store: MeetingStoreDep,
+    queue: QueueDep,
+    payload: RegenerateRequest | None = None,
+) -> Meeting:
+    """Ask the model for a new draft, optionally with another template.
+
+    The previous draft stays in the revisions.
+    """
     meeting = await require_meeting(store, meeting_id)
     if meeting.minutes is None or meeting.transcript is None:
         raise HTTPException(status_code=404, detail="There is no draft to regenerate")
@@ -409,6 +429,9 @@ async def regenerate_minutes(meeting_id: str, store: MeetingStoreDep, queue: Que
     if meeting.status != CaptureStatus.DONE:
         raise HTTPException(status_code=409, detail="A generation is already in progress")
     previous = meeting.model_dump_json()
+    kept_template = meeting.template
+    if payload is not None and payload.template is not None:
+        meeting.template = payload.template
     meeting.status = CaptureStatus.PROCESSING
     meeting.error = None
     if not await store.replace_if_unchanged(meeting, previous):
@@ -416,6 +439,7 @@ async def regenerate_minutes(meeting_id: str, store: MeetingStoreDep, queue: Que
     try:
         await queue.enqueue(meeting_id)
     except Exception as error:
+        meeting.template = kept_template
         meeting.status = CaptureStatus.DONE
         meeting.error = "Regeneration could not be queued. The previous draft is kept."
         await store.save(meeting)

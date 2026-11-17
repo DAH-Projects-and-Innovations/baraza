@@ -43,6 +43,8 @@ class Settings(BaseSettings):
     llm_base_url: str = "http://localhost:4000/v1"
     llm_api_key: str = Field(default="changeme", repr=False)
     llm_model: str = "ollama/mistral"
+    # Minutes template used when a meeting does not choose one.
+    default_template: str = "standard"
     llm_timeout_s: float = Field(default=60.0, gt=0)
     llm_max_output_tokens: int = Field(default=2048, gt=0)
     llm_max_retries: int = Field(default=3, ge=0, le=10)
