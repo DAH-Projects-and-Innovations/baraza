@@ -31,7 +31,7 @@ export interface Segment {
 export interface StartCaptureRequest {
   meeting_url: string;
   title: string;
-  template: "standard";
+  template: string;
   participants_informed: true;
 }
 

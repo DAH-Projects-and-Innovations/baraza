@@ -68,6 +68,15 @@ services:
   redis:
     image: redis:7-alpine
 
+  # Catches the emails Baraza sends, to look at them in a browser (http://localhost:8025).
+  # Enabled with --profile mail; set BARAZA_SMTP_HOST=mailpit, BARAZA_SMTP_PORT=1025 and
+  # BARAZA_SMTP_ALLOW_INSECURE=true with BARAZA_SMTP_STARTTLS=false in .env.
+  mailpit:
+    image: axllent/mailpit:v1.21
+    profiles: ["mail"]
+    ports:
+      - "127.0.0.1:8025:8025"
+
   # Local language model. Enabled with --profile local.
   ollama:
     image: ollama/ollama
