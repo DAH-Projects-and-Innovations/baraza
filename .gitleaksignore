@@ -1,0 +1,2 @@
+# False positive: prose in a doc, not a secret (generic-api-key entropy match)
+29baaccb6e7cc9553a10530abb20b3cfe412de3a:docs/sprint02-capture-api.md:generic-api-key:66
