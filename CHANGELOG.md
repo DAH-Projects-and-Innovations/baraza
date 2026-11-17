@@ -9,6 +9,11 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ### Added
 
+- Frontend (#104): the home page is a meeting dashboard (waiting for review, in progress,
+  recent). The meeting page lets a person edit the draft (summary, decisions, actions, owners,
+  deadlines, open points), save, and validate with a confirmation. Validated minutes are shown
+  locked, with the history and the checks the assistant applied. The browser simulation stays
+  read-only. The API now accepts cross-origin `PUT` with `If-Match`.
 - Minutes review (#135): edit a draft with optimistic locking, validate and lock it, keep every
   revision (the assistant's original stays as version 1).
 - Meeting history: `GET /meetings` with status and needs-review filters, pagination and counts.

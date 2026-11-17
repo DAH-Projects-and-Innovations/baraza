@@ -30,8 +30,10 @@ def create_app() -> FastAPI:
     app.add_middleware(
         CORSMiddleware,
         allow_origins=get_settings().cors_origins,
-        allow_methods=["GET", "POST"],
-        allow_headers=["Content-Type"],
+        allow_methods=["GET", "POST", "PUT"],
+        # If-Match carries the minutes version a person is editing (optimistic locking).
+        allow_headers=["Content-Type", "If-Match"],
+        expose_headers=["ETag", "X-Minutes-Status"],
     )
     app.include_router(health.router)
     app.include_router(segments.router)
