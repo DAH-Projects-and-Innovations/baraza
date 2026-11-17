@@ -121,6 +121,16 @@ async def start_capture(
     return capture_response(meeting)
 
 
+class BotIdentity(BaseModel):
+    name: str
+
+
+@router.get("/bot")
+async def bot_identity() -> BotIdentity:
+    """The name the assistant shows in the meeting, so the organizer can tell participants."""
+    return BotIdentity(name=get_settings().vexa_bot_name)
+
+
 @router.get("/{capture_id}")
 async def get_capture(
     capture_id: str,
