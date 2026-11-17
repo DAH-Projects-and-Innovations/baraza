@@ -45,4 +45,6 @@ class Meeting(BaseModel):
     revisions: list[MinutesRevision] = Field(default_factory=list)
     error: str | None = None
     simulated: bool = False
+    # Who started the meeting (their email when signed in): the person notified about the draft.
+    created_by: str | None = None
     stop_requested: bool = False

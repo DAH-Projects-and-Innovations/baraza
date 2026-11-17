@@ -43,6 +43,30 @@ class Settings(BaseSettings):
     llm_base_url: str = "http://localhost:4000/v1"
     llm_api_key: str = Field(default="changeme", repr=False)
     llm_model: str = "ollama/mistral"
+    # Email notifications (draft ready, generation failed). Empty host: no email is sent.
+    smtp_host: str = ""
+    smtp_port: int = Field(default=587, gt=0, le=65535)
+    smtp_user: str = ""
+    smtp_password: SecretStr = Field(default=SecretStr(""), repr=False)
+    smtp_from: str = "Baraza <no-reply@localhost>"
+    smtp_starttls: bool = True
+    smtp_ssl: bool = False
+    # Only for a local test server such as Mailpit: lets the connection stay unencrypted.
+    smtp_allow_insecure: bool = False
+    smtp_timeout_s: float = Field(default=10.0, gt=0)
+    smtp_retries: int = Field(default=2, ge=0, le=5)
+    # Where people open the app: the links in emails point here.
+    public_url: str = "http://localhost:3000"
+
+    @model_validator(mode="after")
+    def smtp_is_encrypted(self) -> "Settings":
+        if self.smtp_host and not (self.smtp_starttls or self.smtp_ssl or self.smtp_allow_insecure):
+            raise ValueError(
+                "SMTP needs TLS: keep BARAZA_SMTP_STARTTLS or BARAZA_SMTP_SSL on, or set "
+                "BARAZA_SMTP_ALLOW_INSECURE=true for a local test server"
+            )
+        return self
+
     # Minutes template used when a meeting does not choose one.
     default_template: str = "standard"
     llm_timeout_s: float = Field(default=60.0, gt=0)

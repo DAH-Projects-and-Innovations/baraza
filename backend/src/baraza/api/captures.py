@@ -7,7 +7,13 @@ from pydantic import BaseModel, Field, StringConstraints, field_validator
 
 from baraza.adapters.base import CaptureAdapter, CaptureStatus
 from baraza.api.dependencies import get_capture_adapter
-from baraza.api.meetings import MeetingStoreDep, QueueDep, require_meeting, submit_transcript
+from baraza.api.meetings import (
+    ActorDep,
+    MeetingStoreDep,
+    QueueDep,
+    require_meeting,
+    submit_transcript,
+)
 from baraza.api.segments import StoreDep
 from baraza.config import get_settings
 from baraza.core.meeting_record import Meeting
@@ -88,6 +94,7 @@ async def start_capture(
     payload: StartCaptureRequest,
     store: MeetingStoreDep,
     adapter: AdapterDep,
+    actor: ActorDep,
 ) -> CaptureResponse:
     adapter = require_adapter(adapter)
     try:
@@ -104,6 +111,7 @@ async def start_capture(
         participants_informed=True,
         simulated=adapter.name == "fake",
         template=payload.template or get_settings().default_template,
+        created_by=actor,
     )
     try:
         await store.save(meeting)
