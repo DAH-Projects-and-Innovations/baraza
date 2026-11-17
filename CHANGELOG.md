@@ -9,6 +9,32 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ### Added
 
+- Email notifications (#148, #71): the person who started a meeting is emailed when the draft is
+  ready or could not be generated. Emails hold the title and a link only, are sent with retries and
+  never block a generation. SMTP settings with TLS required, and an optional Mailpit service
+  (`--profile mail`). See `docs/notifications.md`.
+- Minutes templates (#132): `standard`, `team_meeting`, `committee` and `general_assembly`, chosen
+  when starting a capture (default `BARAZA_DEFAULT_TEMPLATE`) or when regenerating a draft;
+  `GET /templates` lists them. A template only adds instructions; the structure and the
+  anti-invention rules do not change.
+- Regenerate a draft (#136): `POST /meetings/{id}/minutes/regenerate` asks the model again; the
+  previous draft and any manual edits stay in the revisions, validated minutes are refused, and a
+  failed regeneration keeps the previous draft. The model that wrote the draft is recorded (#89).
+- Sign in: email and password, server-side sessions in an HttpOnly cookie, every route except
+  `/health` protected, login throttling, writes from unknown origins refused, accounts created
+  with `python -m baraza.cli`. The frontend has a sign in page and a sign out button, and
+  revisions record the signed in person's email. See `docs/authentication.md`.
+- Frontend (#104): the home page is a meeting dashboard (waiting for review, in progress,
+  recent). The meeting page lets a person edit the draft (summary, decisions, actions, owners,
+  deadlines, open points), save, and validate with a confirmation. Validated minutes are shown
+  locked, with the history and the checks the assistant applied. The browser simulation stays
+  read-only. The API now accepts cross-origin `PUT` with `If-Match`.
+- Speaker naming (#138): give a name to a speaker the capture could not name; the transcript and
+  the draft's action owners follow. The transcript shows the speakers that still need a name,
+  and the links from decisions and actions land on the highlighted line (#141).
+- Minutes review (#135): edit a draft with optimistic locking, validate and lock it, keep every
+  revision (the assistant's original stays as version 1).
+- Meeting history: `GET /meetings` with status and needs-review filters, pagination and counts.
 - `BARAZA_CAPTURE_MODE=vexa`: `POST /captures` now starts the real Vexa bot through `VexaAdapter`;
   in-progress captures survive an API restart and the Vexa HTTP client is closed at shutdown.
 - Resilient LLM client and anti-invention checks in minutes generation; corrections are kept

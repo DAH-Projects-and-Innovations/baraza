@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test": "node --test src/lib/meet.test.mjs",
+    "test": "node --test src/lib/meet.test.mjs src/lib/minutes.test.mjs src/lib/auth.test.mjs src/lib/speakers.test.mjs",
     "typecheck": "next typegen && tsc --noEmit"
   },
   "dependencies": {
