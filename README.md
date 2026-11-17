@@ -29,6 +29,10 @@ docker compose --profile local up   # fully local, with Ollama
 - Web interface: http://localhost:3000
 - API: http://localhost:8000 (interactive docs at `/docs`)
 
+For the internal Sprint 3 rehearsal, see the [demo runbook](docs/sprint-3-demo.md). It distinguishes
+the real backend with explicit fake capture from the browser-only fallback. Live Vexa validation
+is pending Thierry's integration; the default capture mode fails explicitly until configured.
+
 With the `local` profile, pull a model on first run:
 
 ```bash
@@ -69,6 +73,11 @@ Capture adapters        ──►  Core                ──►  Outputs
 ```
 
 Details in [docs/architecture.md](docs/architecture.md).
+
+## Bilan des contributions de Thierry
+
+La [documentation en français des sprints 01 à 04](docs/bilan-thierry-sprints-01-04.fr.md)
+présente les réalisations backend et Vexa, les vérifications effectuées et les validations restantes.
 
 ## License
 

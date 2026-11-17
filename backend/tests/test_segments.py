@@ -39,6 +39,8 @@ def test_text_is_stripped() -> None:
         {"start": -1},
         {"start": 10, "end": 5},
         {"end": "soon"},
+        {"start": float("nan")},
+        {"end": float("inf")},
     ],
 )
 def test_invalid_segments_are_rejected(overrides: dict[str, object]) -> None:

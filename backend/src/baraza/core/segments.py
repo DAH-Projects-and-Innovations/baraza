@@ -32,8 +32,8 @@ class TranscriptSegment(BaseModel):
     speaker_id: _Id | None = Field(
         default=None, description="Stable identifier of the speaker in the source, when available."
     )
-    start: float = Field(ge=0, description="Start time, in seconds from the meeting start.")
-    end: float = Field(ge=0, description="End time, in seconds from the meeting start.")
+    start: float = Field(ge=0, allow_inf_nan=False, description="Start time in seconds.")
+    end: float = Field(ge=0, allow_inf_nan=False, description="End time in seconds.")
     text: _Text
     language: str | None = Field(
         default=None, description='ISO 639-1 code (e.g. "fr"), when known for this segment.'
