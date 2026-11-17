@@ -31,7 +31,7 @@ export interface Segment {
 export interface StartCaptureRequest {
   meeting_url: string;
   title: string;
-  template: "standard";
+  template: string;
   participants_informed: true;
 }
 
@@ -63,4 +63,65 @@ export interface Minutes {
   decisions: { text: string; source: SourceRef }[];
   actions: { text: string; owner: string | null; due_date: string | null; source: SourceRef }[];
   open_points: { text: string; source: SourceRef }[];
+}
+
+/** Review state of the minutes. Mirrors backend/src/baraza/core/minutes_review.py. */
+export type MinutesStatus = "draft" | "validated";
+
+export interface MinutesCounts {
+  decisions: number;
+  actions: number;
+  actions_without_owner: number;
+  actions_without_deadline: number;
+  open_points: number;
+}
+
+/** `GET /meetings`. Mirrors `MeetingSummary` in backend/src/baraza/api/meetings.py. */
+export interface MeetingSummary {
+  meeting_id: string;
+  title: string;
+  status: CaptureStatus;
+  started_at: string;
+  simulated: boolean;
+  duration_seconds: number | null;
+  participants: number;
+  minutes_status: MinutesStatus | null;
+  minutes_version: number;
+  needs_review: boolean;
+  counts: MinutesCounts | null;
+}
+
+export interface MeetingList {
+  items: MeetingSummary[];
+  total: number;
+  limit: number;
+  offset: number;
+}
+
+/** A check the backend applied to the draft: something removed or cleared as unsupported. */
+export interface Correction {
+  kind: "item_rejected" | "owner_nulled" | "due_date_nulled" | "due_date_year_adjusted";
+  item_type: "topic" | "decision" | "action" | "open_point";
+  item_position: number;
+  original_value: string | null;
+  reason: string;
+}
+
+/** `GET /meetings/{id}/minutes/meta`. */
+export interface MinutesState {
+  meeting_id: string;
+  status: MinutesStatus;
+  version: number;
+  validated_by: string | null;
+  validated_at: string | null;
+  prompt_version: string | null;
+  corrections: Correction[];
+  counts: MinutesCounts;
+}
+
+export interface RevisionSummary {
+  version: number;
+  saved_by: string;
+  saved_at: string;
+  status: MinutesStatus;
 }

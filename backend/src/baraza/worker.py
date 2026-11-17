@@ -16,6 +16,8 @@ from baraza.adapters.vexa import VexaAdapter
 from baraza.api.dependencies import get_meeting_store
 from baraza.config import get_settings
 from baraza.core.captures import VexaCaptureService
+from baraza.core.minutes_review import record_generated
+from baraza.core.notifications import Kind, notify
 from baraza.core.pipeline import generate_checked_minutes
 from baraza.db.session import Database
 from baraza.llm.resilient import ResilientLLMClient
@@ -39,18 +41,40 @@ async def generate_minutes_task(ctx: dict[str, Any], meeting_id: str) -> None:
         # Out-of-range sources, unsupported owners and unsupported deadlines are removed and
         # traced in ``corrections`` rather than shown as facts.
         minutes, corrections, prompt_version = await generate_checked_minutes(
-            meeting.transcript, llm, meeting_date=meeting.started_at.date()
+            meeting.transcript,
+            llm,
+            meeting_date=meeting.started_at.date(),
+            template=meeting.template,
         )
-        meeting.minutes = minutes
+        record_generated(meeting, minutes)
         meeting.corrections = corrections
         meeting.prompt_version = prompt_version
+        meeting.model_name = get_settings().llm_model
         meeting.status = CaptureStatus.DONE
         meeting.error = None
     except Exception:
         # No model response or transcript text in logs or user-facing errors.
-        meeting.status = CaptureStatus.FAILED
-        meeting.error = "Draft generation failed. Check the model service, then retry."
+        if meeting.minutes is not None:
+            # A regeneration failed: the draft that was there stays, with a note.
+            meeting.status = CaptureStatus.DONE
+            meeting.error = "Regeneration failed. The previous draft is kept; try again later."
+        else:
+            meeting.status = CaptureStatus.FAILED
+            meeting.error = "Draft generation failed. Check the model service, then retry."
     await store.save(meeting)
+    await _notify_outcome(ctx, meeting)
+
+
+async def _notify_outcome(ctx: dict[str, Any], meeting: Any) -> None:
+    """Tell the person who started the meeting: draft ready, or generation failed."""
+    failed = meeting.status == CaptureStatus.FAILED or bool(meeting.error)
+    kind: Kind = "error" if failed else "ready"
+    send = ctx.get("mailer") or notify
+    try:
+        await send(meeting, kind, get_settings())
+    except Exception:
+        # A notification problem never changes the outcome of the generation.
+        structlog.get_logger().warning("notification_error", meeting_id=meeting.capture_id)
 
 
 async def startup(ctx: dict[str, Any]) -> None:
