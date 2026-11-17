@@ -40,6 +40,30 @@ def edited(summary: str = "Reviewed summary", owner: str | None = "Awa Example")
     }
 
 
+def test_browser_may_save_minutes_with_if_match(flow: Flow) -> None:  # noqa: F811
+    """The preflight of a cross-origin PUT with If-Match must be accepted (frontend on :3000)."""
+    client, _, _ = flow
+    allowed = client.options(
+        "/meetings/any/minutes",
+        headers={
+            "Origin": "http://localhost:3000",
+            "Access-Control-Request-Method": "PUT",
+            "Access-Control-Request-Headers": "content-type,if-match",
+        },
+    )
+    assert allowed.status_code == 200
+    assert allowed.headers["access-control-allow-origin"] == "http://localhost:3000"
+    refused = client.options(
+        "/meetings/any/minutes",
+        headers={
+            "Origin": "https://untrusted.example",
+            "Access-Control-Request-Method": "PUT",
+            "Access-Control-Request-Headers": "content-type,if-match",
+        },
+    )
+    assert "access-control-allow-origin" not in refused.headers
+
+
 def test_history_is_empty_then_lists_meetings_most_recent_first(flow: Flow) -> None:  # noqa: F811
     client, _, _ = flow
     assert client.get("/meetings").json() == {"items": [], "total": 0, "limit": 50, "offset": 0}
