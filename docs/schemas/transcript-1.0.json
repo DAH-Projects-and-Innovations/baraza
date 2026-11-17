@@ -1,0 +1,170 @@
+{
+  "$defs": {
+    "MeetingMetadata": {
+      "properties": {
+        "title": {
+          "minLength": 1,
+          "title": "Title",
+          "type": "string"
+        },
+        "started_at": {
+          "format": "date-time",
+          "title": "Started At",
+          "type": "string"
+        },
+        "duration_seconds": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Duration Seconds"
+        },
+        "platform": {
+          "enum": [
+            "google_meet",
+            "teams",
+            "zoom",
+            "file",
+            "other"
+          ],
+          "title": "Platform",
+          "type": "string"
+        },
+        "organizer": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Organizer"
+        }
+      },
+      "required": [
+        "title",
+        "started_at",
+        "platform"
+      ],
+      "title": "MeetingMetadata",
+      "type": "object"
+    },
+    "Participant": {
+      "properties": {
+        "name": {
+          "minLength": 1,
+          "title": "Name",
+          "type": "string"
+        },
+        "email": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Email"
+        }
+      },
+      "required": [
+        "name"
+      ],
+      "title": "Participant",
+      "type": "object"
+    },
+    "Segment": {
+      "properties": {
+        "speaker": {
+          "description": "Speaker name, or \"Speaker 1\" when unknown.",
+          "minLength": 1,
+          "title": "Speaker",
+          "type": "string"
+        },
+        "start": {
+          "description": "Start time in seconds.",
+          "minimum": 0,
+          "title": "Start",
+          "type": "number"
+        },
+        "end": {
+          "description": "End time in seconds.",
+          "minimum": 0,
+          "title": "End",
+          "type": "number"
+        },
+        "text": {
+          "minLength": 1,
+          "title": "Text",
+          "type": "string"
+        }
+      },
+      "required": [
+        "speaker",
+        "start",
+        "end",
+        "text"
+      ],
+      "title": "Segment",
+      "type": "object"
+    }
+  },
+  "properties": {
+    "schema_version": {
+      "const": "1.0",
+      "default": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "meeting": {
+      "$ref": "#/$defs/MeetingMetadata"
+    },
+    "participants": {
+      "default": [],
+      "items": {
+        "$ref": "#/$defs/Participant"
+      },
+      "title": "Participants",
+      "type": "array"
+    },
+    "segments": {
+      "items": {
+        "$ref": "#/$defs/Segment"
+      },
+      "minItems": 1,
+      "title": "Segments",
+      "type": "array"
+    },
+    "language": {
+      "description": "ISO 639-1 code, or und when unknown.",
+      "pattern": "^(?:[a-z]{2}|und)$",
+      "title": "Language",
+      "type": "string"
+    },
+    "source_adapter": {
+      "description": "Identifier of the adapter that produced it.",
+      "minLength": 1,
+      "title": "Source Adapter",
+      "type": "string"
+    }
+  },
+  "required": [
+    "meeting",
+    "segments",
+    "language",
+    "source_adapter"
+  ],
+  "title": "Transcript",
+  "type": "object",
+  "$schema": "https://json-schema.org/draft/2020-12/schema"
+}
