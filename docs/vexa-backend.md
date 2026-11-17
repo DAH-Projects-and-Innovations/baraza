@@ -203,6 +203,8 @@ nécessite une réunion réelle.
 
 La version épinglée **n'implémente pas l'envoi de chat** (`POST /bots/.../chat`) dans son cœur
 open source. Aucune requête fictive de notice n'est envoyée.
+Le formulaire de lancement affiche le nom que le bot montrera (`GET /captures/bot`) et rappelle
+d'informer les participants, faute de message dans le chat.
 L'organisateur doit informer les participants avant la capture (dépendance #106), par exemple :
 « Baraza transcrit cette réunion pour préparer son compte rendu. Merci de signaler toute opposition
 avant de démarrer. » Le parcours de consentement reste dans #106.

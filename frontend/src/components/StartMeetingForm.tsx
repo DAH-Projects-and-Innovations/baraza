@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect, useState, type FormEvent } from "react";
-import { startCapture } from "@/lib/api/captures";
+import { getBotName, startCapture } from "@/lib/api/captures";
 import { errorMessage } from "@/lib/api/client";
 import { getTemplates, type MinutesTemplate } from "@/lib/api/templates";
 import { isGoogleMeetUrl, normalizeGoogleMeetUrl } from "@/lib/meet";
@@ -14,10 +14,12 @@ export function StartMeetingForm() {
   const [consent, setConsent] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
+  const [botName, setBotName] = useState<string | null>(null);
   const [templates, setTemplates] = useState<MinutesTemplate[]>([]);
   const [template, setTemplate] = useState("standard");
 
   useEffect(() => {
+    getBotName().then(setBotName).catch(() => undefined);
     // If the list cannot be loaded the form still works with the standard template.
     getTemplates()
       .then((list) => {
@@ -96,6 +98,12 @@ export function StartMeetingForm() {
           ))}
         </select>
       </label>
+      {botName && (
+        <p className="text-sm text-muted">
+          The assistant joins as a visible participant named <strong>{botName}</strong>. Tell the
+          participants before you start: it cannot post a notice in the meeting chat.
+        </p>
+      )}
       <label className="flex items-start gap-2 rounded-lg bg-accent-soft px-3 py-2.5 text-sm text-accent-ink">
         <input type="checkbox" checked={consent} required disabled={pending}
           onChange={(event) => setConsent(event.target.checked)} className="mt-1" />

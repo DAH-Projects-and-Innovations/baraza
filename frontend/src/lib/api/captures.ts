@@ -75,3 +75,9 @@ export async function stopCapture(captureId: string): Promise<CaptureStatusRespo
   }
   return apiFetch<CaptureStatusResponse>(`/captures/${encodeURIComponent(captureId)}/stop`, { method: "POST" });
 }
+
+/** The name the assistant shows in the meeting. */
+export async function getBotName(): Promise<string> {
+  if (USE_MOCK_API) return "Baraza – note taker (transcribing)";
+  return (await apiFetch<{ name: string }>("/captures/bot", { cache: "no-store" })).name;
+}

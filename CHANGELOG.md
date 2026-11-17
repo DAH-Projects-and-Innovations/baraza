@@ -9,6 +9,9 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ### Added
 
+- Visible bot (#128): the start form shows the name the assistant will have in the meeting and
+  reminds the organizer to tell participants (`GET /captures/bot`), since the pinned Vexa cannot post
+  a notice in the meeting chat.
 - Email notifications (#148, #71): the person who started a meeting is emailed when the draft is
   ready or could not be generated. Emails hold the title and a link only, are sent with retries and
   never block a generation. SMTP settings with TLS required, and an optional Mailpit service

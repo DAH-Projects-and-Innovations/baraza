@@ -56,7 +56,7 @@ and speak. Use a throwaway meeting and tell everyone it is a test.
 | Consent required | Start is impossible without the consent box | |
 | Status is visible | The meeting page shows waiting for admission, then capturing | |
 | The bot is clearly named | The tile reads `Baraza – note taker`, it is visible to everyone | |
-| The bot announces itself | A message in the Meet chat says it is an assistant that transcribes | |
+| The bot announces itself | The pinned Vexa cannot post in the Meet chat, so the organizer announces it. Check that the start form showed the bot name and the reminder to tell participants | |
 | Not admitted case | (optional) deny the bot once: Baraza shows a clear failure, nothing is recorded | |
 | Stop works | After Stop, the page moves to processing, then done | |
 | Segments are stored | `curl -s localhost:8000/meetings/<id>/segments` returns timestamped lines | |

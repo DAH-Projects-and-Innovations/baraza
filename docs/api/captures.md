@@ -32,6 +32,12 @@ Response `200` (or `201`):
 - `422` if `meeting_url` is not a Google Meet link (`https://meet.google.com/xxx-xxxx-xxx`).
 - `502`/`503` if the capture service (Vexa) is unreachable.
 
+### `GET /captures/bot`: the assistant's visible name
+
+Response `200`: `{ "name": "Baraza – note taker (transcribing)" }` (`BARAZA_VEXA_BOT_NAME`). The start form
+shows it so the organizer can tell participants; the pinned Vexa cannot post a notice in the
+meeting chat.
+
 ### `GET /captures/{capture_id}`: capture status
 
 Response `200`:
