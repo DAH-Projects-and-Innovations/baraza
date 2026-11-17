@@ -17,6 +17,7 @@ from baraza.api.dependencies import get_meeting_store
 from baraza.config import get_settings
 from baraza.core.captures import VexaCaptureService
 from baraza.core.minutes_review import record_generated
+from baraza.core.notifications import Kind, notify
 from baraza.core.pipeline import generate_checked_minutes
 from baraza.db.session import Database
 from baraza.llm.resilient import ResilientLLMClient
@@ -61,6 +62,19 @@ async def generate_minutes_task(ctx: dict[str, Any], meeting_id: str) -> None:
             meeting.status = CaptureStatus.FAILED
             meeting.error = "Draft generation failed. Check the model service, then retry."
     await store.save(meeting)
+    await _notify_outcome(ctx, meeting)
+
+
+async def _notify_outcome(ctx: dict[str, Any], meeting: Any) -> None:
+    """Tell the person who started the meeting: draft ready, or generation failed."""
+    failed = meeting.status == CaptureStatus.FAILED or bool(meeting.error)
+    kind: Kind = "error" if failed else "ready"
+    send = ctx.get("mailer") or notify
+    try:
+        await send(meeting, kind, get_settings())
+    except Exception:
+        # A notification problem never changes the outcome of the generation.
+        structlog.get_logger().warning("notification_error", meeting_id=meeting.capture_id)
 
 
 async def startup(ctx: dict[str, Any]) -> None:

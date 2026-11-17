@@ -9,6 +9,10 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ### Added
 
+- Email notifications (#148, #71): the person who started a meeting is emailed when the draft is
+  ready or could not be generated. Emails hold the title and a link only, are sent with retries and
+  never block a generation. SMTP settings with TLS required, and an optional Mailpit service
+  (`--profile mail`). See `docs/notifications.md`.
 - Minutes templates (#132): `standard`, `team_meeting`, `committee` and `general_assembly`, chosen
   when starting a capture (default `BARAZA_DEFAULT_TEMPLATE`) or when regenerating a draft;
   `GET /templates` lists them. A template only adds instructions; the structure and the
