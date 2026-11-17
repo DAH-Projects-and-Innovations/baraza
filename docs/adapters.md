@@ -10,6 +10,20 @@ need to read two files:
 
 ## Contract
 
+Language-neutral schemas are published at
+[`schemas/transcript-1.0.json`](schemas/transcript-1.0.json) and
+[`schemas/transcript-segment-1.0.json`](schemas/transcript-segment-1.0.json).
+Generate them with `uv run python scripts/export_schemas.py` from `backend/`; CI runs the same
+command with `--check`. A field removal/rename, unit change, changed meaning or newly required
+field is a breaking change: bump the relevant schema version, publish a new file and provide an
+adapter migration. Backward-compatible optional fields keep the version. Reject unsupported
+whole-transcript `schema_version` values rather than silently interpreting them as version 1.0.
+
+The final transcript endpoint and demo procedure are described in
+[`sprint-3-demo.md`](sprint-3-demo.md). Unknown speakers must keep a neutral source identifier;
+never infer a real identity. Timestamps must be finite and ordered within each segment, and a
+finished transcript must contain at least one non-empty segment.
+
 | Method | Role |
 |---|---|
 | `capabilities()` | Supported platforms, real-time or not, whether speaker names are provided |
@@ -25,6 +39,28 @@ need to read two files:
 - If the adapter uses a bot, it must appear as a visible, clearly named participant.
 - Adapter tests must not depend on a real video conferencing account: mock the HTTP calls.
 
+## Streaming segments
+
+Adapters that capture a live meeting push `TranscriptSegment` objects
+([`core/segments.py`](../backend/src/baraza/core/segments.py)) while the meeting runs, instead of
+returning one `Transcript` at the end.
+
+| Field | Meaning |
+|---|---|
+| `meeting_id` | Meeting the segment belongs to |
+| `segment_id` | Unique within the meeting; re-sending an id replaces the segment (a partial result is replaced by its final version) |
+| `speaker` | Speaker name, or "Speaker 1", "Speaker 2"… when unknown |
+| `speaker_id` | Optional stable speaker identifier from the source. If `speaker` is missing it is labelled "Speaker <id>"; identity is never guessed |
+| `start`, `end` | Seconds from the meeting start (`end >= start`) |
+| `text` | Non-empty, trimmed text |
+| `language` | Optional ISO 639-1 code |
+| `is_final` | `false` for a partial result that may still be revised |
+
+The ingestion endpoint also accepts the source field names `start_time` and `end_time`.
+
+`segments_to_transcript()` assembles the final segments into the `Transcript` used by the minutes
+pipeline. Breaking changes bump `SEGMENT_SCHEMA_VERSION`.
+
 ## Planned adapters
 
 | Adapter | Platforms | Transcription | Milestone |
@@ -34,3 +70,9 @@ need to read two files:
 | Vexa bot | Meet, Teams, Zoom (experimental) | Self-hosted Whisper | MVP, option B |
 | Native Teams transcript | Teams | Microsoft | After MVP |
 | Native Zoom transcript | Zoom | Zoom | After MVP |
+
+## Vexa implementation
+
+The optional Google Meet adapter, pinned service deployment, polling and lifecycle mapping are
+implemented. See [vexa-backend.md](vexa-backend.md) for configuration and remaining live checks.
+The reusable mock-based contract is in `backend/tests/adapters/contract.py`.

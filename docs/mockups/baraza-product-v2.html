@@ -1,0 +1,833 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Baraza product mockup v2</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Newsreader:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+body{margin:0;font-family:Inter,system-ui,sans-serif;color:#16181D;background:#FBFAF8}
+a{text-decoration:none;color:inherit}
+mark{background:#FFE9A8;color:inherit;border-radius:3px;padding:0 2px}
+.screen{display:none}
+.screen:target{display:block}
+#signin{display:block}
+body:has(.screen:target) #signin:not(:target){display:none}
+.frame{overflow-x:auto}
+.banner{background:#16181D;color:#fff;font-size:13px;padding:8px 16px;display:flex;flex-wrap:wrap;gap:4px 8px;align-items:center}
+.banner a{color:#C9D6F2;padding:4px 8px;border-radius:6px}
+.banner a:hover{background:#2A2F3B;color:#fff}
+.banner b{font-weight:600;margin-right:8px}
+.banner span{color:#F58A4F;margin-left:auto}
+@media (max-width:760px){
+nav[aria-label=Main]{flex:1 1 100% !important;flex-direction:row !important;align-items:center;overflow-x:auto;padding:8px 10px !important;border-right:0 !important;border-bottom:1px solid #E7E4DE;gap:4px !important}
+nav[aria-label=Main] a{white-space:nowrap;flex:none}
+nav[aria-label=Main]>div{display:none !important}
+}
+</style>
+</head>
+<body>
+<div class="banner" role="navigation" aria-label="Mockup screens">
+<b>Baraza mockup v2</b>
+<a href="#design-system">Design system</a><a href="#signin">Sign in</a><a href="#first-start">First start</a><a href="#home">Home</a><a href="#library">Meetings</a><a href="#live">Live meeting</a><a href="#editor">Minutes</a><a href="#actions">Actions</a><a href="#share">Share</a><a href="#series">Series</a><a href="#search">Search</a><a href="#settings">Settings</a><a href="#extension">Extension</a><a href="#assistant">Assistant in the call</a><a href="#calendar">Calendar (next)</a><a href="#integrations">Teams and Zoom (next)</a><a href="#empty">Empty states</a><a href="#errors">Errors</a>
+<span>Fictional data. Not the real application.</span>
+</div>
+<section id="design-system" class="screen" aria-label="Design system"><div class="frame">
+
+<div style="width:1280px;height:940px;box-sizing:border-box;background:#FBFAF8;padding:56px 64px;display:flex;flex-direction:column;gap:40px">
+  <div style="display:flex;justify-content:space-between;align-items:flex-end">
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <span style="font-size:13px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:#6A6F7B">Baraza design system</span>
+      <h1 style="margin:0;font-family:Newsreader,Georgia,serif;font-weight:500;font-size:48px;line-height:1.1;letter-spacing:-0.01em">Quiet tools for serious meetings</h1>
+    </div>
+    <span style="font-size:14px;color:#4B505C;max-width:380px;line-height:1.5;text-align:right">Generous space, one accent, a serif for the document. The interface steps back so the minutes can lead.</span>
+  </div>
+
+  <div style="display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:16px">
+    <div style="display:flex;flex-direction:column;gap:8px"><div style="height:72px;border-radius:14px;background:#1A5FD0"></div><span style="font-size:14px;font-weight:600">Blue 600</span><span style="font-size:13px;color:#6A6F7B">#1A5FD0 · action</span></div>
+    <div style="display:flex;flex-direction:column;gap:8px"><div style="height:72px;border-radius:14px;background:#EAF1FD;border:1px solid #D5E2FA;box-sizing:border-box"></div><span style="font-size:14px;font-weight:600">Blue 50</span><span style="font-size:13px;color:#6A6F7B">#EAF1FD · selection</span></div>
+    <div style="display:flex;flex-direction:column;gap:8px"><div style="height:72px;border-radius:14px;background:#F26B21"></div><span style="font-size:14px;font-weight:600">Orange 500</span><span style="font-size:13px;color:#6A6F7B">#F26B21 · needs a human</span></div>
+    <div style="display:flex;flex-direction:column;gap:8px"><div style="height:72px;border-radius:14px;background:#FEF0E6;border:1px solid #FAD9C2;box-sizing:border-box"></div><span style="font-size:14px;font-weight:600">Orange 50</span><span style="font-size:13px;color:#6A6F7B">#FEF0E6 · draft</span></div>
+    <div style="display:flex;flex-direction:column;gap:8px"><div style="height:72px;border-radius:14px;background:#16181D"></div><span style="font-size:14px;font-weight:600">Ink</span><span style="font-size:13px;color:#6A6F7B">#16181D · text</span></div>
+    <div style="display:flex;flex-direction:column;gap:8px"><div style="height:72px;border-radius:14px;background:#FFFFFF;border:1px solid #E7E4DE;box-sizing:border-box"></div><span style="font-size:14px;font-weight:600">Paper</span><span style="font-size:13px;color:#6A6F7B">#FFFFFF on #FBFAF8</span></div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:1.1fr 1fr;gap:48px;flex:1">
+    <div style="display:flex;flex-direction:column;gap:20px">
+      <span style="font-size:13px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:#6A6F7B">Type</span>
+      <div style="display:flex;flex-direction:column;gap:4px"><span style="font-size:13px;color:#6A6F7B">Newsreader 500 · minutes and headings</span><span style="font-family:Newsreader,Georgia,serif;font-size:32px;font-weight:500;line-height:1.2">Decisions, then actions</span></div>
+      <div style="display:flex;flex-direction:column;gap:4px"><span style="font-size:13px;color:#6A6F7B">Newsreader 400 · 18/28 body of the minutes</span><span style="font-family:Newsreader,Georgia,serif;font-size:18px;line-height:1.55;color:#2A2E37;max-width:520px">The committee agreed to move the pilot to March. Awa will confirm the budget with the funder.</span></div>
+      <div style="display:flex;flex-direction:column;gap:4px"><span style="font-size:13px;color:#6A6F7B">Inter 400 / 500 / 600 · interface, 14 to 16</span><span style="font-size:15px;line-height:1.5;color:#4B505C">Meetings, People, Settings. Labels stay short and plain.</span></div>
+      <div style="display:flex;flex-direction:column;gap:10px;padding-top:8px;border-top:1px solid #E7E4DE">
+        <span style="font-size:13px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:#6A6F7B">Shape and space</span>
+        <span style="font-size:14px;line-height:1.6;color:#4B505C">8-point spacing. Radius 10 on controls, 16 on cards, full on chips. Borders instead of shadows. Content width 720 for reading, 1200 for the app.</span>
+      </div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:20px">
+      <span style="font-size:13px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:#6A6F7B">Components</span>
+      <div style="display:flex;flex-wrap:wrap;gap:12px;align-items:center">
+        <span style="min-height:44px;padding:0 20px;display:inline-flex;align-items:center;border-radius:10px;background:#1A5FD0;color:#fff;font-size:15px;font-weight:600">Validate minutes</span>
+        <span style="min-height:44px;padding:0 20px;display:inline-flex;align-items:center;border-radius:10px;background:#fff;border:1px solid #CFCBC3;box-sizing:border-box;font-size:15px;font-weight:500">Share</span>
+        <span style="min-height:44px;padding:0 12px;display:inline-flex;align-items:center;border-radius:10px;color:#1A5FD0;font-size:15px;font-weight:500">Edit</span>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center">
+        <span style="display:inline-flex;align-items:center;gap:8px;padding:5px 12px;border-radius:99px;background:#FEF0E6;color:#A8470F;font-size:13px;font-weight:600"><span style="width:7px;height:7px;border-radius:50%;background:#F26B21"></span>Draft</span>
+        <span style="display:inline-flex;align-items:center;gap:8px;padding:5px 12px;border-radius:99px;background:#EAF1FD;color:#0E3F94;font-size:13px;font-weight:600"><span style="width:7px;height:7px;border-radius:50%;background:#1A5FD0"></span>Validated</span>
+        <span style="display:inline-flex;align-items:center;gap:8px;padding:5px 12px;border-radius:99px;background:#F1EFEA;color:#4B505C;font-size:13px;font-weight:600">Not specified</span>
+        <span style="display:inline-flex;align-items:center;gap:8px;padding:5px 12px;border-radius:99px;background:#16181D;color:#fff;font-size:13px;font-weight:600"><span style="width:7px;height:7px;border-radius:50%;background:#F26B21"></span>Live</span>
+      </div>
+      <div style="background:#fff;border:1px solid #E7E4DE;border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:10px">
+        <div style="display:flex;justify-content:space-between;align-items:center"><span style="font-family:Newsreader,Georgia,serif;font-size:20px;font-weight:500">Pilot committee</span><span style="font-size:13px;color:#6A6F7B">Today · 42 min</span></div>
+        <span style="font-size:14px;line-height:1.5;color:#4B505C">3 decisions · 5 actions, 2 without a deadline</span>
+        <div style="display:flex;gap:8px;align-items:center"><span style="width:28px;height:28px;border-radius:50%;background:#EAF1FD;color:#0E3F94;font-size:12px;font-weight:600;display:inline-flex;align-items:center;justify-content:center">AE</span><span style="width:28px;height:28px;border-radius:50%;background:#FEF0E6;color:#A8470F;font-size:12px;font-weight:600;display:inline-flex;align-items:center;justify-content:center;margin-left:-14px;border:2px solid #fff;box-sizing:border-box">KT</span><span style="font-size:13px;color:#6A6F7B">Awa, Koffi and 4 others</span></div>
+      </div>
+      <div style="display:flex;gap:16px;align-items:center;background:#0B1B3F;border-radius:16px;padding:18px 20px;color:#fff">
+        <span style="width:52px;height:52px;border-radius:50%;background:#1A5FD0;display:inline-flex;align-items:center;justify-content:center;flex:none"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></span>
+        <span style="display:flex;flex-direction:column;gap:2px"><span style="font-size:15px;font-weight:600">Baraza – note taker</span><span style="font-size:13px;color:#C7D6F5">The assistant: always visible, never speaks</span></span>
+      </div>
+    </div>
+  </div>
+</div>
+</div></section>
+<section id="signin" class="screen" aria-label="Sign in"><div class="frame">
+
+<div style="width:100%;min-height:900px;display:flex;flex-wrap:wrap;background:#FBFAF8">
+  <main style="flex:1 1 440px;box-sizing:border-box;padding:48px;display:flex;flex-direction:column;justify-content:center;align-items:center">
+    <div style="width:100%;max-width:380px;display:flex;flex-direction:column;gap:32px">
+      <div style="display:flex;align-items:center;gap:10px"><span style="width:32px;height:32px;border-radius:9px;background:#1A5FD0;display:inline-flex;align-items:center;justify-content:center"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></span><span style="font-family:Newsreader,Georgia,serif;font-size:26px;font-weight:600">Baraza</span></div>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <h1 style="margin:0;font-family:Newsreader,Georgia,serif;font-weight:500;font-size:40px;line-height:1.15;letter-spacing:-0.01em">Meetings that write themselves up</h1>
+        <p style="margin:0;font-size:16px;line-height:1.6;color:#4B505C">Sign in to see your minutes, actions and decisions.</p>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <a href="#first-start" style="min-height:52px;display:flex;align-items:center;justify-content:center;gap:12px;border-radius:12px;background:#fff;border:1px solid #CFCBC3;box-sizing:border-box;font-size:16px;font-weight:600"><svg width="20" height="20" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="none" stroke="#16181D" stroke-width="2"/><path d="M12 12h8" stroke="#16181D" stroke-width="2"/></svg>Continue with Google</a>
+        <a href="#first-start" style="min-height:52px;display:flex;align-items:center;justify-content:center;border-radius:12px;background:#fff;border:1px solid #CFCBC3;box-sizing:border-box;font-size:16px;font-weight:600">Continue with email</a>
+      </div>
+      <p style="margin:0;font-size:13px;line-height:1.6;color:#6A6F7B">By continuing you accept the terms. Your meetings stay in your workspace. Baraza is open source, built by DAH Labs.</p>
+    </div>
+  </main>
+  <aside aria-label="Product preview" style="flex:1 1 440px;background:#0B1B3F;color:#fff;box-sizing:border-box;padding:56px;display:flex;flex-direction:column;justify-content:center;gap:28px">
+    <span style="font-size:13px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:#9DB6E8">Draft by AI, validated by you</span>
+    <div style="background:#fff;color:#16181D;border-radius:20px;padding:32px;display:flex;flex-direction:column;gap:18px;max-width:520px">
+      <span style="font-family:Newsreader,Georgia,serif;font-size:26px;font-weight:500">Pilot committee</span>
+      <p style="margin:0;font-family:Newsreader,Georgia,serif;font-size:18px;line-height:1.6;color:#2A2E37">The pilot starts in March. The team asks the funder for a one-month extension.</p>
+      <div style="display:flex;flex-wrap:wrap;gap:8px"><span style="padding:4px 12px;border-radius:99px;background:#EAF1FD;color:#0E3F94;font-size:13px;font-weight:600">Awa Example</span><span style="padding:4px 12px;border-radius:99px;background:#F1EFEA;color:#2A2E37;font-size:13px;font-weight:600">Friday 7 Nov</span><span style="padding:4px 12px;border-radius:99px;border:1px dashed #D9702F;color:#A8470F;font-size:13px;font-weight:600">Owner not specified</span></div>
+    </div>
+    <p style="margin:0;font-size:16px;line-height:1.6;color:#C7D6F5;max-width:480px">Nothing is shared until a person has read it. Missing owners and deadlines are flagged, never guessed.</p>
+  </aside>
+</div>
+</div></section>
+<section id="first-start" class="screen" aria-label="First start"><div class="frame">
+
+<div style="width:100%;min-height:900px;background:#FBFAF8;display:flex;flex-direction:column">
+  <header style="display:flex;justify-content:space-between;align-items:center;padding:20px 40px">
+    <div style="display:flex;align-items:center;gap:10px"><span style="width:28px;height:28px;border-radius:8px;background:#1A5FD0;display:inline-flex;align-items:center;justify-content:center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></span><span style="font-family:Newsreader,Georgia,serif;font-size:22px;font-weight:600">Baraza</span></div>
+    <a href="#home" style="font-size:14px;color:#4B505C;font-weight:500">Skip for now</a>
+  </header>
+
+  <main style="flex:1;display:flex;flex-wrap:wrap;gap:56px;justify-content:center;align-items:flex-start;box-sizing:border-box;padding:48px 40px 72px">
+    <div style="flex:1 1 320px;max-width:400px;display:flex;flex-direction:column;gap:32px">
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <span style="font-size:14px;color:#6A6F7B">Welcome, Awa</span>
+        <h1 style="margin:0;font-family:Newsreader,Georgia,serif;font-weight:500;font-size:40px;line-height:1.15;letter-spacing:-0.01em">Three steps, then your meetings write themselves up</h1>
+      </div>
+      <ol style="list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:0">
+        <li style="display:flex;gap:16px;align-items:flex-start;padding-bottom:28px;position:relative"><span style="width:32px;height:32px;border-radius:50%;background:#1A5FD0;display:inline-flex;align-items:center;justify-content:center;flex:none"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5 9-10"/></svg></span><span style="display:flex;flex-direction:column;gap:2px;padding-top:4px"><span style="font-size:16px;font-weight:600">Install the extension</span><span style="font-size:14px;color:#6A6F7B">Done</span></span></li>
+        <li style="display:flex;gap:16px;align-items:flex-start;padding-bottom:28px"><span style="width:32px;height:32px;border-radius:50%;background:#fff;border:2px solid #1A5FD0;box-sizing:border-box;color:#1A5FD0;font-size:14px;font-weight:600;display:inline-flex;align-items:center;justify-content:center;flex:none">2</span><span style="display:flex;flex-direction:column;gap:2px;padding-top:4px"><span style="font-size:16px;font-weight:600">Pair it with your account</span><span style="font-size:14px;color:#4B505C">You are here</span></span></li>
+        <li style="display:flex;gap:16px;align-items:flex-start"><span style="width:32px;height:32px;border-radius:50%;background:#F1EFEA;color:#6A6F7B;font-size:14px;font-weight:600;display:inline-flex;align-items:center;justify-content:center;flex:none">3</span><span style="display:flex;flex-direction:column;gap:2px;padding-top:4px"><span style="font-size:16px;font-weight:600;color:#4B505C">Try it in a Google Meet</span><span style="font-size:14px;color:#6A6F7B">Takes about two minutes</span></span></li>
+      </ol>
+    </div>
+
+    <section aria-labelledby="pair" style="flex:1 1 420px;max-width:560px;background:#fff;border:1px solid #E7E4DE;border-radius:20px;padding:40px;box-sizing:border-box;display:flex;flex-direction:column;gap:28px">
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <span style="font-size:13px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:#6A6F7B">Step 2 of 3</span>
+        <h2 id="pair" style="margin:0;font-family:Newsreader,Georgia,serif;font-weight:500;font-size:30px;line-height:1.2">Pair your browser</h2>
+        <p style="margin:0;font-size:15px;line-height:1.6;color:#4B505C">Open the Baraza extension from the puzzle icon in your browser and enter this code. It links the extension to your account, once.</p>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:10px;align-items:flex-start">
+        <div style="display:flex;gap:10px" aria-label="Pairing code K7M 4QX">
+          <span style="width:52px;height:64px;border-radius:12px;background:#EAF1FD;color:#0E3F94;font-family:Newsreader,Georgia,serif;font-size:32px;font-weight:600;display:inline-flex;align-items:center;justify-content:center">K</span>
+          <span style="width:52px;height:64px;border-radius:12px;background:#EAF1FD;color:#0E3F94;font-family:Newsreader,Georgia,serif;font-size:32px;font-weight:600;display:inline-flex;align-items:center;justify-content:center">7</span>
+          <span style="width:52px;height:64px;border-radius:12px;background:#EAF1FD;color:#0E3F94;font-family:Newsreader,Georgia,serif;font-size:32px;font-weight:600;display:inline-flex;align-items:center;justify-content:center">M</span>
+          <span style="width:20px;height:64px;display:inline-flex;align-items:center;justify-content:center;color:#6A6F7B;font-size:24px">–</span>
+          <span style="width:52px;height:64px;border-radius:12px;background:#EAF1FD;color:#0E3F94;font-family:Newsreader,Georgia,serif;font-size:32px;font-weight:600;display:inline-flex;align-items:center;justify-content:center">4</span>
+          <span style="width:52px;height:64px;border-radius:12px;background:#EAF1FD;color:#0E3F94;font-family:Newsreader,Georgia,serif;font-size:32px;font-weight:600;display:inline-flex;align-items:center;justify-content:center">Q</span>
+          <span style="width:52px;height:64px;border-radius:12px;background:#EAF1FD;color:#0E3F94;font-family:Newsreader,Georgia,serif;font-size:32px;font-weight:600;display:inline-flex;align-items:center;justify-content:center">X</span>
+        </div>
+        <span style="font-size:13px;color:#6A6F7B">The code expires in 9 minutes. <a href="#first-start" style="color:#1A5FD0;font-weight:500">Get a new one</a></span>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px;background:#F7F6F2;border-radius:12px;padding:14px 16px;font-size:14px;color:#4B505C"><span style="width:10px;height:10px;border-radius:50%;background:#F26B21;flex:none"></span>Waiting for the extension to confirm</div>
+      <div style="display:flex;flex-direction:column;gap:10px;padding-top:24px;border-top:1px solid #E7E4DE">
+        <span style="font-size:14px;font-weight:600">What the extension can do</span>
+        <span style="font-size:14px;line-height:1.6;color:#4B505C">Send the assistant into a Google Meet and stop it. It cannot hear your microphone, read your other tabs or record your screen.</span>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:12px;align-items:center">
+        <a href="#first-start" style="min-height:48px;padding:0 24px;display:inline-flex;align-items:center;border-radius:12px;background:#1A5FD0;color:#fff;font-size:15px;font-weight:600">Continue</a>
+        <a href="#first-start" style="min-height:48px;padding:0 12px;display:inline-flex;align-items:center;font-size:15px;font-weight:500;color:#1A5FD0">I don't see the extension</a>
+      </div>
+    </section>
+  </main>
+</div>
+</div></section>
+<section id="home" class="screen" aria-label="Home"><div class="frame">
+
+<div style="width:100%;min-height:900px;display:flex;flex-wrap:wrap;background:#FBFAF8">
+  <nav aria-label="Main" style="flex:0 0 232px;box-sizing:border-box;padding:24px 16px;display:flex;flex-direction:column;gap:4px;border-right:1px solid #E7E4DE;background:#FBFAF8">
+    <div style="display:flex;align-items:center;gap:10px;padding:4px 12px 20px"><span style="width:28px;height:28px;border-radius:8px;background:#1A5FD0;display:inline-flex;align-items:center;justify-content:center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></span><span style="font-family:Newsreader,Georgia,serif;font-size:22px;font-weight:600">Baraza</span></div>
+    <a href="#home" style="min-height:40px;padding:0 12px;display:flex;align-items:center;gap:12px;border-radius:10px;background:#EAF1FD;color:#0E3F94;font-size:15px;font-weight:600">Home</a>
+    <a href="#library" style="min-height:40px;padding:0 12px;display:flex;align-items:center;gap:12px;border-radius:10px;color:#4B505C;font-size:15px">Meetings</a>
+    <a href="#actions" style="min-height:40px;padding:0 12px;display:flex;align-items:center;justify-content:space-between;border-radius:10px;color:#4B505C;font-size:15px"><span>Actions</span><span style="background:#FEF0E6;color:#A8470F;border-radius:99px;padding:1px 8px;font-size:12px;font-weight:600">7</span></a>
+    <a href="#series" style="min-height:40px;padding:0 12px;display:flex;align-items:center;gap:12px;border-radius:10px;color:#4B505C;font-size:15px">Series</a>
+    <a href="#search" style="min-height:40px;padding:0 12px;display:flex;align-items:center;gap:12px;border-radius:10px;color:#4B505C;font-size:15px">Search</a>
+    <div style="flex:1;min-height:40px"></div>
+    <a href="#settings" style="min-height:40px;padding:0 12px;display:flex;align-items:center;gap:12px;border-radius:10px;color:#4B505C;font-size:15px">Settings</a>
+    <div style="display:flex;align-items:center;gap:10px;padding:12px;border-top:1px solid #E7E4DE;margin-top:8px"><span style="width:32px;height:32px;border-radius:50%;background:#EAF1FD;color:#0E3F94;font-size:13px;font-weight:600;display:inline-flex;align-items:center;justify-content:center">AE</span><span style="display:flex;flex-direction:column"><span style="font-size:14px;font-weight:500">Awa Example</span><span style="font-size:12px;color:#6A6F7B">Association Demo</span></span></div>
+  </nav>
+
+  <main style="flex:999 1 560px;min-width:0;box-sizing:border-box;padding:48px 56px;display:flex;flex-direction:column;gap:40px">
+    <header style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:20px">
+      <div style="display:flex;flex-direction:column;gap:6px">
+        <span style="font-size:14px;color:#6A6F7B">Wednesday 5 November</span>
+        <h1 style="margin:0;font-family:Newsreader,Georgia,serif;font-weight:500;font-size:40px;line-height:1.15;letter-spacing:-0.01em">Good morning, Awa</h1>
+      </div>
+    </header>
+
+    <section aria-labelledby="bot" style="background:#0B1B3F;border-radius:16px;padding:24px 28px;display:flex;flex-wrap:wrap;gap:24px;align-items:center;color:#fff">
+      <span style="width:56px;height:56px;border-radius:50%;background:#1A5FD0;display:inline-flex;align-items:center;justify-content:center;flex:none"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></span>
+      <div style="display:flex;flex-direction:column;gap:6px;flex:1 1 260px">
+        <h2 id="bot" style="margin:0;font-family:Newsreader,Georgia,serif;font-weight:500;font-size:24px">Your assistant is ready</h2>
+        <span style="font-size:14px;line-height:1.5;color:#C7D6F5">Start it from Google Meet with the Baraza extension. Minutes appear here when the call ends.</span>
+      </div>
+      <div style="display:flex;flex-wrap:wrap;gap:10px;align-items:center">
+        <span style="display:inline-flex;align-items:center;gap:8px;background:#12285A;border-radius:99px;padding:6px 14px;font-size:13px;font-weight:600"><span style="width:8px;height:8px;border-radius:50%;background:#7FA6E8"></span>Extension connected</span>
+        <a href="#extension" style="min-height:44px;padding:0 20px;display:inline-flex;align-items:center;border-radius:12px;background:#fff;color:#0E3F94;font-size:15px;font-weight:600">How to start it</a>
+      </div>
+    </section>
+
+    <section aria-labelledby="rev" style="background:#fff;border:1px solid #F5CBAE;border-radius:16px;padding:24px 28px;display:flex;flex-wrap:wrap;gap:20px;align-items:center;justify-content:space-between">
+      <div style="display:flex;flex-direction:column;gap:6px;flex:1 1 320px">
+        <span style="display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:600;color:#A8470F"><span style="width:7px;height:7px;border-radius:50%;background:#F26B21"></span>Waiting for your review</span>
+        <h2 id="rev" style="margin:0;font-family:Newsreader,Georgia,serif;font-weight:500;font-size:26px;line-height:1.25">Pilot committee, yesterday</h2>
+        <span style="font-size:15px;line-height:1.5;color:#4B505C">3 decisions and 5 actions drafted. 2 actions have no owner or no deadline yet.</span>
+      </div>
+      <a href="#editor" style="min-height:48px;padding:0 22px;display:inline-flex;align-items:center;border-radius:12px;background:#16181D;color:#fff;font-size:15px;font-weight:600">Review the minutes</a>
+    </section>
+
+    <div style="display:flex;flex-wrap:wrap;gap:40px">
+      <section aria-labelledby="rec" style="flex:3 1 420px;min-width:0;display:flex;flex-direction:column;gap:8px">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;padding-bottom:8px"><h2 id="rec" style="margin:0;font-size:15px;font-weight:600">Recent meetings</h2><a href="#home" style="font-size:14px;color:#1A5FD0;font-weight:500">All meetings</a></div>
+        <a href="#editor" style="display:flex;justify-content:space-between;gap:16px;align-items:center;padding:16px 0;border-top:1px solid #E7E4DE"><span style="display:flex;flex-direction:column;gap:4px"><span style="font-family:Newsreader,Georgia,serif;font-size:19px;font-weight:500">Pilot committee</span><span style="font-size:14px;color:#6A6F7B">Yesterday · 42 min · 6 people</span></span><span style="padding:4px 12px;border-radius:99px;background:#FEF0E6;color:#A8470F;font-size:13px;font-weight:600">Draft</span></a>
+        <a href="#editor" style="display:flex;justify-content:space-between;gap:16px;align-items:center;padding:16px 0;border-top:1px solid #E7E4DE"><span style="display:flex;flex-direction:column;gap:4px"><span style="font-family:Newsreader,Georgia,serif;font-size:19px;font-weight:500">Budget review Q4</span><span style="font-size:14px;color:#6A6F7B">Monday · 58 min · 4 people</span></span><span style="padding:4px 12px;border-radius:99px;background:#EAF1FD;color:#0E3F94;font-size:13px;font-weight:600">Validated</span></a>
+        <a href="#editor" style="display:flex;justify-content:space-between;gap:16px;align-items:center;padding:16px 0;border-top:1px solid #E7E4DE"><span style="display:flex;flex-direction:column;gap:4px"><span style="font-family:Newsreader,Georgia,serif;font-size:19px;font-weight:500">Field team weekly</span><span style="font-size:14px;color:#6A6F7B">Last Friday · 31 min · 9 people</span></span><span style="padding:4px 12px;border-radius:99px;background:#EAF1FD;color:#0E3F94;font-size:13px;font-weight:600">Validated</span></a>
+        <a href="#editor" style="display:flex;justify-content:space-between;gap:16px;align-items:center;padding:16px 0;border-top:1px solid #E7E4DE;border-bottom:1px solid #E7E4DE"><span style="display:flex;flex-direction:column;gap:4px"><span style="font-family:Newsreader,Georgia,serif;font-size:19px;font-weight:500">Partner call, Kigali</span><span style="font-size:14px;color:#6A6F7B">Last Thursday · 27 min · 3 people</span></span><span style="padding:4px 12px;border-radius:99px;background:#EAF1FD;color:#0E3F94;font-size:13px;font-weight:600">Validated</span></a>
+      </section>
+
+      <section aria-labelledby="act" style="flex:2 1 300px;min-width:0;display:flex;flex-direction:column;gap:8px">
+        <div style="display:flex;justify-content:space-between;align-items:baseline;padding-bottom:8px"><h2 id="act" style="margin:0;font-size:15px;font-weight:600">Your actions</h2><span style="font-size:14px;color:#6A6F7B">7 open</span></div>
+        <div style="display:flex;gap:12px;align-items:flex-start;padding:14px 0;border-top:1px solid #E7E4DE"><span style="width:20px;height:20px;border:1.5px solid #8A8F9B;border-radius:6px;box-sizing:border-box;flex:none;margin-top:2px"></span><span style="display:flex;flex-direction:column;gap:4px"><span style="font-size:15px;line-height:1.4">Confirm the budget with the funder</span><span style="font-size:13px;color:#A8470F;font-weight:500">Due Friday</span></span></div>
+        <div style="display:flex;gap:12px;align-items:flex-start;padding:14px 0;border-top:1px solid #E7E4DE"><span style="width:20px;height:20px;border:1.5px solid #8A8F9B;border-radius:6px;box-sizing:border-box;flex:none;margin-top:2px"></span><span style="display:flex;flex-direction:column;gap:4px"><span style="font-size:15px;line-height:1.4">Send the pilot calendar to partners</span><span style="font-size:13px;color:#6A6F7B">Due 12 November</span></span></div>
+        <div style="display:flex;gap:12px;align-items:flex-start;padding:14px 0;border-top:1px solid #E7E4DE;border-bottom:1px solid #E7E4DE"><span style="width:20px;height:20px;border:1.5px solid #8A8F9B;border-radius:6px;box-sizing:border-box;flex:none;margin-top:2px"></span><span style="display:flex;flex-direction:column;gap:4px"><span style="font-size:15px;line-height:1.4">Update the risk register</span><span style="font-size:13px;color:#6A6F7B">Deadline not specified</span></span></div>
+      </section>
+    </div>
+  </main>
+</div>
+</div></section>
+<section id="library" class="screen" aria-label="Meetings"><div class="frame">
+
+<div style="width:100%;min-height:900px;display:flex;flex-wrap:wrap;background:#FBFAF8">
+  <nav aria-label="Main" style="flex:0 0 232px;box-sizing:border-box;padding:24px 16px;display:flex;flex-direction:column;gap:4px;border-right:1px solid #E7E4DE">
+    <div style="display:flex;align-items:center;gap:10px;padding:4px 12px 20px"><span style="width:28px;height:28px;border-radius:8px;background:#1A5FD0;display:inline-flex;align-items:center;justify-content:center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></span><span style="font-family:Newsreader,Georgia,serif;font-size:22px;font-weight:600">Baraza</span></div>
+    <a href="#home" style="min-height:40px;padding:0 12px;display:flex;align-items:center;border-radius:10px;color:#4B505C;font-size:15px">Home</a>
+    <a href="#library" style="min-height:40px;padding:0 12px;display:flex;align-items:center;border-radius:10px;background:#EAF1FD;color:#0E3F94;font-size:15px;font-weight:600">Meetings</a>
+    <a href="#actions" style="min-height:40px;padding:0 12px;display:flex;align-items:center;justify-content:space-between;border-radius:10px;color:#4B505C;font-size:15px"><span>Actions</span><span style="background:#FEF0E6;color:#A8470F;border-radius:99px;padding:1px 8px;font-size:12px;font-weight:600">7</span></a>
+    <a href="#series" style="min-height:40px;padding:0 12px;display:flex;align-items:center;border-radius:10px;color:#4B505C;font-size:15px">Series</a>
+    <a href="#search" style="min-height:40px;padding:0 12px;display:flex;align-items:center;border-radius:10px;color:#4B505C;font-size:15px">Search</a>
+    <div style="flex:1;min-height:40px"></div>
+    <a href="#settings" style="min-height:40px;padding:0 12px;display:flex;align-items:center;border-radius:10px;color:#4B505C;font-size:15px">Settings</a>
+    <div style="display:flex;align-items:center;gap:10px;padding:12px;border-top:1px solid #E7E4DE;margin-top:8px"><span style="width:32px;height:32px;border-radius:50%;background:#EAF1FD;color:#0E3F94;font-size:13px;font-weight:600;display:inline-flex;align-items:center;justify-content:center">AE</span><span style="display:flex;flex-direction:column"><span style="font-size:14px;font-weight:500">Awa Example</span><span style="font-size:12px;color:#6A6F7B">Association Demo</span></span></div>
+  </nav>
+  <main style="flex:999 1 560px;min-width:0;box-sizing:border-box;padding:48px 56px;display:flex;flex-direction:column;gap:28px">
+    <header style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:16px">
+      <h1 style="margin:0;font-family:Newsreader,Georgia,serif;font-weight:500;font-size:40px;letter-spacing:-0.01em">Meetings</h1>
+      <span style="font-size:14px;color:#6A6F7B">48 meetings · 6 hours this week</span>
+    </header>
+    <div style="display:flex;flex-wrap:wrap;gap:12px;align-items:center">
+      <label for="q" style="position:absolute;left:-9999px">Search meetings</label>
+      <input id="q" type="text" placeholder="Search by title, person or word" style="flex:1 1 280px;min-height:48px;box-sizing:border-box;border:1px solid #CFCBC3;border-radius:12px;background:#fff;padding:0 16px;font:15px Inter,system-ui,sans-serif">
+      <span style="min-height:40px;padding:0 16px;display:inline-flex;align-items:center;border-radius:99px;background:#16181D;color:#fff;font-size:14px;font-weight:500">All</span>
+      <span style="min-height:40px;padding:0 16px;display:inline-flex;align-items:center;border-radius:99px;background:#fff;border:1px solid #CFCBC3;box-sizing:border-box;font-size:14px;font-weight:500">To review · 2</span>
+      <span style="min-height:40px;padding:0 16px;display:inline-flex;align-items:center;border-radius:99px;background:#fff;border:1px solid #CFCBC3;box-sizing:border-box;font-size:14px;font-weight:500">Validated</span>
+    </div>
+    <section style="display:flex;flex-direction:column">
+      <span style="font-size:13px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:#6A6F7B;padding-bottom:8px">This week</span>
+      <a href="#editor" style="display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px;align-items:center;padding:18px 0;border-top:1px solid #E7E4DE"><span style="display:flex;flex-direction:column;gap:4px"><span style="font-family:Newsreader,Georgia,serif;font-size:20px;font-weight:500">Pilot committee</span><span style="font-size:14px;color:#6A6F7B">Wednesday · 42 min · 3 decisions · 5 actions</span></span><span style="padding:4px 12px;border-radius:99px;background:#FEF0E6;color:#A8470F;font-size:13px;font-weight:600">Draft</span></a>
+      <a href="#editor" style="display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px;align-items:center;padding:18px 0;border-top:1px solid #E7E4DE"><span style="display:flex;flex-direction:column;gap:4px"><span style="font-family:Newsreader,Georgia,serif;font-size:20px;font-weight:500">Budget review Q4</span><span style="font-size:14px;color:#6A6F7B">Monday · 58 min · 2 decisions · 4 actions</span></span><span style="padding:4px 12px;border-radius:99px;background:#EAF1FD;color:#0E3F94;font-size:13px;font-weight:600">Validated</span></a>
+      <a href="#editor" style="display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px;align-items:center;padding:18px 0;border-top:1px solid #E7E4DE"><span style="display:flex;flex-direction:column;gap:4px"><span style="font-family:Newsreader,Georgia,serif;font-size:20px;font-weight:500">Field team weekly</span><span style="font-size:14px;color:#6A6F7B">Monday · 31 min · 1 decision · 3 actions</span></span><span style="padding:4px 12px;border-radius:99px;background:#FEF0E6;color:#A8470F;font-size:13px;font-weight:600">Draft</span></a>
+    </section>
+    <section style="display:flex;flex-direction:column">
+      <span style="font-size:13px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:#6A6F7B;padding-bottom:8px">Last week</span>
+      <a href="#editor" style="display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px;align-items:center;padding:18px 0;border-top:1px solid #E7E4DE"><span style="display:flex;flex-direction:column;gap:4px"><span style="font-family:Newsreader,Georgia,serif;font-size:20px;font-weight:500">Partner call, Kigali</span><span style="font-size:14px;color:#6A6F7B">Thursday · 27 min · 2 decisions · 2 actions</span></span><span style="padding:4px 12px;border-radius:99px;background:#EAF1FD;color:#0E3F94;font-size:13px;font-weight:600">Validated</span></a>
+      <a href="#editor" style="display:flex;flex-wrap:wrap;justify-content:space-between;gap:12px;align-items:center;padding:18px 0;border-top:1px solid #E7E4DE;border-bottom:1px solid #E7E4DE"><span style="display:flex;flex-direction:column;gap:4px"><span style="font-family:Newsreader,Georgia,serif;font-size:20px;font-weight:500">Communications sync</span><span style="font-size:14px;color:#6A6F7B">Tuesday · 22 min · 1 decision · 2 actions</span></span><span style="padding:4px 12px;border-radius:99px;background:#EAF1FD;color:#0E3F94;font-size:13px;font-weight:600">Validated</span></a>
+    </section>
+  </main>
+</div>
+</div></section>
+<section id="live" class="screen" aria-label="Live meeting"><div class="frame">
+
+<div style="width:100%;min-height:900px;background:#FBFAF8;display:flex;flex-direction:column">
+  <header style="display:flex;flex-wrap:wrap;gap:16px;align-items:center;justify-content:space-between;padding:16px 40px;border-bottom:1px solid #E7E4DE">
+    <div style="display:flex;align-items:center;gap:16px">
+      <a href="#home" aria-label="Back to home" style="width:40px;height:40px;border-radius:10px;border:1px solid #E7E4DE;background:#fff;display:inline-flex;align-items:center;justify-content:center"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#16181D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg></a>
+      <span style="display:flex;flex-direction:column"><span style="font-size:14px;font-weight:600">Budget review Q4</span><span style="font-size:13px;color:#6A6F7B">Google Meet · 4 people</span></span>
+      <span style="display:inline-flex;align-items:center;gap:8px;padding:5px 12px;border-radius:99px;background:#16181D;color:#fff;font-size:13px;font-weight:600"><span style="width:7px;height:7px;border-radius:50%;background:#F26B21"></span>Live · 12:48</span>
+    </div>
+    <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+      <span style="display:inline-flex;align-items:center;gap:10px;font-size:14px;color:#4B505C"><span style="width:28px;height:28px;border-radius:50%;background:#1A5FD0;display:inline-flex;align-items:center;justify-content:center"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></span>Assistant in the call</span>
+      <a href="#live" style="min-height:44px;padding:0 20px;display:inline-flex;align-items:center;border-radius:10px;background:#fff;border:1px solid #CFCBC3;box-sizing:border-box;font-size:15px;font-weight:600">Stop and write minutes</a>
+    </div>
+  </header>
+
+  <div style="display:flex;flex-wrap:wrap;flex:1">
+    <main style="flex:999 1 560px;min-width:0;box-sizing:border-box;padding:40px;display:flex;justify-content:center">
+      <div style="width:100%;max-width:720px;display:flex;flex-direction:column;gap:28px">
+        <span style="font-size:13px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:#6A6F7B">Transcript, as it happens</span>
+        <div style="display:flex;gap:16px"><span style="font-size:13px;color:#6A6F7B;width:44px;flex:none;padding-top:3px">11:52</span><div style="display:flex;flex-direction:column;gap:4px"><span style="font-size:14px;font-weight:600">Awa Example</span><p style="margin:0;font-family:Newsreader,Georgia,serif;font-size:19px;line-height:1.55;color:#2A2E37">So the question is whether we keep the field visits in this quarter or move them to January.</p></div></div>
+        <div style="display:flex;gap:16px"><span style="font-size:13px;color:#6A6F7B;width:44px;flex:none;padding-top:3px">12:09</span><div style="display:flex;flex-direction:column;gap:4px"><span style="font-size:14px;font-weight:600">Koffi Test</span><p style="margin:0;font-family:Newsreader,Georgia,serif;font-size:19px;line-height:1.55;color:#2A2E37">I would move them. We have not heard back from the funder, and I do not want to commit money we may not have.</p></div></div>
+        <div style="display:flex;gap:16px"><span style="font-size:13px;color:#6A6F7B;width:44px;flex:none;padding-top:3px">12:31</span><div style="display:flex;flex-direction:column;gap:4px"><span style="font-size:14px;font-weight:600">Nadia Demo</span><p style="margin:0;font-family:Newsreader,Georgia,serif;font-size:19px;line-height:1.55;color:#2A2E37">Agreed. We can still prepare the logistics now and release the budget once the funder confirms.</p></div></div>
+        <div style="display:flex;gap:16px"><span style="font-size:13px;color:#6A6F7B;width:44px;flex:none;padding-top:3px">12:44</span><div style="display:flex;flex-direction:column;gap:4px"><span style="font-size:14px;font-weight:600">Awa Example</span><p style="margin:0;font-family:Newsreader,Georgia,serif;font-size:19px;line-height:1.55;color:#2A2E37">Then that is decided. Koffi, can you</p><span style="display:inline-flex;gap:4px;padding-top:6px" aria-label="Transcribing"><span style="width:6px;height:6px;border-radius:50%;background:#1A5FD0"></span><span style="width:6px;height:6px;border-radius:50%;background:#7FA6E8"></span><span style="width:6px;height:6px;border-radius:50%;background:#C3D5F4"></span></span></div></div>
+      </div>
+    </main>
+
+    <aside aria-label="Notes so far" style="flex:1 1 320px;max-width:400px;min-width:280px;box-sizing:border-box;padding:40px 32px;border-left:1px solid #E7E4DE;display:flex;flex-direction:column;gap:24px;background:#fff">
+      <div style="display:flex;flex-direction:column;gap:6px">
+        <h2 style="margin:0;font-size:15px;font-weight:600">Noted so far</h2>
+        <span style="font-size:13px;line-height:1.5;color:#6A6F7B">A private scratchpad for you. The real minutes are written when you stop.</span>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <span style="font-size:13px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:#6A6F7B">Likely decision</span>
+        <div style="background:#FBFAF8;border:1px solid #E7E4DE;border-radius:12px;padding:14px;font-family:Newsreader,Georgia,serif;font-size:17px;line-height:1.5">Field visits move to January until the funder confirms.</div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <span style="font-size:13px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:#6A6F7B">Possible action</span>
+        <div style="background:#FFF8F3;border:1px solid #F5CBAE;border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:8px"><span style="font-family:Newsreader,Georgia,serif;font-size:17px;line-height:1.5">Koffi to prepare the logistics</span><span style="font-size:13px;color:#A8470F;font-weight:600">Deadline not specified yet</span></div>
+      </div>
+      <div style="margin-top:auto;font-size:13px;line-height:1.5;color:#6A6F7B;border-top:1px solid #E7E4DE;padding-top:16px">Everyone in the call was told the meeting is being transcribed.</div>
+    </aside>
+  </div>
+</div>
+</div></section>
+<section id="editor" class="screen" aria-label="Minutes"><div class="frame">
+
+<div style="width:100%;min-height:1180px;background:#FBFAF8;display:flex;flex-direction:column">
+  <header style="position:static;display:flex;flex-wrap:wrap;gap:16px;align-items:center;justify-content:space-between;padding:16px 40px;border-bottom:1px solid #E7E4DE;background:#FBFAF8">
+    <div style="display:flex;align-items:center;gap:16px;min-width:0">
+      <a href="#home" aria-label="Back to home" style="width:40px;height:40px;border-radius:10px;border:1px solid #E7E4DE;background:#fff;display:inline-flex;align-items:center;justify-content:center"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#16181D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg></a>
+      <span style="display:flex;flex-direction:column"><span style="font-size:14px;font-weight:600">Pilot committee</span><span style="font-size:13px;color:#6A6F7B">Yesterday · 42 min · Google Meet</span></span>
+      <span style="display:inline-flex;align-items:center;gap:8px;padding:5px 12px;border-radius:99px;background:#FEF0E6;color:#A8470F;font-size:13px;font-weight:600"><span style="width:7px;height:7px;border-radius:50%;background:#F26B21"></span>Draft by AI</span>
+    </div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap">
+      <a href="#editor" style="min-height:44px;padding:0 18px;display:inline-flex;align-items:center;border-radius:10px;background:#fff;border:1px solid #CFCBC3;box-sizing:border-box;font-size:15px;font-weight:500">Transcript</a>
+      <a href="#editor" style="min-height:44px;padding:0 20px;display:inline-flex;align-items:center;border-radius:10px;background:#1A5FD0;color:#fff;font-size:15px;font-weight:600">Validate minutes</a>
+    </div>
+  </header>
+
+  <div style="display:flex;flex-wrap:wrap;gap:0;flex:1">
+    <main style="flex:999 1 560px;min-width:0;box-sizing:border-box;padding:56px 40px 80px;display:flex;justify-content:center">
+      <article style="width:100%;max-width:720px;display:flex;flex-direction:column;gap:36px">
+        <div style="display:flex;flex-direction:column;gap:12px">
+          <h1 style="margin:0;font-family:Newsreader,Georgia,serif;font-weight:500;font-size:44px;line-height:1.1;letter-spacing:-0.015em">Pilot committee</h1>
+          <span style="font-size:15px;color:#6A6F7B">Wednesday 4 November · Awa Example, Koffi Test, Nadia Demo and 3 others</span>
+        </div>
+
+        <section aria-labelledby="sum" style="display:flex;flex-direction:column;gap:10px">
+          <h2 id="sum" style="margin:0;font-size:13px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:#6A6F7B">Summary</h2>
+          <p style="margin:0;font-family:Newsreader,Georgia,serif;font-size:20px;line-height:1.6;color:#2A2E37">The committee reviewed the pilot schedule and the budget gap. It agreed to start the pilot in March and to ask the funder for a one-month extension. Two risks remain open.</p>
+        </section>
+
+        <section aria-labelledby="dec" style="display:flex;flex-direction:column;gap:14px">
+          <h2 id="dec" style="margin:0;font-size:13px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:#6A6F7B">Decisions</h2>
+          <div style="display:flex;gap:16px;align-items:baseline"><span style="font-family:Newsreader,Georgia,serif;font-size:18px;color:#6A6F7B;width:24px;flex:none">1</span><div style="display:flex;flex-direction:column;gap:6px"><p style="margin:0;font-family:Newsreader,Georgia,serif;font-size:19px;line-height:1.55">The pilot starts in March instead of January.</p><a href="#editor" style="font-size:13px;color:#1A5FD0;font-weight:500">At 12:40 in the transcript</a></div></div>
+          <div style="display:flex;gap:16px;align-items:baseline"><span style="font-family:Newsreader,Georgia,serif;font-size:18px;color:#6A6F7B;width:24px;flex:none">2</span><div style="display:flex;flex-direction:column;gap:6px"><p style="margin:0;font-family:Newsreader,Georgia,serif;font-size:19px;line-height:1.55">The team asks the funder for a one-month extension.</p><a href="#editor" style="font-size:13px;color:#1A5FD0;font-weight:500">At 21:05 in the transcript</a></div></div>
+          <div style="display:flex;gap:16px;align-items:baseline"><span style="font-family:Newsreader,Georgia,serif;font-size:18px;color:#6A6F7B;width:24px;flex:none">3</span><div style="display:flex;flex-direction:column;gap:6px"><p style="margin:0;font-family:Newsreader,Georgia,serif;font-size:19px;line-height:1.55">Field visits are paused until the budget is confirmed.</p><a href="#editor" style="font-size:13px;color:#1A5FD0;font-weight:500">At 33:18 in the transcript</a></div></div>
+        </section>
+
+        <section aria-labelledby="actn" style="display:flex;flex-direction:column;gap:0">
+          <h2 id="actn" style="margin:0 0 6px;font-size:13px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:#6A6F7B">Actions</h2>
+          <div style="display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;padding:16px 0;border-top:1px solid #E7E4DE"><span style="font-family:Newsreader,Georgia,serif;font-size:18px;line-height:1.4;flex:1 1 300px">Confirm the budget with the funder</span><span style="display:flex;gap:8px;flex-wrap:wrap"><span style="padding:4px 12px;border-radius:99px;background:#EAF1FD;color:#0E3F94;font-size:13px;font-weight:600">Awa Example</span><span style="padding:4px 12px;border-radius:99px;background:#F1EFEA;color:#2A2E37;font-size:13px;font-weight:600">Friday 7 Nov</span></span></div>
+          <div style="display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;padding:16px 0;border-top:1px solid #E7E4DE"><span style="font-family:Newsreader,Georgia,serif;font-size:18px;line-height:1.4;flex:1 1 300px">Send the pilot calendar to partners</span><span style="display:flex;gap:8px;flex-wrap:wrap"><span style="padding:4px 12px;border-radius:99px;background:#EAF1FD;color:#0E3F94;font-size:13px;font-weight:600">Koffi Test</span><span style="padding:4px 12px;border-radius:99px;background:#F1EFEA;color:#2A2E37;font-size:13px;font-weight:600">12 Nov</span></span></div>
+          <div style="display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;padding:16px 16px;border-top:1px solid #F5CBAE;background:#FFF8F3;border-radius:12px;margin:2px 0"><span style="font-family:Newsreader,Georgia,serif;font-size:18px;line-height:1.4;flex:1 1 300px">Update the risk register</span><span style="display:flex;gap:8px;flex-wrap:wrap"><span style="padding:4px 12px;border-radius:99px;background:#EAF1FD;color:#0E3F94;font-size:13px;font-weight:600">Nadia Demo</span><a href="#editor" style="padding:4px 12px;border-radius:99px;border:1px dashed #D9702F;color:#A8470F;font-size:13px;font-weight:600">Add a deadline</a></span></div>
+          <div style="display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;padding:16px 16px;border-top:1px solid #F5CBAE;background:#FFF8F3;border-radius:12px;margin:2px 0"><span style="font-family:Newsreader,Georgia,serif;font-size:18px;line-height:1.4;flex:1 1 300px">Brief the field team on the pause</span><span style="display:flex;gap:8px;flex-wrap:wrap"><a href="#editor" style="padding:4px 12px;border-radius:99px;border:1px dashed #D9702F;color:#A8470F;font-size:13px;font-weight:600">Assign an owner</a><span style="padding:4px 12px;border-radius:99px;background:#F1EFEA;color:#2A2E37;font-size:13px;font-weight:600">Monday 10 Nov</span></span></div>
+          <div style="padding-top:2px;border-top:1px solid #E7E4DE"></div>
+        </section>
+      </article>
+    </main>
+
+    <aside aria-label="Review" style="flex:1 1 320px;max-width:380px;min-width:280px;box-sizing:border-box;padding:56px 32px;border-left:1px solid #E7E4DE;display:flex;flex-direction:column;gap:28px">
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <h2 style="margin:0;font-size:15px;font-weight:600">Before you validate</h2>
+        <div style="display:flex;gap:12px;align-items:flex-start;background:#FFF8F3;border:1px solid #F5CBAE;border-radius:12px;padding:14px"><span style="width:8px;height:8px;border-radius:50%;background:#F26B21;margin-top:7px;flex:none"></span><span style="font-size:14px;line-height:1.5;color:#2A2E37">One action has no deadline. Add one or confirm it stays open.</span></div>
+        <div style="display:flex;gap:12px;align-items:flex-start;background:#FFF8F3;border:1px solid #F5CBAE;border-radius:12px;padding:14px"><span style="width:8px;height:8px;border-radius:50%;background:#F26B21;margin-top:7px;flex:none"></span><span style="font-size:14px;line-height:1.5;color:#2A2E37">One action has no owner. Nobody was named in the meeting.</span></div>
+        <div style="display:flex;gap:12px;align-items:flex-start;padding:14px;border:1px solid #E7E4DE;border-radius:12px;background:#fff"><span style="width:8px;height:8px;border-radius:50%;background:#1A5FD0;margin-top:7px;flex:none"></span><span style="font-size:14px;line-height:1.5;color:#2A2E37">3 decisions checked against the transcript.</span></div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:10px;padding-top:24px;border-top:1px solid #E7E4DE">
+        <h2 style="margin:0;font-size:15px;font-weight:600">How this was made</h2>
+        <p style="margin:0;font-size:14px;line-height:1.6;color:#4B505C">Drafted by an AI model from the transcript. Every statement links to the moment it comes from. Nothing is shared until you validate.</p>
+      </div>
+      <a href="#editor" style="min-height:48px;display:flex;align-items:center;justify-content:center;border-radius:12px;background:#1A5FD0;color:#fff;font-size:15px;font-weight:600">Validate minutes</a>
+    </aside>
+  </div>
+</div>
+</div></section>
+<section id="actions" class="screen" aria-label="Actions"><div class="frame">
+
+<div style="width:100%;min-height:900px;display:flex;flex-wrap:wrap;background:#FBFAF8">
+  <nav aria-label="Main" style="flex:0 0 232px;box-sizing:border-box;padding:24px 16px;display:flex;flex-direction:column;gap:4px;border-right:1px solid #E7E4DE">
+    <div style="display:flex;align-items:center;gap:10px;padding:4px 12px 20px"><span style="width:28px;height:28px;border-radius:8px;background:#1A5FD0;display:inline-flex;align-items:center;justify-content:center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></span><span style="font-family:Newsreader,Georgia,serif;font-size:22px;font-weight:600">Baraza</span></div>
+    <a href="#home" style="min-height:40px;padding:0 12px;display:flex;align-items:center;border-radius:10px;color:#4B505C;font-size:15px">Home</a>
+    <a href="#library" style="min-height:40px;padding:0 12px;display:flex;align-items:center;border-radius:10px;color:#4B505C;font-size:15px">Meetings</a>
+    <a href="#actions" style="min-height:40px;padding:0 12px;display:flex;align-items:center;justify-content:space-between;border-radius:10px;background:#EAF1FD;color:#0E3F94;font-size:15px;font-weight:600"><span>Actions</span><span style="background:#FEF0E6;color:#A8470F;border-radius:99px;padding:1px 8px;font-size:12px;font-weight:600">7</span></a>
+    <a href="#series" style="min-height:40px;padding:0 12px;display:flex;align-items:center;border-radius:10px;color:#4B505C;font-size:15px">Series</a>
+    <a href="#search" style="min-height:40px;padding:0 12px;display:flex;align-items:center;border-radius:10px;color:#4B505C;font-size:15px">Search</a>
+    <div style="flex:1;min-height:40px"></div>
+    <a href="#settings" style="min-height:40px;padding:0 12px;display:flex;align-items:center;border-radius:10px;color:#4B505C;font-size:15px">Settings</a>
+    <div style="display:flex;align-items:center;gap:10px;padding:12px;border-top:1px solid #E7E4DE;margin-top:8px"><span style="width:32px;height:32px;border-radius:50%;background:#EAF1FD;color:#0E3F94;font-size:13px;font-weight:600;display:inline-flex;align-items:center;justify-content:center">AE</span><span style="display:flex;flex-direction:column"><span style="font-size:14px;font-weight:500">Awa Example</span><span style="font-size:12px;color:#6A6F7B">Association Demo</span></span></div>
+  </nav>
+  <main style="flex:999 1 560px;min-width:0;box-sizing:border-box;padding:48px 56px;display:flex;flex-direction:column;gap:32px">
+    <header style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:16px">
+      <h1 style="margin:0;font-family:Newsreader,Georgia,serif;font-weight:500;font-size:40px;letter-spacing:-0.01em">Actions</h1>
+      <div style="display:flex;gap:8px"><span style="min-height:40px;padding:0 16px;display:inline-flex;align-items:center;border-radius:99px;background:#16181D;color:#fff;font-size:14px;font-weight:500">Mine</span><span style="min-height:40px;padding:0 16px;display:inline-flex;align-items:center;border-radius:99px;background:#fff;border:1px solid #CFCBC3;box-sizing:border-box;font-size:14px;font-weight:500">Everyone</span></div>
+    </header>
+    <p style="margin:0;font-size:15px;color:#4B505C;max-width:560px;line-height:1.6">Only actions from validated minutes appear here. Drafts stay in their meeting until a person has read them.</p>
+
+    <section style="display:flex;flex-direction:column">
+      <span style="font-size:13px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:#A8470F;padding-bottom:8px">Due this week · 2</span>
+      <div style="display:flex;flex-wrap:wrap;gap:14px;align-items:center;padding:16px 0;border-top:1px solid #E7E4DE"><span style="width:22px;height:22px;border:1.5px solid #8A8F9B;border-radius:6px;box-sizing:border-box;flex:none"></span><span style="flex:1 1 280px;display:flex;flex-direction:column;gap:4px"><span style="font-family:Newsreader,Georgia,serif;font-size:19px">Confirm the budget with the funder</span><a href="#editor" style="font-size:13px;color:#1A5FD0;font-weight:500">Pilot committee</a></span><span style="padding:4px 12px;border-radius:99px;background:#FEF0E6;color:#A8470F;font-size:13px;font-weight:600">Friday</span></div>
+      <div style="display:flex;flex-wrap:wrap;gap:14px;align-items:center;padding:16px 0;border-top:1px solid #E7E4DE"><span style="width:22px;height:22px;border:1.5px solid #8A8F9B;border-radius:6px;box-sizing:border-box;flex:none"></span><span style="flex:1 1 280px;display:flex;flex-direction:column;gap:4px"><span style="font-family:Newsreader,Georgia,serif;font-size:19px">Share the Q4 budget summary</span><a href="#editor" style="font-size:13px;color:#1A5FD0;font-weight:500">Budget review Q4</a></span><span style="padding:4px 12px;border-radius:99px;background:#FEF0E6;color:#A8470F;font-size:13px;font-weight:600">Thursday</span></div>
+    </section>
+    <section style="display:flex;flex-direction:column">
+      <span style="font-size:13px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:#6A6F7B;padding-bottom:8px">Later · 3</span>
+      <div style="display:flex;flex-wrap:wrap;gap:14px;align-items:center;padding:16px 0;border-top:1px solid #E7E4DE"><span style="width:22px;height:22px;border:1.5px solid #8A8F9B;border-radius:6px;box-sizing:border-box;flex:none"></span><span style="flex:1 1 280px;display:flex;flex-direction:column;gap:4px"><span style="font-family:Newsreader,Georgia,serif;font-size:19px">Send the pilot calendar to partners</span><a href="#editor" style="font-size:13px;color:#1A5FD0;font-weight:500">Pilot committee</a></span><span style="padding:4px 12px;border-radius:99px;background:#F1EFEA;color:#2A2E37;font-size:13px;font-weight:600">12 Nov</span></div>
+      <div style="display:flex;flex-wrap:wrap;gap:14px;align-items:center;padding:16px 0;border-top:1px solid #E7E4DE"><span style="width:22px;height:22px;border:1.5px solid #8A8F9B;border-radius:6px;box-sizing:border-box;flex:none"></span><span style="flex:1 1 280px;display:flex;flex-direction:column;gap:4px"><span style="font-family:Newsreader,Georgia,serif;font-size:19px">Review the partner agreement</span><a href="#editor" style="font-size:13px;color:#1A5FD0;font-weight:500">Partner call, Kigali</a></span><span style="padding:4px 12px;border-radius:99px;background:#F1EFEA;color:#2A2E37;font-size:13px;font-weight:600">20 Nov</span></div>
+    </section>
+    <section style="display:flex;flex-direction:column">
+      <span style="font-size:13px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:#6A6F7B;padding-bottom:8px">No deadline · 2</span>
+      <div style="display:flex;flex-wrap:wrap;gap:14px;align-items:center;padding:16px 0;border-top:1px solid #E7E4DE"><span style="width:22px;height:22px;border:1.5px solid #8A8F9B;border-radius:6px;box-sizing:border-box;flex:none"></span><span style="flex:1 1 280px;display:flex;flex-direction:column;gap:4px"><span style="font-family:Newsreader,Georgia,serif;font-size:19px">Update the risk register</span><a href="#editor" style="font-size:13px;color:#1A5FD0;font-weight:500">Pilot committee</a></span><span style="padding:4px 12px;border-radius:99px;border:1px dashed #D9702F;color:#A8470F;font-size:13px;font-weight:600">Not specified</span></div>
+      <div style="display:flex;flex-wrap:wrap;gap:14px;align-items:center;padding:16px 0;border-top:1px solid #E7E4DE;border-bottom:1px solid #E7E4DE"><span style="width:22px;height:22px;border:1.5px solid #8A8F9B;border-radius:6px;box-sizing:border-box;flex:none"></span><span style="flex:1 1 280px;display:flex;flex-direction:column;gap:4px"><span style="font-family:Newsreader,Georgia,serif;font-size:19px">Draft the communications plan</span><a href="#editor" style="font-size:13px;color:#1A5FD0;font-weight:500">Communications sync</a></span><span style="padding:4px 12px;border-radius:99px;border:1px dashed #D9702F;color:#A8470F;font-size:13px;font-weight:600">Not specified</span></div>
+    </section>
+  </main>
+</div>
+</div></section>
+<section id="share" class="screen" aria-label="Share"><div class="frame">
+
+<div style="width:100%;min-height:900px;background:#FBFAF8;display:flex;flex-direction:column">
+  <header style="display:flex;flex-wrap:wrap;gap:16px;align-items:center;justify-content:space-between;padding:16px 40px;border-bottom:1px solid #E7E4DE">
+    <div style="display:flex;align-items:center;gap:16px">
+      <a href="#editor" aria-label="Back to the minutes" style="width:40px;height:40px;border-radius:10px;border:1px solid #E7E4DE;background:#fff;display:inline-flex;align-items:center;justify-content:center"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#16181D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg></a>
+      <span style="display:flex;flex-direction:column"><span style="font-size:14px;font-weight:600">Budget review Q4</span><span style="font-size:13px;color:#6A6F7B">Share and export</span></span>
+      <span style="display:inline-flex;align-items:center;gap:8px;padding:5px 12px;border-radius:99px;background:#EAF1FD;color:#0E3F94;font-size:13px;font-weight:600"><span style="width:7px;height:7px;border-radius:50%;background:#1A5FD0"></span>Validated by Awa Example</span>
+    </div>
+  </header>
+  <main style="flex:1;display:flex;justify-content:center;padding:56px 40px 80px;box-sizing:border-box">
+    <div style="width:100%;max-width:640px;display:flex;flex-direction:column;gap:36px">
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <h1 style="margin:0;font-family:Newsreader,Georgia,serif;font-weight:500;font-size:40px;line-height:1.15;letter-spacing:-0.01em">Share the minutes</h1>
+        <p style="margin:0;font-size:16px;line-height:1.6;color:#4B505C">People see the validated version. If you change the minutes later, they see the new version after you validate it again.</p>
+      </div>
+
+      <section aria-labelledby="who" style="display:flex;flex-direction:column;gap:12px">
+        <h2 id="who" style="margin:0;font-size:13px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:#6A6F7B">Who can read it</h2>
+        <label style="display:flex;gap:14px;align-items:flex-start;padding:16px;border:1px solid #CFCBC3;border-radius:14px;background:#fff"><input type="radio" name="aud" style="width:20px;height:20px;margin:2px 0 0;flex:none"><span style="display:flex;flex-direction:column;gap:2px"><span style="font-size:15px;font-weight:600">Only me</span><span style="font-size:14px;color:#6A6F7B">Nobody else can open it.</span></span></label>
+        <label style="display:flex;gap:14px;align-items:flex-start;padding:16px;border:2px solid #1A5FD0;border-radius:14px;background:#F5F9FF"><input type="radio" name="aud" checked style="width:20px;height:20px;margin:2px 0 0;flex:none"><span style="display:flex;flex-direction:column;gap:2px"><span style="font-size:15px;font-weight:600">Participants and my workspace</span><span style="font-size:14px;color:#4B505C">The 4 people in the call and members of Association Demo.</span></span></label>
+        <label style="display:flex;gap:14px;align-items:flex-start;padding:16px;border:1px solid #CFCBC3;border-radius:14px;background:#fff"><input type="radio" name="aud" style="width:20px;height:20px;margin:2px 0 0;flex:none"><span style="display:flex;flex-direction:column;gap:2px"><span style="font-size:15px;font-weight:600">Anyone with the link</span><span style="font-size:14px;color:#6A6F7B">Useful for partners. Anyone who has the link can read it.</span></span></label>
+      </section>
+
+      <section aria-labelledby="lnk" style="display:flex;flex-direction:column;gap:12px">
+        <h2 id="lnk" style="margin:0;font-size:13px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:#6A6F7B">Link</h2>
+        <div style="display:flex;flex-wrap:wrap;gap:10px">
+          <input type="text" readonly value="baraza.example/m/q4-budget-review" aria-label="Share link" style="flex:1 1 260px;min-height:48px;box-sizing:border-box;border:1px solid #CFCBC3;border-radius:12px;background:#F7F6F2;padding:0 16px;font:15px Inter,system-ui,sans-serif;color:#4B505C">
+          <a href="#share" style="min-height:48px;padding:0 22px;display:inline-flex;align-items:center;border-radius:12px;background:#1A5FD0;color:#fff;font-size:15px;font-weight:600">Copy link</a>
+        </div>
+      </section>
+
+      <section aria-labelledby="exp" style="display:flex;flex-direction:column;gap:0">
+        <h2 id="exp" style="margin:0 0 10px;font-size:13px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:#6A6F7B">Export</h2>
+        <a href="#share" style="display:flex;justify-content:space-between;align-items:center;padding:16px 0;border-top:1px solid #E7E4DE"><span style="font-size:15px;font-weight:500">PDF</span><span style="font-size:14px;color:#1A5FD0;font-weight:500">Download</span></a>
+        <a href="#share" style="display:flex;justify-content:space-between;align-items:center;padding:16px 0;border-top:1px solid #E7E4DE"><span style="font-size:15px;font-weight:500">Word</span><span style="font-size:14px;color:#1A5FD0;font-weight:500">Download</span></a>
+        <a href="#share" style="display:flex;justify-content:space-between;align-items:center;padding:16px 0;border-top:1px solid #E7E4DE;border-bottom:1px solid #E7E4DE"><span style="font-size:15px;font-weight:500">Markdown</span><span style="font-size:14px;color:#1A5FD0;font-weight:500">Download</span></a>
+      </section>
+
+      <div style="display:flex;gap:12px;align-items:flex-start;background:#F7F6F2;border-radius:12px;padding:16px;font-size:14px;line-height:1.55;color:#4B505C"><span style="width:8px;height:8px;border-radius:50%;background:#F26B21;margin-top:7px;flex:none"></span>A draft cannot be shared or exported. Only validated minutes can leave Baraza.</div>
+    </div>
+  </main>
+</div>
+</div></section>
+<section id="series" class="screen" aria-label="Series"><div class="frame">
+
+<div style="width:100%;min-height:900px;display:flex;flex-wrap:wrap;background:#FBFAF8">
+  <nav aria-label="Main" style="flex:0 0 232px;box-sizing:border-box;padding:24px 16px;display:flex;flex-direction:column;gap:4px;border-right:1px solid #E7E4DE">
+    <div style="display:flex;align-items:center;gap:10px;padding:4px 12px 20px"><span style="width:28px;height:28px;border-radius:8px;background:#1A5FD0;display:inline-flex;align-items:center;justify-content:center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></span><span style="font-family:Newsreader,Georgia,serif;font-size:22px;font-weight:600">Baraza</span></div>
+    <a href="#home" style="min-height:40px;padding:0 12px;display:flex;align-items:center;border-radius:10px;color:#4B505C;font-size:15px">Home</a>
+    <a href="#library" style="min-height:40px;padding:0 12px;display:flex;align-items:center;border-radius:10px;color:#4B505C;font-size:15px">Meetings</a>
+    <a href="#actions" style="min-height:40px;padding:0 12px;display:flex;align-items:center;justify-content:space-between;border-radius:10px;color:#4B505C;font-size:15px"><span>Actions</span><span style="background:#FEF0E6;color:#A8470F;border-radius:99px;padding:1px 8px;font-size:12px;font-weight:600">7</span></a>
+    <a href="#series" style="min-height:40px;padding:0 12px;display:flex;align-items:center;border-radius:10px;background:#EAF1FD;color:#0E3F94;font-size:15px;font-weight:600">Series</a>
+    <a href="#search" style="min-height:40px;padding:0 12px;display:flex;align-items:center;border-radius:10px;color:#4B505C;font-size:15px">Search</a>
+    <div style="flex:1;min-height:40px"></div>
+    <a href="#settings" style="min-height:40px;padding:0 12px;display:flex;align-items:center;border-radius:10px;color:#4B505C;font-size:15px">Settings</a>
+    <div style="display:flex;align-items:center;gap:10px;padding:12px;border-top:1px solid #E7E4DE;margin-top:8px"><span style="width:32px;height:32px;border-radius:50%;background:#EAF1FD;color:#0E3F94;font-size:13px;font-weight:600;display:inline-flex;align-items:center;justify-content:center">AE</span><span style="display:flex;flex-direction:column"><span style="font-size:14px;font-weight:500">Awa Example</span><span style="font-size:12px;color:#6A6F7B">Association Demo</span></span></div>
+  </nav>
+  <main style="flex:999 1 560px;min-width:0;box-sizing:border-box;padding:48px 56px;display:flex;flex-direction:column;gap:36px">
+    <header style="display:flex;flex-direction:column;gap:8px">
+      <span style="font-size:14px;color:#6A6F7B">Series · every Monday · 12 meetings</span>
+      <h1 style="margin:0;font-family:Newsreader,Georgia,serif;font-weight:500;font-size:40px;letter-spacing:-0.01em">Field team weekly</h1>
+    </header>
+
+    <section aria-labelledby="carry" style="background:#FFF8F3;border:1px solid #F5CBAE;border-radius:16px;padding:24px 28px;display:flex;flex-direction:column;gap:14px">
+      <span style="display:inline-flex;align-items:center;gap:8px;font-size:13px;font-weight:600;color:#A8470F"><span style="width:7px;height:7px;border-radius:50%;background:#F26B21"></span>Still open from earlier meetings</span>
+      <h2 id="carry" style="margin:0;font-family:Newsreader,Georgia,serif;font-weight:500;font-size:24px;line-height:1.3">Three actions have come back for the third week</h2>
+      <div style="display:flex;flex-direction:column;gap:0">
+        <div style="display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px;padding:12px 0;border-top:1px solid #F5CBAE"><span style="font-family:Newsreader,Georgia,serif;font-size:18px">Fix the data collection form</span><span style="font-size:14px;color:#A8470F;font-weight:500">Raised 3 times · Koffi Test</span></div>
+        <div style="display:flex;flex-wrap:wrap;justify-content:space-between;gap:10px;padding:12px 0;border-top:1px solid #F5CBAE"><span style="font-family:Newsreader,Georgia,serif;font-size:18px">Order the field kits</span><span style="font-size:14px;color:#A8470F;font-weight:500">Raised 3 times · Owner not specified</span></div>
+      </div>
+    </section>
+
+    <section aria-labelledby="hist" style="display:flex;flex-direction:column;gap:0">
+      <h2 id="hist" style="margin:0 0 10px;font-size:13px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:#6A6F7B">History</h2>
+      <a href="#editor" style="display:flex;gap:20px;padding:18px 0;border-top:1px solid #E7E4DE"><span style="width:84px;flex:none;font-size:14px;color:#6A6F7B;padding-top:3px">3 Nov</span><span style="flex:1;display:flex;flex-direction:column;gap:6px"><span style="font-family:Newsreader,Georgia,serif;font-size:19px;line-height:1.4">Field visits paused until the budget is confirmed.</span><span style="font-size:14px;color:#6A6F7B">1 decision · 3 actions</span></span><span style="padding:4px 12px;border-radius:99px;background:#FEF0E6;color:#A8470F;font-size:13px;font-weight:600;align-self:flex-start">Draft</span></a>
+      <a href="#editor" style="display:flex;gap:20px;padding:18px 0;border-top:1px solid #E7E4DE"><span style="width:84px;flex:none;font-size:14px;color:#6A6F7B;padding-top:3px">27 Oct</span><span style="flex:1;display:flex;flex-direction:column;gap:6px"><span style="font-family:Newsreader,Georgia,serif;font-size:19px;line-height:1.4">New data form adopted for all teams.</span><span style="font-size:14px;color:#6A6F7B">2 decisions · 4 actions</span></span><span style="padding:4px 12px;border-radius:99px;background:#EAF1FD;color:#0E3F94;font-size:13px;font-weight:600;align-self:flex-start">Validated</span></a>
+      <a href="#editor" style="display:flex;gap:20px;padding:18px 0;border-top:1px solid #E7E4DE;border-bottom:1px solid #E7E4DE"><span style="width:84px;flex:none;font-size:14px;color:#6A6F7B;padding-top:3px">20 Oct</span><span style="flex:1;display:flex;flex-direction:column;gap:6px"><span style="font-family:Newsreader,Georgia,serif;font-size:19px;line-height:1.4">Weekly report moves to Fridays.</span><span style="font-size:14px;color:#6A6F7B">1 decision · 2 actions</span></span><span style="padding:4px 12px;border-radius:99px;background:#EAF1FD;color:#0E3F94;font-size:13px;font-weight:600;align-self:flex-start">Validated</span></a>
+    </section>
+  </main>
+</div>
+</div></section>
+<section id="search" class="screen" aria-label="Search"><div class="frame">
+
+<div style="width:100%;min-height:900px;display:flex;flex-wrap:wrap;background:#FBFAF8">
+  <nav aria-label="Main" style="flex:0 0 232px;box-sizing:border-box;padding:24px 16px;display:flex;flex-direction:column;gap:4px;border-right:1px solid #E7E4DE">
+    <div style="display:flex;align-items:center;gap:10px;padding:4px 12px 20px"><span style="width:28px;height:28px;border-radius:8px;background:#1A5FD0;display:inline-flex;align-items:center;justify-content:center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></span><span style="font-family:Newsreader,Georgia,serif;font-size:22px;font-weight:600">Baraza</span></div>
+    <a href="#home" style="min-height:40px;padding:0 12px;display:flex;align-items:center;border-radius:10px;color:#4B505C;font-size:15px">Home</a>
+    <a href="#library" style="min-height:40px;padding:0 12px;display:flex;align-items:center;border-radius:10px;color:#4B505C;font-size:15px">Meetings</a>
+    <a href="#actions" style="min-height:40px;padding:0 12px;display:flex;align-items:center;justify-content:space-between;border-radius:10px;color:#4B505C;font-size:15px"><span>Actions</span><span style="background:#FEF0E6;color:#A8470F;border-radius:99px;padding:1px 8px;font-size:12px;font-weight:600">7</span></a>
+    <a href="#series" style="min-height:40px;padding:0 12px;display:flex;align-items:center;border-radius:10px;color:#4B505C;font-size:15px">Series</a>
+    <a href="#search" style="min-height:40px;padding:0 12px;display:flex;align-items:center;border-radius:10px;background:#EAF1FD;color:#0E3F94;font-size:15px;font-weight:600">Search</a>
+    <div style="flex:1;min-height:40px"></div>
+    <a href="#settings" style="min-height:40px;padding:0 12px;display:flex;align-items:center;border-radius:10px;color:#4B505C;font-size:15px">Settings</a>
+    <div style="display:flex;align-items:center;gap:10px;padding:12px;border-top:1px solid #E7E4DE;margin-top:8px"><span style="width:32px;height:32px;border-radius:50%;background:#EAF1FD;color:#0E3F94;font-size:13px;font-weight:600;display:inline-flex;align-items:center;justify-content:center">AE</span><span style="display:flex;flex-direction:column"><span style="font-size:14px;font-weight:500">Awa Example</span><span style="font-size:12px;color:#6A6F7B">Association Demo</span></span></div>
+  </nav>
+  <main style="flex:999 1 560px;min-width:0;box-sizing:border-box;padding:48px 56px;display:flex;flex-direction:column;gap:28px">
+    <h1 style="margin:0;font-family:Newsreader,Georgia,serif;font-weight:500;font-size:40px;letter-spacing:-0.01em">Search</h1>
+    <div style="display:flex;flex-direction:column;gap:12px;max-width:720px">
+      <label for="s" style="position:absolute;left:-9999px">Search everything said in your meetings</label>
+      <input id="s" type="text" value="funder extension" style="min-height:56px;box-sizing:border-box;border:2px solid #1A5FD0;border-radius:14px;background:#fff;padding:0 20px;font:17px Inter,system-ui,sans-serif">
+      <div style="display:flex;flex-wrap:wrap;gap:8px"><span style="min-height:36px;padding:0 14px;display:inline-flex;align-items:center;border-radius:99px;background:#16181D;color:#fff;font-size:14px;font-weight:500">Everything</span><span style="min-height:36px;padding:0 14px;display:inline-flex;align-items:center;border-radius:99px;background:#fff;border:1px solid #CFCBC3;box-sizing:border-box;font-size:14px;font-weight:500">Decisions</span><span style="min-height:36px;padding:0 14px;display:inline-flex;align-items:center;border-radius:99px;background:#fff;border:1px solid #CFCBC3;box-sizing:border-box;font-size:14px;font-weight:500">Actions</span><span style="min-height:36px;padding:0 14px;display:inline-flex;align-items:center;border-radius:99px;background:#fff;border:1px solid #CFCBC3;box-sizing:border-box;font-size:14px;font-weight:500">Transcripts</span></div>
+    </div>
+    <span style="font-size:14px;color:#6A6F7B">4 results in 3 validated meetings</span>
+    <section style="display:flex;flex-direction:column;max-width:720px">
+      <a href="#editor" style="display:flex;flex-direction:column;gap:6px;padding:18px 0;border-top:1px solid #E7E4DE"><span style="display:flex;flex-wrap:wrap;gap:10px;align-items:center"><span style="padding:3px 10px;border-radius:99px;background:#EAF1FD;color:#0E3F94;font-size:12px;font-weight:600">Decision</span><span style="font-size:13px;color:#6A6F7B">Pilot committee · 4 Nov</span></span><span style="font-family:Newsreader,Georgia,serif;font-size:20px;line-height:1.45">The team asks the <mark>funder</mark> for a one-month <mark>extension</mark>.</span></a>
+      <a href="#editor" style="display:flex;flex-direction:column;gap:6px;padding:18px 0;border-top:1px solid #E7E4DE"><span style="display:flex;flex-wrap:wrap;gap:10px;align-items:center"><span style="padding:3px 10px;border-radius:99px;background:#F1EFEA;color:#2A2E37;font-size:12px;font-weight:600">Transcript</span><span style="font-size:13px;color:#6A6F7B">Budget review Q4 · 3 Nov · 12:44</span></span><span style="font-family:Newsreader,Georgia,serif;font-size:20px;line-height:1.45">"We have not heard back from the <mark>funder</mark>, so an <mark>extension</mark> is the safest route."</span></a>
+      <a href="#editor" style="display:flex;flex-direction:column;gap:6px;padding:18px 0;border-top:1px solid #E7E4DE;border-bottom:1px solid #E7E4DE"><span style="display:flex;flex-wrap:wrap;gap:10px;align-items:center"><span style="padding:3px 10px;border-radius:99px;background:#FEF0E6;color:#A8470F;font-size:12px;font-weight:600">Action</span><span style="font-size:13px;color:#6A6F7B">Partner call, Kigali · 29 Oct</span></span><span style="font-family:Newsreader,Georgia,serif;font-size:20px;line-height:1.45">Send the <mark>funder</mark> the revised timeline.</span></a>
+    </section>
+    <div style="max-width:720px;background:#F7F6F2;border-radius:14px;padding:18px 20px;display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;align-items:center"><span style="font-size:14px;line-height:1.5;color:#4B505C">Asking questions in plain words, with answers from your meetings, comes later.</span><span style="padding:4px 12px;border-radius:99px;background:#fff;border:1px solid #E7E4DE;font-size:13px;font-weight:600;color:#4B505C">Next</span></div>
+  </main>
+</div>
+</div></section>
+<section id="settings" class="screen" aria-label="Settings"><div class="frame">
+
+<div style="width:100%;min-height:900px;display:flex;flex-wrap:wrap;background:#FBFAF8">
+  <nav aria-label="Main" style="flex:0 0 232px;box-sizing:border-box;padding:24px 16px;display:flex;flex-direction:column;gap:4px;border-right:1px solid #E7E4DE">
+    <div style="display:flex;align-items:center;gap:10px;padding:4px 12px 20px"><span style="width:28px;height:28px;border-radius:8px;background:#1A5FD0;display:inline-flex;align-items:center;justify-content:center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></span><span style="font-family:Newsreader,Georgia,serif;font-size:22px;font-weight:600">Baraza</span></div>
+    <a href="#home" style="min-height:40px;padding:0 12px;display:flex;align-items:center;border-radius:10px;color:#4B505C;font-size:15px">Home</a>
+    <a href="#library" style="min-height:40px;padding:0 12px;display:flex;align-items:center;border-radius:10px;color:#4B505C;font-size:15px">Meetings</a>
+    <a href="#actions" style="min-height:40px;padding:0 12px;display:flex;align-items:center;justify-content:space-between;border-radius:10px;color:#4B505C;font-size:15px"><span>Actions</span><span style="background:#FEF0E6;color:#A8470F;border-radius:99px;padding:1px 8px;font-size:12px;font-weight:600">7</span></a>
+    <a href="#series" style="min-height:40px;padding:0 12px;display:flex;align-items:center;border-radius:10px;color:#4B505C;font-size:15px">Series</a>
+    <a href="#search" style="min-height:40px;padding:0 12px;display:flex;align-items:center;border-radius:10px;color:#4B505C;font-size:15px">Search</a>
+    <div style="flex:1;min-height:40px"></div>
+    <a href="#settings" style="min-height:40px;padding:0 12px;display:flex;align-items:center;border-radius:10px;background:#EAF1FD;color:#0E3F94;font-size:15px;font-weight:600">Settings</a>
+    <div style="display:flex;align-items:center;gap:10px;padding:12px;border-top:1px solid #E7E4DE;margin-top:8px"><span style="width:32px;height:32px;border-radius:50%;background:#EAF1FD;color:#0E3F94;font-size:13px;font-weight:600;display:inline-flex;align-items:center;justify-content:center">AE</span><span style="display:flex;flex-direction:column"><span style="font-size:14px;font-weight:500">Awa Example</span><span style="font-size:12px;color:#6A6F7B">Association Demo</span></span></div>
+  </nav>
+  <main style="flex:999 1 560px;min-width:0;box-sizing:border-box;padding:48px 56px;display:flex;flex-direction:column;gap:40px">
+    <h1 style="margin:0;font-family:Newsreader,Georgia,serif;font-weight:500;font-size:40px;letter-spacing:-0.01em">Settings</h1>
+
+    <section aria-labelledby="conn" style="max-width:720px;display:flex;flex-direction:column;gap:0">
+      <h2 id="conn" style="margin:0 0 10px;font-size:13px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:#6A6F7B">Connections</h2>
+      <div style="display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;align-items:center;padding:18px 0;border-top:1px solid #E7E4DE"><span style="display:flex;flex-direction:column;gap:2px"><span style="font-size:15px;font-weight:600">Browser extension</span><span style="font-size:14px;color:#6A6F7B">Paired with Chrome on this computer</span></span><span style="display:inline-flex;align-items:center;gap:8px;padding:5px 12px;border-radius:99px;background:#EAF1FD;color:#0E3F94;font-size:13px;font-weight:600"><span style="width:7px;height:7px;border-radius:50%;background:#1A5FD0"></span>Connected</span></div>
+      <div style="display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;align-items:center;padding:18px 0;border-top:1px solid #E7E4DE;border-bottom:1px solid #E7E4DE"><span style="display:flex;flex-direction:column;gap:2px"><span style="font-size:15px;font-weight:600">Google Calendar</span><span style="font-size:14px;color:#6A6F7B">Join your meetings automatically</span></span><a href="#calendar" style="padding:5px 12px;border-radius:99px;background:#F1EFEA;color:#4B505C;font-size:13px;font-weight:600">Next</a></div>
+    </section>
+
+    <section aria-labelledby="asst" style="max-width:720px;display:flex;flex-direction:column;gap:18px">
+      <h2 id="asst" style="margin:0;font-size:13px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:#6A6F7B">The assistant in your calls</h2>
+      <div style="display:flex;flex-direction:column;gap:8px"><label for="nm" style="font-size:14px;font-weight:500">Name shown in the call</label><input id="nm" type="text" value="Baraza – note taker" style="min-height:48px;box-sizing:border-box;border:1px solid #CFCBC3;border-radius:12px;background:#fff;padding:0 16px;font:15px Inter,system-ui,sans-serif"></div>
+      <div style="display:flex;flex-direction:column;gap:8px"><label for="ann" style="font-size:14px;font-weight:500">Message sent in the call chat</label><textarea id="ann" rows="4" style="box-sizing:border-box;border:1px solid #CFCBC3;border-radius:12px;background:#fff;padding:14px 16px;font:15px/1.5 Inter,system-ui,sans-serif;resize:vertical">Hello, I am the note-taking assistant, started by {organizer}. This meeting is transcribed to prepare minutes. If you disagree, tell the organizer and I will leave.</textarea><span style="font-size:13px;color:#6A6F7B">The message must always say the meeting is transcribed. {organizer} is filled in for you.</span></div>
+    </section>
+
+    <section aria-labelledby="priv" style="max-width:720px;display:flex;flex-direction:column;gap:0">
+      <h2 id="priv" style="margin:0 0 10px;font-size:13px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:#6A6F7B">Data</h2>
+      <div style="display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;align-items:center;padding:18px 0;border-top:1px solid #E7E4DE"><span style="display:flex;flex-direction:column;gap:2px"><span style="font-size:15px;font-weight:600">Keep transcripts for</span><span style="font-size:14px;color:#6A6F7B">Validated minutes are kept until you delete them.</span></span><span style="min-height:44px;padding:0 16px;display:inline-flex;align-items:center;border-radius:10px;background:#fff;border:1px solid #CFCBC3;box-sizing:border-box;font-size:15px">90 days</span></div>
+      <div style="display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;align-items:center;padding:18px 0;border-top:1px solid #E7E4DE;border-bottom:1px solid #E7E4DE"><span style="display:flex;flex-direction:column;gap:2px"><span style="font-size:15px;font-weight:600">AI model</span><span style="font-size:14px;color:#6A6F7B">Minutes are drafted by an external model. Audio never leaves the transcription service.</span></span><span style="padding:5px 12px;border-radius:99px;background:#FEF0E6;color:#A8470F;font-size:13px;font-weight:600">External</span></div>
+    </section>
+    <div style="max-width:720px;display:flex;gap:12px"><a href="#settings" style="min-height:48px;padding:0 24px;display:inline-flex;align-items:center;border-radius:12px;background:#1A5FD0;color:#fff;font-size:15px;font-weight:600">Save changes</a></div>
+  </main>
+</div>
+</div></section>
+<section id="extension" class="screen" aria-label="Extension"><div class="frame">
+
+<div style="width:1280px;height:900px;box-sizing:border-box;display:flex;background:#1B1D22">
+  <section aria-label="Google Meet call" style="flex:1 1 0;min-width:0;padding:32px;box-sizing:border-box;display:flex;flex-direction:column;gap:16px;color:#E8EAED">
+    <div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:15px;font-weight:500">Budget review Q4</span><span style="background:#2B2E35;border-radius:99px;padding:5px 12px;font-size:13px;color:#C9CDD6">Illustration of Google Meet</span></div>
+    <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:repeat(2,minmax(0,1fr));gap:12px;flex:1">
+      <div style="background:#2B2E35;border-radius:16px;display:flex;align-items:center;justify-content:center;position:relative"><span style="width:72px;height:72px;border-radius:50%;background:#3E4350;display:inline-flex;align-items:center;justify-content:center;font-size:24px">AE</span><span style="position:absolute;left:14px;bottom:12px;font-size:14px">You</span></div>
+      <div style="background:#2B2E35;border-radius:16px;display:flex;align-items:center;justify-content:center;position:relative"><span style="width:72px;height:72px;border-radius:50%;background:#3E4350;display:inline-flex;align-items:center;justify-content:center;font-size:24px">KT</span><span style="position:absolute;left:14px;bottom:12px;font-size:14px">Koffi Test</span></div>
+      <div style="background:#2B2E35;border-radius:16px;display:flex;align-items:center;justify-content:center;position:relative"><span style="width:72px;height:72px;border-radius:50%;background:#3E4350;display:inline-flex;align-items:center;justify-content:center;font-size:24px">ND</span><span style="position:absolute;left:14px;bottom:12px;font-size:14px">Nadia Demo</span></div>
+      <div style="background:#2B2E35;border-radius:16px;border:2px dashed #4A4F5C;display:flex;align-items:center;justify-content:center;color:#9AA0AC;font-size:14px;text-align:center;padding:20px;box-sizing:border-box">The assistant will appear here once admitted</div>
+    </div>
+  </section>
+
+  <aside aria-label="Baraza" style="flex:0 0 400px;box-sizing:border-box;background:#FBFAF8;padding:28px 28px 32px;display:flex;flex-direction:column;gap:22px;border-left:1px solid #E7E4DE">
+    <div style="display:flex;align-items:center;justify-content:space-between">
+      <div style="display:flex;align-items:center;gap:10px"><span style="width:28px;height:28px;border-radius:8px;background:#1A5FD0;display:inline-flex;align-items:center;justify-content:center"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></span><span style="font-family:Newsreader,Georgia,serif;font-size:22px;font-weight:600">Baraza</span></div>
+      <span style="font-size:13px;color:#6A6F7B">awa@association.org</span>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <h1 style="margin:0;font-family:Newsreader,Georgia,serif;font-weight:500;font-size:28px;line-height:1.2">Take notes for this meeting?</h1>
+      <p style="margin:0;font-size:15px;line-height:1.55;color:#4B505C">Baraza sends an assistant into the call. It listens, then drafts the minutes for you to review.</p>
+    </div>
+
+    <div style="background:#fff;border:1px solid #E7E4DE;border-radius:16px;padding:18px;display:flex;flex-direction:column;gap:12px">
+      <span style="font-size:13px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:#6A6F7B">What will happen</span>
+      <div style="display:flex;gap:12px;font-size:14px;line-height:1.5"><span style="font-weight:600;color:#1A5FD0;width:14px">1</span><span>An assistant named "Baraza – note taker" asks to join. You admit it.</span></div>
+      <div style="display:flex;gap:12px;font-size:14px;line-height:1.5"><span style="font-weight:600;color:#1A5FD0;width:14px">2</span><span>It tells everyone in the chat that the meeting is transcribed.</span></div>
+      <div style="display:flex;gap:12px;font-size:14px;line-height:1.5"><span style="font-weight:600;color:#1A5FD0;width:14px">3</span><span>You stop it, or it leaves when the call ends. Minutes appear in Baraza.</span></div>
+    </div>
+
+    <label style="display:flex;gap:12px;align-items:flex-start;font-size:14px;line-height:1.5;color:#2A2E37"><input type="checkbox" style="width:20px;height:20px;margin:1px 0 0;flex:none">I have told the participants that this meeting is transcribed.</label>
+
+    <button type="button" style="min-height:52px;border:0;border-radius:12px;background:#1A5FD0;color:#fff;font:600 16px Inter,system-ui,sans-serif;display:flex;align-items:center;justify-content:center;gap:10px"><span style="width:8px;height:8px;border-radius:50%;background:#fff"></span>Send the assistant</button>
+
+    <div style="margin-top:auto;display:flex;flex-direction:column;gap:8px;border-top:1px solid #E7E4DE;padding-top:16px">
+      <span style="font-size:13px;line-height:1.5;color:#6A6F7B">The extension only starts and stops the assistant. It never records audio from your browser.</span>
+      <span style="font-size:13px;font-weight:500;color:#1A5FD0">Open Baraza</span>
+    </div>
+  </aside>
+</div>
+</div></section>
+<section id="assistant" class="screen" aria-label="Assistant in the call"><div class="frame">
+
+<div style="width:1280px;height:900px;box-sizing:border-box;display:flex;background:#FBFAF8">
+  <section aria-labelledby="callh" style="flex:1 1 0;min-width:0;background:#1B1D22;color:#E8EAED;padding:32px;box-sizing:border-box;display:flex;flex-direction:column;gap:20px">
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:12px">
+      <h1 id="callh" style="margin:0;font-size:16px;font-weight:600">What everyone sees in the call</h1>
+      <span style="background:#2B2E35;border-radius:99px;padding:5px 12px;font-size:13px;color:#C9CDD6">Illustration, not the video tool's real interface</span>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:repeat(2,minmax(0,1fr));gap:12px;flex:1">
+      <div style="background:#2B2E35;border-radius:16px;display:flex;align-items:center;justify-content:center;position:relative"><span style="width:76px;height:76px;border-radius:50%;background:#3E4350;display:inline-flex;align-items:center;justify-content:center;font-size:26px;font-weight:500">AE</span><span style="position:absolute;left:14px;bottom:12px;font-size:14px">Awa Example</span></div>
+      <div style="background:#2B2E35;border-radius:16px;display:flex;align-items:center;justify-content:center;position:relative"><span style="width:76px;height:76px;border-radius:50%;background:#3E4350;display:inline-flex;align-items:center;justify-content:center;font-size:26px;font-weight:500">KT</span><span style="position:absolute;left:14px;bottom:12px;font-size:14px">Koffi Test</span></div>
+      <div style="background:#2B2E35;border-radius:16px;display:flex;align-items:center;justify-content:center;position:relative"><span style="width:76px;height:76px;border-radius:50%;background:#3E4350;display:inline-flex;align-items:center;justify-content:center;font-size:26px;font-weight:500">ND</span><span style="position:absolute;left:14px;bottom:12px;font-size:14px">Nadia Demo</span></div>
+      <div style="background:#0B1B3F;border-radius:16px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;position:relative;box-shadow:inset 0 0 0 2px #1A5FD0">
+        <span style="width:88px;height:88px;border-radius:50%;background:#1A5FD0;display:inline-flex;align-items:center;justify-content:center"><svg width="46" height="46" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></span>
+        <span style="font-size:15px;font-weight:600;color:#fff">Baraza – note taker</span>
+        <span style="display:inline-flex;align-items:center;gap:8px;background:#fff;color:#0E3F94;border-radius:99px;padding:5px 14px;font-size:13px;font-weight:600"><span style="width:8px;height:8px;border-radius:50%;background:#1A5FD0"></span>Transcribing</span>
+      </div>
+    </div>
+    <p style="margin:0;font-size:14px;line-height:1.6;color:#C9CDD6">The assistant always appears as a participant with its own name and a blue tile. It has no camera, no microphone, never speaks, and does not recognise anyone by voice.</p>
+  </section>
+
+  <aside style="flex:0 0 440px;box-sizing:border-box;padding:32px;display:flex;flex-direction:column;gap:20px;overflow:hidden">
+    <div style="background:#fff;border:1px solid #E7E4DE;border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:14px">
+      <span style="font-size:13px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:#6A6F7B">1 · Asking to join</span>
+      <div style="display:flex;gap:12px;align-items:center"><span style="width:40px;height:40px;border-radius:50%;background:#1A5FD0;display:inline-flex;align-items:center;justify-content:center;flex:none"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></span><span style="font-size:14px;line-height:1.45"><b style="font-weight:600">Baraza – note taker</b> wants to join, started by Awa Example. Nothing is recorded until you admit it.</span></div>
+      <div style="display:flex;gap:10px"><span style="min-height:44px;flex:1;display:flex;align-items:center;justify-content:center;border-radius:10px;background:#1A5FD0;color:#fff;font-size:15px;font-weight:600">Admit</span><span style="min-height:44px;flex:1;display:flex;align-items:center;justify-content:center;border-radius:10px;border:1px solid #CFCBC3;box-sizing:border-box;font-size:15px;font-weight:500">Deny</span></div>
+    </div>
+    <div style="background:#fff;border:1px solid #E7E4DE;border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:12px">
+      <span style="font-size:13px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:#6A6F7B">2 · Said in the call chat</span>
+      <div style="background:#EAF1FD;border-radius:12px;padding:14px;font-size:14px;line-height:1.6;color:#0E3F94"><b style="font-weight:600">Baraza</b><br>Hello, I am the note-taking assistant, started by Awa Example. This meeting is transcribed to prepare minutes. If you disagree, tell the organizer and I will leave. A person reviews the minutes before anything is shared.</div>
+      <div style="background:#F1EFEA;border-radius:12px;padding:14px;font-size:14px;line-height:1.6;color:#2A2E37"><b style="font-weight:600">Baraza, at the end</b><br>Transcription has stopped and I have left. Awa Example will review the draft minutes.</div>
+    </div>
+    <div style="background:#fff;border:1px solid #E7E4DE;border-radius:16px;padding:20px;display:flex;flex-direction:column;gap:10px">
+      <span style="font-size:13px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:#6A6F7B">3 · Behaviour</span>
+      <div style="display:flex;justify-content:space-between;gap:12px;font-size:14px"><span style="color:#6A6F7B">States</span><span>Waiting, transcribing, left</span></div>
+      <div style="display:flex;justify-content:space-between;gap:12px;font-size:14px"><span style="color:#6A6F7B">Camera and microphone</span><span>Always off</span></div>
+      <div style="display:flex;justify-content:space-between;gap:12px;font-size:14px"><span style="color:#6A6F7B">Leaves when</span><span style="text-align:right">Stopped, denied or removed</span></div>
+    </div>
+  </aside>
+</div>
+</div></section>
+<section id="calendar" class="screen" aria-label="Calendar (next)"><div class="frame">
+
+<div style="width:100%;min-height:900px;background:#FBFAF8;display:flex;flex-direction:column">
+  <header style="display:flex;align-items:center;gap:16px;padding:16px 40px;border-bottom:1px solid #E7E4DE">
+    <a href="#settings" aria-label="Back to settings" style="width:40px;height:40px;border-radius:10px;border:1px solid #E7E4DE;background:#fff;display:inline-flex;align-items:center;justify-content:center"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#16181D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg></a>
+    <span style="font-size:14px;font-weight:600">Settings</span>
+    <span style="padding:4px 12px;border-radius:99px;background:#F1EFEA;color:#4B505C;font-size:13px;font-weight:600">Next</span>
+  </header>
+  <main style="flex:1;display:flex;justify-content:center;padding:56px 40px 80px;box-sizing:border-box">
+    <div style="width:100%;max-width:680px;display:flex;flex-direction:column;gap:32px">
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <h1 style="margin:0;font-family:Newsreader,Georgia,serif;font-weight:500;font-size:40px;line-height:1.15;letter-spacing:-0.01em">Let the assistant join for you</h1>
+        <p style="margin:0;font-size:16px;line-height:1.6;color:#4B505C">Connect Google Calendar and the assistant joins your Google Meet calls on its own. You can switch any meeting off.</p>
+      </div>
+      <section aria-labelledby="rule" style="display:flex;flex-direction:column;gap:10px">
+        <h2 id="rule" style="margin:0;font-size:13px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:#6A6F7B">Which meetings</h2>
+        <label style="display:flex;gap:14px;align-items:flex-start;padding:16px;border:2px solid #1A5FD0;border-radius:14px;background:#F5F9FF"><input type="radio" name="r" checked style="width:20px;height:20px;margin:2px 0 0;flex:none"><span style="display:flex;flex-direction:column;gap:2px"><span style="font-size:15px;font-weight:600">Only meetings I organize</span><span style="font-size:14px;color:#4B505C">Safest. Others in the call are never surprised by a guest.</span></span></label>
+        <label style="display:flex;gap:14px;align-items:flex-start;padding:16px;border:1px solid #CFCBC3;border-radius:14px;background:#fff"><input type="radio" name="r" style="width:20px;height:20px;margin:2px 0 0;flex:none"><span style="display:flex;flex-direction:column;gap:2px"><span style="font-size:15px;font-weight:600">All meetings with a Meet link</span><span style="font-size:14px;color:#6A6F7B">Including those organized by someone else.</span></span></label>
+      </section>
+      <section aria-labelledby="up" style="display:flex;flex-direction:column">
+        <h2 id="up" style="margin:0 0 10px;font-size:13px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:#6A6F7B">Coming up</h2>
+        <div style="display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;align-items:center;padding:16px 0;border-top:1px solid #E7E4DE"><span style="display:flex;flex-direction:column;gap:2px"><span style="font-family:Newsreader,Georgia,serif;font-size:19px;font-weight:500">Pilot committee</span><span style="font-size:14px;color:#6A6F7B">Tomorrow 10:00 · 6 people</span></span><span style="display:inline-flex;align-items:center;gap:10px;font-size:14px;font-weight:500"><span style="width:44px;height:26px;border-radius:99px;background:#1A5FD0;display:inline-flex;align-items:center;justify-content:flex-end;padding:0 3px;box-sizing:border-box"><span style="width:20px;height:20px;border-radius:50%;background:#fff"></span></span>Assistant joins</span></div>
+        <div style="display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;align-items:center;padding:16px 0;border-top:1px solid #E7E4DE"><span style="display:flex;flex-direction:column;gap:2px"><span style="font-family:Newsreader,Georgia,serif;font-size:19px;font-weight:500">One-to-one with Koffi</span><span style="font-size:14px;color:#6A6F7B">Thursday 14:00 · 2 people</span></span><span style="display:inline-flex;align-items:center;gap:10px;font-size:14px;font-weight:500;color:#6A6F7B"><span style="width:44px;height:26px;border-radius:99px;background:#CFCBC3;display:inline-flex;align-items:center;justify-content:flex-start;padding:0 3px;box-sizing:border-box"><span style="width:20px;height:20px;border-radius:50%;background:#fff"></span></span>Off</span></div>
+        <div style="display:flex;flex-wrap:wrap;gap:12px;justify-content:space-between;align-items:center;padding:16px 0;border-top:1px solid #E7E4DE;border-bottom:1px solid #E7E4DE"><span style="display:flex;flex-direction:column;gap:2px"><span style="font-family:Newsreader,Georgia,serif;font-size:19px;font-weight:500">Field team weekly</span><span style="font-size:14px;color:#6A6F7B">Monday 09:00 · every week</span></span><span style="display:inline-flex;align-items:center;gap:10px;font-size:14px;font-weight:500"><span style="width:44px;height:26px;border-radius:99px;background:#1A5FD0;display:inline-flex;align-items:center;justify-content:flex-end;padding:0 3px;box-sizing:border-box"><span style="width:20px;height:20px;border-radius:50%;background:#fff"></span></span>Assistant joins</span></div>
+      </section>
+      <div style="display:flex;gap:12px;align-items:flex-start;background:#FFF8F3;border:1px solid #F5CBAE;border-radius:12px;padding:16px;font-size:14px;line-height:1.55;color:#2A2E37"><span style="width:8px;height:8px;border-radius:50%;background:#F26B21;margin-top:7px;flex:none"></span>The assistant always announces itself in the call chat and waits to be admitted. Auto-join never hides it.</div>
+    </div>
+  </main>
+</div>
+</div></section>
+<section id="integrations" class="screen" aria-label="Teams and Zoom (next)"><div class="frame">
+
+<div style="width:100%;min-height:900px;background:#FBFAF8;display:flex;flex-direction:column">
+  <header style="display:flex;align-items:center;gap:16px;padding:16px 40px;border-bottom:1px solid #E7E4DE">
+    <a href="#settings" aria-label="Back to settings" style="width:40px;height:40px;border-radius:10px;border:1px solid #E7E4DE;background:#fff;display:inline-flex;align-items:center;justify-content:center"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#16181D" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg></a>
+    <span style="font-size:14px;font-weight:600">Settings</span>
+    <span style="padding:4px 12px;border-radius:99px;background:#F1EFEA;color:#4B505C;font-size:13px;font-weight:600">Next</span>
+  </header>
+  <main style="flex:1;display:flex;justify-content:center;padding:56px 40px 80px;box-sizing:border-box">
+    <div style="width:100%;max-width:760px;display:flex;flex-direction:column;gap:32px">
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <h1 style="margin:0;font-family:Newsreader,Georgia,serif;font-weight:500;font-size:40px;line-height:1.15;letter-spacing:-0.01em">More places for the assistant</h1>
+        <p style="margin:0;font-size:16px;line-height:1.6;color:#4B505C">Baraza starts with Google Meet. The same assistant, with the same rules, will join other video tools.</p>
+      </div>
+      <section style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px">
+        <div style="background:#fff;border:1px solid #E7E4DE;border-radius:16px;padding:24px;display:flex;flex-direction:column;gap:14px">
+          <div style="display:flex;justify-content:space-between;align-items:center"><span style="font-family:Newsreader,Georgia,serif;font-size:22px;font-weight:500">Google Meet</span><span style="display:inline-flex;align-items:center;gap:8px;padding:4px 12px;border-radius:99px;background:#EAF1FD;color:#0E3F94;font-size:13px;font-weight:600"><span style="width:7px;height:7px;border-radius:50%;background:#1A5FD0"></span>Available</span></div>
+          <span style="font-size:14px;line-height:1.5;color:#4B505C">Start from the extension. Calendar auto-join comes next.</span>
+        </div>
+        <div style="background:#fff;border:1px solid #E7E4DE;border-radius:16px;padding:24px;display:flex;flex-direction:column;gap:14px">
+          <div style="display:flex;justify-content:space-between;align-items:center"><span style="font-family:Newsreader,Georgia,serif;font-size:22px;font-weight:500">Microsoft Teams</span><span style="padding:4px 12px;border-radius:99px;background:#F1EFEA;color:#4B505C;font-size:13px;font-weight:600">Next</span></div>
+          <span style="font-size:14px;line-height:1.5;color:#4B505C">Same assistant, same announcement, same review step.</span>
+          <a href="#integrations" style="min-height:44px;display:flex;align-items:center;justify-content:center;border-radius:10px;border:1px solid #CFCBC3;box-sizing:border-box;font-size:15px;font-weight:500">Tell me when it is ready</a>
+        </div>
+        <div style="background:#fff;border:1px solid #E7E4DE;border-radius:16px;padding:24px;display:flex;flex-direction:column;gap:14px">
+          <div style="display:flex;justify-content:space-between;align-items:center"><span style="font-family:Newsreader,Georgia,serif;font-size:22px;font-weight:500">Zoom</span><span style="padding:4px 12px;border-radius:99px;background:#F1EFEA;color:#4B505C;font-size:13px;font-weight:600">Next</span></div>
+          <span style="font-size:14px;line-height:1.5;color:#4B505C">Same assistant, same announcement, same review step.</span>
+          <a href="#integrations" style="min-height:44px;display:flex;align-items:center;justify-content:center;border-radius:10px;border:1px solid #CFCBC3;box-sizing:border-box;font-size:15px;font-weight:500">Tell me when it is ready</a>
+        </div>
+      </section>
+    </div>
+  </main>
+</div>
+</div></section>
+<section id="empty" class="screen" aria-label="Empty states"><div class="frame">
+
+<div style="width:1280px;height:900px;box-sizing:border-box;background:#FBFAF8;padding:48px 56px;display:flex;flex-direction:column;gap:32px">
+  <div style="display:flex;flex-direction:column;gap:8px">
+    <span style="font-size:13px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:#6A6F7B">Empty states</span>
+    <h1 style="margin:0;font-family:Newsreader,Georgia,serif;font-weight:500;font-size:36px;letter-spacing:-0.01em">When there is nothing to show yet</h1>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-template-rows:repeat(2,minmax(0,1fr));gap:20px;flex:1">
+
+    <div style="background:#fff;border:1px solid #E7E4DE;border-radius:16px;padding:28px;display:flex;flex-direction:column;gap:12px">
+      <span style="font-size:12px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:#6A6F7B">Home, first visit</span>
+      <span style="width:48px;height:48px;border-radius:50%;background:#EAF1FD;display:inline-flex;align-items:center;justify-content:center"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1A5FD0" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v3"/></svg></span>
+      <h2 style="margin:0;font-family:Newsreader,Georgia,serif;font-weight:500;font-size:24px;line-height:1.25">Your first meeting will show up here</h2>
+      <p style="margin:0;font-size:14px;line-height:1.6;color:#4B505C">Open a Google Meet and send the assistant from the extension. The minutes appear when the call ends.</p>
+      <span style="margin-top:auto;min-height:44px;padding:0 18px;display:inline-flex;align-items:center;align-self:flex-start;border-radius:10px;background:#1A5FD0;color:#fff;font-size:15px;font-weight:600">How to start it</span>
+    </div>
+
+    <div style="background:#fff;border:1px solid #E7E4DE;border-radius:16px;padding:28px;display:flex;flex-direction:column;gap:12px">
+      <span style="font-size:12px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:#6A6F7B">Library, no results</span>
+      <h2 style="margin:0;font-family:Newsreader,Georgia,serif;font-weight:500;font-size:24px;line-height:1.25">Nothing matches "budget 2019"</h2>
+      <p style="margin:0;font-size:14px;line-height:1.6;color:#4B505C">Search covers titles, people and what was said in validated meetings. Drafts are not searched.</p>
+      <span style="margin-top:auto;min-height:44px;padding:0 18px;display:inline-flex;align-items:center;align-self:flex-start;border-radius:10px;background:#fff;border:1px solid #CFCBC3;box-sizing:border-box;font-size:15px;font-weight:500">Clear search</span>
+    </div>
+
+    <div style="background:#fff;border:1px solid #E7E4DE;border-radius:16px;padding:28px;display:flex;flex-direction:column;gap:12px">
+      <span style="font-size:12px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:#6A6F7B">Actions, all done</span>
+      <span style="width:48px;height:48px;border-radius:50%;background:#EAF1FD;display:inline-flex;align-items:center;justify-content:center"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1A5FD0" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5 9-10"/></svg></span>
+      <h2 style="margin:0;font-family:Newsreader,Georgia,serif;font-weight:500;font-size:24px;line-height:1.25">Nothing left on your list</h2>
+      <p style="margin:0;font-size:14px;line-height:1.6;color:#4B505C">Every action from validated meetings is done. New ones appear after the next review.</p>
+    </div>
+
+    <div style="background:#fff;border:1px solid #E7E4DE;border-radius:16px;padding:28px;display:flex;flex-direction:column;gap:12px">
+      <span style="font-size:12px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:#6A6F7B">Minutes, being written</span>
+      <span style="display:inline-flex;gap:6px;padding:8px 0" aria-hidden="true"><span style="width:10px;height:10px;border-radius:50%;background:#1A5FD0"></span><span style="width:10px;height:10px;border-radius:50%;background:#7FA6E8"></span><span style="width:10px;height:10px;border-radius:50%;background:#C3D5F4"></span></span>
+      <h2 style="margin:0;font-family:Newsreader,Georgia,serif;font-weight:500;font-size:24px;line-height:1.25">Writing the minutes</h2>
+      <p style="margin:0;font-size:14px;line-height:1.6;color:#4B505C">The call ended at 11:42. This usually takes under a minute. You can leave this page; we will tell you when the draft is ready.</p>
+      <span style="margin-top:auto;min-height:44px;padding:0 18px;display:inline-flex;align-items:center;align-self:flex-start;border-radius:10px;background:#fff;border:1px solid #CFCBC3;box-sizing:border-box;font-size:15px;font-weight:500">Read the transcript meanwhile</span>
+    </div>
+
+    <div style="background:#fff;border:1px solid #E7E4DE;border-radius:16px;padding:28px;display:flex;flex-direction:column;gap:12px">
+      <span style="font-size:12px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:#6A6F7B">Live, nobody has spoken</span>
+      <span style="display:inline-flex;align-items:center;gap:8px;align-self:flex-start;padding:5px 12px;border-radius:99px;background:#16181D;color:#fff;font-size:13px;font-weight:600"><span style="width:7px;height:7px;border-radius:50%;background:#F26B21"></span>Live · 00:42</span>
+      <h2 style="margin:0;font-family:Newsreader,Georgia,serif;font-weight:500;font-size:24px;line-height:1.25">Listening</h2>
+      <p style="margin:0;font-size:14px;line-height:1.6;color:#4B505C">The assistant is in the call. The transcript starts as soon as someone speaks.</p>
+    </div>
+
+    <div style="background:#fff;border:1px solid #E7E4DE;border-radius:16px;padding:28px;display:flex;flex-direction:column;gap:12px">
+      <span style="font-size:12px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:#6A6F7B">Series, first meeting only</span>
+      <h2 style="margin:0;font-family:Newsreader,Georgia,serif;font-weight:500;font-size:24px;line-height:1.25">A series needs two meetings</h2>
+      <p style="margin:0;font-size:14px;line-height:1.6;color:#4B505C">When the same call happens again, Baraza groups the meetings and shows actions that keep coming back.</p>
+    </div>
+
+  </div>
+</div>
+</div></section>
+<section id="errors" class="screen" aria-label="Errors"><div class="frame">
+
+<div style="width:1280px;height:900px;box-sizing:border-box;background:#FBFAF8;padding:48px 56px;display:flex;flex-direction:column;gap:32px">
+  <div style="display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:16px">
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <span style="font-size:13px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:#6A6F7B">Errors and recovery</span>
+      <h1 style="margin:0;font-family:Newsreader,Georgia,serif;font-weight:500;font-size:36px;letter-spacing:-0.01em">When something goes wrong, say what and what next</h1>
+    </div>
+    <span style="font-size:14px;line-height:1.5;color:#4B505C;max-width:340px;text-align:right">Plain words, no codes. Say whether anything was lost. Always offer one next step.</span>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-template-rows:repeat(2,minmax(0,1fr));gap:20px;flex:1">
+
+    <div style="background:#fff;border:1px solid #F5CBAE;border-radius:16px;padding:28px;display:flex;flex-direction:column;gap:12px">
+      <span style="font-size:12px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:#A8470F">Extension · not admitted</span>
+      <h2 style="margin:0;font-family:Newsreader,Georgia,serif;font-weight:500;font-size:24px;line-height:1.25">The assistant was not let in</h2>
+      <p style="margin:0;font-size:14px;line-height:1.6;color:#4B505C">Nobody admitted it within 5 minutes, or it was denied. Nothing was recorded.</p>
+      <span style="margin-top:auto;min-height:44px;padding:0 18px;display:inline-flex;align-items:center;align-self:flex-start;border-radius:10px;background:#1A5FD0;color:#fff;font-size:15px;font-weight:600">Try again</span>
+    </div>
+
+    <div style="background:#fff;border:1px solid #F5CBAE;border-radius:16px;padding:28px;display:flex;flex-direction:column;gap:12px">
+      <span style="font-size:12px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:#A8470F">Extension · cannot join</span>
+      <h2 style="margin:0;font-family:Newsreader,Georgia,serif;font-weight:500;font-size:24px;line-height:1.25">This call cannot be joined</h2>
+      <p style="margin:0;font-size:14px;line-height:1.6;color:#4B505C">The meeting has ended or the link is not a Google Meet call. Check the link and try again.</p>
+      <span style="margin-top:auto;min-height:44px;padding:0 18px;display:inline-flex;align-items:center;align-self:flex-start;border-radius:10px;background:#fff;border:1px solid #CFCBC3;box-sizing:border-box;font-size:15px;font-weight:500">Back to the call</span>
+    </div>
+
+    <div style="background:#fff;border:1px solid #F5CBAE;border-radius:16px;padding:28px;display:flex;flex-direction:column;gap:12px">
+      <span style="font-size:12px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:#A8470F">First start · code expired</span>
+      <h2 style="margin:0;font-family:Newsreader,Georgia,serif;font-weight:500;font-size:24px;line-height:1.25">This code is no longer valid</h2>
+      <p style="margin:0;font-size:14px;line-height:1.6;color:#4B505C">Codes last 10 minutes and work once. Get a new one and enter it in the extension.</p>
+      <span style="margin-top:auto;min-height:44px;padding:0 18px;display:inline-flex;align-items:center;align-self:flex-start;border-radius:10px;background:#1A5FD0;color:#fff;font-size:15px;font-weight:600">Get a new code</span>
+    </div>
+
+    <div style="background:#fff;border:1px solid #F5CBAE;border-radius:16px;padding:28px;display:flex;flex-direction:column;gap:12px">
+      <span style="font-size:12px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:#A8470F">Minutes · could not be written</span>
+      <h2 style="margin:0;font-family:Newsreader,Georgia,serif;font-weight:500;font-size:24px;line-height:1.25">We could not write the minutes</h2>
+      <p style="margin:0;font-size:14px;line-height:1.6;color:#4B505C">The transcript is safe. The writing step failed, which can happen when the AI service is busy.</p>
+      <div style="margin-top:auto;display:flex;flex-wrap:wrap;gap:10px"><span style="min-height:44px;padding:0 18px;display:inline-flex;align-items:center;border-radius:10px;background:#1A5FD0;color:#fff;font-size:15px;font-weight:600">Try again</span><span style="min-height:44px;padding:0 14px;display:inline-flex;align-items:center;font-size:15px;font-weight:500;color:#1A5FD0">Read the transcript</span></div>
+    </div>
+
+    <div style="background:#fff;border:1px solid #F5CBAE;border-radius:16px;padding:28px;display:flex;flex-direction:column;gap:12px">
+      <span style="font-size:12px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:#A8470F">Connection lost</span>
+      <div style="display:flex;align-items:center;gap:10px;background:#FFF8F3;border:1px solid #F5CBAE;border-radius:10px;padding:10px 14px;font-size:14px;color:#2A2E37"><span style="width:8px;height:8px;border-radius:50%;background:#F26B21;flex:none"></span>Offline. Reconnecting</div>
+      <h2 style="margin:0;font-family:Newsreader,Georgia,serif;font-weight:500;font-size:24px;line-height:1.25">Your changes are kept on this device</h2>
+      <p style="margin:0;font-size:14px;line-height:1.6;color:#4B505C">The meeting itself is not affected: the assistant keeps transcribing. We save your edits when you are back.</p>
+    </div>
+
+    <div style="background:#fff;border:1px solid #F5CBAE;border-radius:16px;padding:28px;display:flex;flex-direction:column;gap:12px">
+      <span style="font-size:12px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;color:#A8470F">Link · no access</span>
+      <h2 style="margin:0;font-family:Newsreader,Georgia,serif;font-weight:500;font-size:24px;line-height:1.25">You cannot read these minutes</h2>
+      <p style="margin:0;font-size:14px;line-height:1.6;color:#4B505C">Awa Example shared them with participants only. Ask her to add you, or sign in with the account she invited.</p>
+      <span style="margin-top:auto;min-height:44px;padding:0 18px;display:inline-flex;align-items:center;align-self:flex-start;border-radius:10px;background:#fff;border:1px solid #CFCBC3;box-sizing:border-box;font-size:15px;font-weight:500">Switch account</span>
+    </div>
+
+  </div>
+</div>
+</div></section>
+</body>
+</html>
