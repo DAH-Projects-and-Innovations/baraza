@@ -9,7 +9,9 @@ from baraza.adapters.base import CaptureAdapter, CaptureStatus
 from baraza.api.dependencies import get_capture_adapter
 from baraza.api.meetings import MeetingStoreDep, QueueDep, require_meeting, submit_transcript
 from baraza.api.segments import StoreDep
+from baraza.config import get_settings
 from baraza.core.meeting_record import Meeting
+from baraza.core.templates import TEMPLATES
 
 router = APIRouter(prefix="/captures", tags=["captures"])
 AdapterDep = Annotated[CaptureAdapter | None, Depends(get_capture_adapter)]
@@ -33,8 +35,15 @@ class StartCaptureRequest(BaseModel):
         ),
     ]
     title: Annotated[str, StringConstraints(strip_whitespace=True, min_length=1, max_length=200)]
-    template: Literal["standard"] = "standard"
+    template: str | None = None  # None: the configured default
     participants_informed: Literal[True]
+
+    @field_validator("template")
+    @classmethod
+    def known_template(cls, value: str | None) -> str | None:
+        if value is not None and value not in TEMPLATES:
+            raise ValueError("Unknown minutes template")
+        return value
 
     @field_validator("meeting_url")
     @classmethod
@@ -94,6 +103,7 @@ async def start_capture(
         adapter=adapter.name,
         participants_informed=True,
         simulated=adapter.name == "fake",
+        template=payload.template or get_settings().default_template,
     )
     try:
         await store.save(meeting)

@@ -9,7 +9,16 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
 from baraza import __version__
-from baraza.api import auth, captures, health, meetings, minutes, segments, vexa_capture
+from baraza.api import (
+    auth,
+    captures,
+    health,
+    meetings,
+    minutes,
+    segments,
+    templates,
+    vexa_capture,
+)
 from baraza.api.auth import require_user
 from baraza.api.dependencies import close_capture_adapter
 from baraza.config import get_settings
@@ -63,6 +72,7 @@ def create_app() -> FastAPI:
     app.include_router(meetings.router, dependencies=signed_in)
     app.include_router(vexa_capture.router, dependencies=signed_in)
     app.include_router(minutes.router, dependencies=signed_in)
+    app.include_router(templates.router, dependencies=signed_in)
 
     @app.exception_handler(RequestValidationError)
     async def validation_error_handler(
