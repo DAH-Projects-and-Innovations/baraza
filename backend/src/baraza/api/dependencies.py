@@ -1,13 +1,16 @@
 """Replaceable integration ports for capture, persistence and job submission."""
 
 from functools import lru_cache
+from typing import Annotated
 
 from arq.connections import RedisSettings, create_pool
+from fastapi import Depends
 from sqlalchemy.ext.asyncio import AsyncEngine, create_async_engine
 
 from baraza.adapters.base import CaptureAdapter
 from baraza.adapters.fake import FakeCaptureAdapter
 from baraza.adapters.vexa import VexaAdapter
+from baraza.api.auth import CurrentUser, require_user
 from baraza.config import get_settings
 from baraza.storage.sql import SqlMeetingStore
 from baraza.vexa.client import VexaClient
@@ -59,3 +62,11 @@ class GenerationQueue:
 
 def get_generation_queue() -> GenerationQueue:
     return GenerationQueue()
+
+
+def get_actor(user: Annotated[CurrentUser, Depends(require_user)]) -> str:
+    """Who is acting, for the revision history: the signed in person's email.
+
+    With sign in switched off (development only) it is the placeholder ``local-user``.
+    """
+    return user.email

@@ -2,7 +2,7 @@
 
 from functools import lru_cache
 
-from pydantic import Field, SecretStr, field_validator
+from pydantic import Field, SecretStr, field_validator, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -18,10 +18,57 @@ class Settings(BaseSettings):
     capture_mode: str = "disabled"
     cors_origins: list[str] = ["http://localhost:3000", "http://127.0.0.1:3000"]
 
+    # Sign in. Switching it off is for local rehearsals and tests only: the API then trusts every
+    # caller, so it is refused outside development.
+    auth_enabled: bool = True
+    session_ttl_days: int = Field(default=14, ge=1, le=90)
+    # None = secure cookie everywhere except development (plain http on localhost).
+    cookie_secure: bool | None = None
+    login_max_failures: int = Field(default=5, ge=1, le=50)
+    login_lockout_minutes: int = Field(default=15, ge=1, le=240)
+
+    @property
+    def secure_cookies(self) -> bool:
+        return self.cookie_secure if self.cookie_secure is not None else self.env != "development"
+
+    @model_validator(mode="after")
+    def auth_stays_on_in_production(self) -> "Settings":
+        if not self.auth_enabled and self.env != "development":
+            raise ValueError(
+                "BARAZA_AUTH_ENABLED=false is only allowed when BARAZA_ENV=development"
+            )
+        return self
+
     # OpenAI-compatible LLM gateway (LiteLLM, Ollama, vLLM, hosted provider...).
     llm_base_url: str = "http://localhost:4000/v1"
     llm_api_key: str = Field(default="changeme", repr=False)
     llm_model: str = "ollama/mistral"
+    # Email notifications (draft ready, generation failed). Empty host: no email is sent.
+    smtp_host: str = ""
+    smtp_port: int = Field(default=587, gt=0, le=65535)
+    smtp_user: str = ""
+    smtp_password: SecretStr = Field(default=SecretStr(""), repr=False)
+    smtp_from: str = "Baraza <no-reply@localhost>"
+    smtp_starttls: bool = True
+    smtp_ssl: bool = False
+    # Only for a local test server such as Mailpit: lets the connection stay unencrypted.
+    smtp_allow_insecure: bool = False
+    smtp_timeout_s: float = Field(default=10.0, gt=0)
+    smtp_retries: int = Field(default=2, ge=0, le=5)
+    # Where people open the app: the links in emails point here.
+    public_url: str = "http://localhost:3000"
+
+    @model_validator(mode="after")
+    def smtp_is_encrypted(self) -> "Settings":
+        if self.smtp_host and not (self.smtp_starttls or self.smtp_ssl or self.smtp_allow_insecure):
+            raise ValueError(
+                "SMTP needs TLS: keep BARAZA_SMTP_STARTTLS or BARAZA_SMTP_SSL on, or set "
+                "BARAZA_SMTP_ALLOW_INSECURE=true for a local test server"
+            )
+        return self
+
+    # Minutes template used when a meeting does not choose one.
+    default_template: str = "standard"
     llm_timeout_s: float = Field(default=60.0, gt=0)
     llm_max_output_tokens: int = Field(default=2048, gt=0)
     llm_max_retries: int = Field(default=3, ge=0, le=10)

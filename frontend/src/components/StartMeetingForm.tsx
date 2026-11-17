@@ -1,9 +1,10 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { startCapture } from "@/lib/api/captures";
 import { errorMessage } from "@/lib/api/client";
+import { getTemplates, type MinutesTemplate } from "@/lib/api/templates";
 import { isGoogleMeetUrl, normalizeGoogleMeetUrl } from "@/lib/meet";
 
 export function StartMeetingForm() {
@@ -13,6 +14,18 @@ export function StartMeetingForm() {
   const [consent, setConsent] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
+  const [templates, setTemplates] = useState<MinutesTemplate[]>([]);
+  const [template, setTemplate] = useState("standard");
+
+  useEffect(() => {
+    // If the list cannot be loaded the form still works with the standard template.
+    getTemplates()
+      .then((list) => {
+        setTemplates(list);
+        setTemplate(list.find((item) => item.default)?.id ?? "standard");
+      })
+      .catch(() => undefined);
+  }, []);
 
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -29,7 +42,7 @@ export function StartMeetingForm() {
     setPending(true);
     try {
       const { capture_id } = await startCapture({
-        meeting_url: normalizeGoogleMeetUrl(url), title: title.trim(), template: "standard", participants_informed: true,
+        meeting_url: normalizeGoogleMeetUrl(url), title: title.trim(), template, participants_informed: true,
       });
       router.push(`/meetings/${encodeURIComponent(capture_id)}`);
     } catch (error) {
@@ -71,8 +84,16 @@ export function StartMeetingForm() {
       </div>
       <label className="flex flex-col gap-1.5 text-sm font-medium">
         Minutes template
-        <select className="rounded-lg border border-line bg-surface px-3 py-2.5" disabled={pending}>
-          <option value="standard">Standard: summary, decisions and actions</option>
+        <select value={template} onChange={(event) => setTemplate(event.target.value)}
+          className="rounded-lg border border-line bg-surface px-3 py-2.5" disabled={pending}>
+          {templates.length === 0 && (
+            <option value="standard">Standard: summary, decisions and actions</option>
+          )}
+          {templates.map((item) => (
+            <option key={item.id} value={item.id}>
+              {item.name.en ?? item.id}: {item.description.en ?? ""}
+            </option>
+          ))}
         </select>
       </label>
       <label className="flex items-start gap-2 rounded-lg bg-accent-soft px-3 py-2.5 text-sm text-accent-ink">

@@ -17,6 +17,7 @@ from pydantic import ValidationError
 from baraza.core.anti_invention import Correction, apply_anti_invention
 from baraza.core.generation import load_prompt, render_transcript
 from baraza.core.minutes import Minutes
+from baraza.core.templates import template_prompt
 from baraza.llm.errors import InvalidModelOutputError
 
 SUPPORTED_LANGUAGES = ("fr", "en")
@@ -66,6 +67,7 @@ async def generate_checked_minutes(
     llm: Any,
     *,
     meeting_date: date | None = None,
+    template: str = "standard",
     max_repairs: int = 1,
 ) -> tuple[Minutes, list[Correction], str]:
     """Retourne (minutes nettoyées, corrections, version du prompt).
@@ -75,6 +77,9 @@ async def generate_checked_minutes(
     """
     language = normalize_language(getattr(transcript, "language", None))
     system = load_prompt("minutes", language)
+    extra = template_prompt(template, language)
+    if extra:
+        system = f"{system}\n\n{extra}"
     user = render_transcript(transcript)
     if meeting_date is not None:
         user = (

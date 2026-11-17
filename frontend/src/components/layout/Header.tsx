@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { USE_MOCK_API } from "@/lib/config";
+import { UserMenu } from "../UserMenu";
 
 function LogoMark() {
   return (
@@ -26,12 +27,15 @@ export function Header() {
             by <span className="font-medium text-accent">DAH Labs</span>
           </span>
         </Link>
-        <Link
-          href="/meetings/new"
-          className="rounded-lg bg-brand px-3 py-1.5 text-sm font-medium text-white hover:bg-brand-strong"
-        >
-          New meeting
-        </Link>
+        <div className="flex items-center gap-3">
+          <Link
+            href="/meetings/new"
+            className="rounded-lg bg-brand px-3 py-1.5 text-sm font-medium text-white hover:bg-brand-strong"
+          >
+            New meeting
+          </Link>
+          <UserMenu />
+        </div>
       </nav>
       {USE_MOCK_API && (
         <p role="status" className="bg-accent-soft px-4 py-2 text-center text-sm text-accent-ink">
