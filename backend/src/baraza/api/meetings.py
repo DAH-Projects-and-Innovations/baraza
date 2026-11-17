@@ -5,7 +5,7 @@ from datetime import datetime
 from typing import Annotated, Any, Literal
 
 from fastapi import APIRouter, Depends, Header, HTTPException, Query, Response
-from pydantic import BaseModel, ValidationError
+from pydantic import BaseModel, Field, ValidationError
 
 from baraza.adapters.base import CaptureStatus
 from baraza.api.dependencies import (
@@ -30,6 +30,7 @@ from baraza.core.minutes_review import (
     validate,
 )
 from baraza.core.segments import TranscriptSegment
+from baraza.core.speakers import InvalidSpeakerName, clean_name, rename_in_transcript, rename_owner
 from baraza.core.transcript import Transcript
 from baraza.storage.sql import SqlMeetingStore
 
@@ -318,6 +319,59 @@ async def validate_minutes(
         validate(meeting, actor=actor, expected_version=version)
 
     return await apply_review(meeting_id, store, response, mark_validated)
+
+
+class RenameSpeaker(BaseModel):
+    from_name: str = Field(min_length=1, max_length=200)
+    to_name: str = Field(max_length=1024)
+
+
+class RenameResult(BaseModel):
+    renamed_segments: int
+    # Set when the draft's action owners were updated too (a new version of the minutes).
+    minutes_version: int | None
+
+
+@router.post("/{meeting_id}/speakers/rename")
+async def rename_speaker(
+    meeting_id: str,
+    payload: RenameSpeaker,
+    store: MeetingStoreDep,
+    segments: StoreDep,
+    actor: ActorDep,
+) -> RenameResult:
+    """Give a name to a speaker the capture could not name ("Speaker 3").
+
+    The name is applied to every line of that speaker, and to the draft's action owners.
+    Validated minutes are locked: so are their speakers.
+    """
+    meeting = await require_meeting(store, meeting_id)
+    if meeting.minutes is not None and meeting.minutes_status == "validated":
+        raise HTTPException(status_code=409, detail="Validated minutes are locked")
+    try:
+        new = clean_name(payload.to_name)
+    except InvalidSpeakerName as error:
+        raise HTTPException(status_code=422, detail=str(error)) from error
+    old = payload.from_name
+    if new == old:
+        raise HTTPException(status_code=422, detail="This is already the name")
+    # The segment store is updated first and the change is idempotent: a retry finishes the job.
+    stored = [s for s in await segments.list(meeting_id) if s.speaker == old]
+    previous = meeting.model_dump_json()
+    in_transcript = rename_in_transcript(meeting, old, new)
+    if not stored and not in_transcript:
+        raise HTTPException(status_code=404, detail="Unknown speaker")
+    if stored:
+        await segments.upsert([s.model_copy(update={"speaker": new}) for s in stored])
+    owners_changed = rename_owner(meeting, old, new, actor=actor)
+    if (in_transcript or owners_changed) and not await store.replace_if_unchanged(
+        meeting, previous
+    ):
+        raise HTTPException(status_code=409, detail="The meeting changed; reload and try again")
+    return RenameResult(
+        renamed_segments=max(len(stored), in_transcript),
+        minutes_version=meeting.minutes_version if owners_changed else None,
+    )
 
 
 @router.post("/{meeting_id}/retry", status_code=202)

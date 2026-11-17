@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useState, type ReactNode } from "react";
+import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 import { ApiError, errorMessage } from "@/lib/api/client";
 import {
   REVIEW_AVAILABLE,
@@ -30,7 +30,16 @@ function formatDateTime(iso: string) {
   });
 }
 
-export function MinutesPanel({ meetingId, ready }: { meetingId: string; ready: boolean }) {
+export function MinutesPanel({
+  meetingId,
+  ready,
+  reloadKey = 0,
+}: {
+  meetingId: string;
+  ready: boolean;
+  /** Changes when something outside the panel changed the minutes (a speaker was named). */
+  reloadKey?: number;
+}) {
   const [doc, setDoc] = useState<MinutesDoc | null>(null);
   const [draft, setDraft] = useState<Minutes | null>(null);
   const [loadError, setLoadError] = useState(false);
@@ -101,6 +110,22 @@ export function MinutesPanel({ meetingId, ready }: { meetingId: string; ready: b
       setNotice({ message: errorMessage(error, "Cannot reload the minutes."), reload: false });
     }
   }, [meetingId]);
+
+  // Something outside changed the minutes: reload them, unless that would drop unsaved edits.
+  const seenReload = useRef(reloadKey);
+  useEffect(() => {
+    if (reloadKey === seenReload.current || !doc) return;
+    seenReload.current = reloadKey;
+    const unsaved = draft !== null && !sameMinutes(draft, doc.minutes);
+    void (async () => {
+      if (!unsaved) return reload();
+      setNotice({
+        message:
+          "A speaker was named, which updates the owners. Reload to see it: your unsaved changes will be lost.",
+        reload: true,
+      });
+    })();
+  }, [reloadKey, doc, draft, reload]);
 
   function explain(error: unknown, fallback: string) {
     if (error instanceof ApiError && error.status === 412) {
