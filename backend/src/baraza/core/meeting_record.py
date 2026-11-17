@@ -35,6 +35,8 @@ class Meeting(BaseModel):
     # Traces des contrôles anti-invention, montrées aux relecteurs avec le brouillon.
     corrections: list[Correction] = Field(default_factory=list)
     prompt_version: str | None = None
+    # Model that wrote the current draft (setting at generation time), shown with the draft.
+    model_name: str | None = None
     # Review state of the minutes (see baraza.core.minutes_review).
     minutes_status: Literal["draft", "validated"] = "draft"
     minutes_version: int = 0

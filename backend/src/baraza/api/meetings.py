@@ -140,6 +140,7 @@ class MinutesState(BaseModel):
     validated_by: str | None
     validated_at: datetime | None
     prompt_version: str | None
+    model_name: str | None
     corrections: list[Correction]
     counts: MinutesCounts
 
@@ -161,6 +162,7 @@ def minutes_state(meeting: Meeting) -> MinutesState:
         validated_by=meeting.validated_by,
         validated_at=meeting.validated_at,
         prompt_version=meeting.prompt_version,
+        model_name=meeting.model_name,
         corrections=meeting.corrections,
         counts=count_items(meeting.minutes),
     )
@@ -391,6 +393,31 @@ async def retry_generation(meeting_id: str, store: MeetingStoreDep, queue: Queue
         meeting.error = (
             "Generation could not be queued. Try again when the task service is available."
         )
+        await store.save(meeting)
+        raise HTTPException(status_code=503, detail=meeting.error) from error
+    return meeting
+
+
+@router.post("/{meeting_id}/minutes/regenerate", status_code=202)
+async def regenerate_minutes(meeting_id: str, store: MeetingStoreDep, queue: QueueDep) -> Meeting:
+    """Ask the model for a new draft. The previous one stays in the revisions."""
+    meeting = await require_meeting(store, meeting_id)
+    if meeting.minutes is None or meeting.transcript is None:
+        raise HTTPException(status_code=404, detail="There is no draft to regenerate")
+    if meeting.minutes_status == "validated":
+        raise HTTPException(status_code=409, detail="Validated minutes cannot be regenerated")
+    if meeting.status != CaptureStatus.DONE:
+        raise HTTPException(status_code=409, detail="A generation is already in progress")
+    previous = meeting.model_dump_json()
+    meeting.status = CaptureStatus.PROCESSING
+    meeting.error = None
+    if not await store.replace_if_unchanged(meeting, previous):
+        raise HTTPException(status_code=409, detail="The meeting changed; reload and try again")
+    try:
+        await queue.enqueue(meeting_id)
+    except Exception as error:
+        meeting.status = CaptureStatus.DONE
+        meeting.error = "Regeneration could not be queued. The previous draft is kept."
         await store.save(meeting)
         raise HTTPException(status_code=503, detail=meeting.error) from error
     return meeting
