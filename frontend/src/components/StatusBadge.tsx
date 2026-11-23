@@ -10,10 +10,10 @@ export const STATUS_LABELS: Record<CaptureStatus, string> = {
 
 const BADGE_STYLES: Record<CaptureStatus, string> = {
   waiting_admission: "bg-accent-soft text-accent-ink",
-  capturing: "bg-brand-soft text-brand-ink",
+  capturing: "bg-foreground text-white",
   processing: "bg-accent-soft text-accent-ink",
-  done: "bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300",
-  failed: "bg-red-100 text-red-800 dark:bg-red-950 dark:text-red-300",
+  done: "bg-brand-soft text-brand-ink",
+  failed: "bg-red-100 text-red-800",
 };
 
 export function StatusBadge({ status }: { status: CaptureStatus | null }) {
@@ -25,11 +25,11 @@ export function StatusBadge({ status }: { status: CaptureStatus | null }) {
     <span
       role="status"
       aria-live="polite"
-      className={`inline-flex items-center gap-2 rounded-full px-3 py-1 text-sm font-medium ${BADGE_STYLES[status]}`}
+      className={`inline-flex items-center gap-2 rounded-full px-3 py-1 text-[13px] font-semibold ${BADGE_STYLES[status]}`}
     >
       <span
         aria-hidden="true"
-        className={`h-2 w-2 rounded-full bg-current ${pulsing ? "animate-pulse" : ""}`}
+        className={`h-1.75 w-1.75 rounded-full ${status === "capturing" ? "bg-accent" : "bg-current"} ${pulsing ? "animate-pulse" : ""}`}
       />
       {STATUS_LABELS[status]}
     </span>

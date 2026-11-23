@@ -1,71 +1,171 @@
 @import "tailwindcss";
 
-/* DAH Labs palette: blue and orange. Semantic names, light mode by default. */
+/* Baraza product design v3: bright blue brand, deep navy panels, orange only where a human must act. */
 :root {
-  --background: #f7f8fa;
+  --background: #f6f7fb;
   --surface: #ffffff;
-  --foreground: #14171f;
-  --muted: #5b6475;
-  --faint: #8a93a3;
-  --line: #e3e6ec;
+  --foreground: #0e1424;
+  --secondary: #424a5e;
+  --muted: #5f667a;
+  --faint: #8a91a6;
+  --line: #e4e7f0;
+  --line-strong: #cbd1e1;
 
-  --blue: #1e6fe0;
-  --blue-strong: #0f4dab;
-  --blue-soft: #e8f0fd;
-  --blue-ink: #0f4dab;
+  --blue: #2457f5;
+  --blue-strong: #1a3fb8;
+  --blue-soft: #eaf0ff;
+  --blue-ink: #1a3fb8;
+  --violet: #5b3ff0;
 
-  --orange: #f26b21;
-  --orange-strong: #c2410c;
-  --orange-soft: #feefe6;
-  --orange-ink: #a8470f;
-}
+  --orange: #ff7a2f;
+  --orange-strong: #b54708;
+  --orange-soft: #fff3ea;
+  --orange-ink: #b54708;
+  --orange-line: #ffd2b3;
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0d1017;
-    --surface: #151a24;
-    --foreground: #eef1f6;
-    --muted: #a3acbc;
-    --faint: #7a8496;
-    --line: #262d3b;
-
-    --blue: #4a90f0;
-    --blue-strong: #7db0f7;
-    --blue-soft: #14284a;
-    --blue-ink: #a9ccfa;
-
-    --orange: #f58a4f;
-    --orange-strong: #f9a679;
-    --orange-soft: #3a2314;
-    --orange-ink: #f8bd9a;
-  }
+  --navy: #0a1230;
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-surface: var(--surface);
   --color-foreground: var(--foreground);
+  --color-secondary: var(--secondary);
   --color-muted: var(--muted);
   --color-faint: var(--faint);
   --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
   --color-brand: var(--blue);
   --color-brand-strong: var(--blue-strong);
   --color-brand-soft: var(--blue-soft);
   --color-brand-ink: var(--blue-ink);
+  --color-violet: var(--violet);
   --color-accent: var(--orange);
   --color-accent-strong: var(--orange-strong);
   --color-accent-soft: var(--orange-soft);
   --color-accent-ink: var(--orange-ink);
+  --color-accent-line: var(--orange-line);
+  --color-navy: var(--navy);
+  --font-sans: var(--font-inter), system-ui, sans-serif;
+  --font-display: var(--font-jakarta), var(--font-inter), sans-serif;
+  --font-serif: var(--font-newsreader), Georgia, serif;
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family:
-    system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  font-family: var(--font-sans);
 }
 
 :focus-visible {
   outline: 2px solid var(--blue);
   outline-offset: 2px;
+}
+
+mark {
+  background: #ffe9a8;
+  color: inherit;
+  border-radius: 3px;
+  padding: 0 2px;
+}
+
+/* Shared building blocks */
+.btn {
+  display: inline-flex;
+  min-height: 3rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 14px;
+  padding: 0 1.5rem;
+  font-size: 15px;
+  font-weight: 600;
+}
+.btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+.btn-primary {
+  background: var(--blue);
+  color: #fff;
+  box-shadow: 0 6px 16px rgba(36, 87, 245, 0.28);
+}
+.btn-primary:hover:not(:disabled) {
+  background: var(--blue-strong);
+}
+.btn-dark {
+  background: var(--foreground);
+  color: #fff;
+}
+.btn-dark:hover:not(:disabled) {
+  background: var(--secondary);
+}
+.btn-secondary {
+  background: var(--surface);
+  color: var(--foreground);
+  border: 1px solid var(--line-strong);
+}
+.btn-secondary:hover:not(:disabled) {
+  background: var(--background);
+}
+.field {
+  min-height: 3rem;
+  width: 100%;
+  border-radius: 12px;
+  border: 1px solid var(--line-strong);
+  background: var(--surface);
+  padding: 0 0.875rem;
+  font-size: 15px;
+  color: var(--foreground);
+}
+.field:focus {
+  outline: none;
+  border-color: var(--blue);
+  box-shadow: 0 0 0 4px rgba(36, 87, 245, 0.14);
+}
+textarea.field {
+  padding: 0.75rem 0.875rem;
+}
+.card {
+  border-radius: 24px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+}
+.chip {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 9999px;
+  padding: 0.25rem 0.75rem;
+  font-size: 13px;
+  font-weight: 600;
+}
+.chip-draft {
+  background: var(--orange-soft);
+  color: var(--orange-ink);
+}
+.chip-validated {
+  background: var(--blue-soft);
+  color: var(--blue-ink);
+}
+.chip-neutral {
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--muted);
+}
+.chip-missing {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 9999px;
+  border: 1.5px dashed var(--orange);
+  padding: 0.25rem 0.75rem;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--orange-ink);
+}
+.eyebrow {
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
 }

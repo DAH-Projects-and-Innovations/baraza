@@ -55,15 +55,15 @@ export function StartMeetingForm() {
   }
 
   return (
-    <form onSubmit={onSubmit} className="flex flex-col gap-4" noValidate>
-      <label className="flex flex-col gap-1.5 text-sm font-medium">
+    <form onSubmit={onSubmit} className="card flex flex-col gap-5 p-8" noValidate>
+      <label className="flex flex-col gap-2 text-sm font-semibold">
         Meeting title
         <input value={title} onChange={(event) => setTitle(event.target.value)} maxLength={200}
           required disabled={pending} placeholder="Weekly project sync"
-          className="rounded-lg border border-line bg-surface px-3 py-2.5" />
+          className="field" />
       </label>
-      <div className="flex flex-col gap-1.5">
-        <label htmlFor="meeting-url" className="text-sm font-medium">
+      <div className="flex flex-col gap-2">
+        <label htmlFor="meeting-url" className="text-sm font-semibold">
           Google Meet link
         </label>
         <input
@@ -76,18 +76,18 @@ export function StartMeetingForm() {
           placeholder="https://meet.google.com/abc-defg-hij"
           aria-invalid={error !== null}
           aria-describedby={error ? "meeting-url-error" : undefined}
-          className="rounded-lg border border-line bg-surface px-3 py-2.5 aria-invalid:border-red-500"
+          className="field aria-invalid:border-red-500"
         />
         {error && (
-          <p id="meeting-url-error" role="alert" className="text-sm text-red-600 dark:text-red-400">
+          <p id="meeting-url-error" role="alert" className="text-sm text-red-700">
             {error}
           </p>
         )}
       </div>
-      <label className="flex flex-col gap-1.5 text-sm font-medium">
+      <label className="flex flex-col gap-2 text-sm font-semibold">
         Minutes template
         <select value={template} onChange={(event) => setTemplate(event.target.value)}
-          className="rounded-lg border border-line bg-surface px-3 py-2.5" disabled={pending}>
+          className="field" disabled={pending}>
           {templates.length === 0 && (
             <option value="standard">Standard: summary, decisions and actions</option>
           )}
@@ -99,20 +99,20 @@ export function StartMeetingForm() {
         </select>
       </label>
       {botName && (
-        <p className="text-sm text-muted">
+        <p className="text-sm leading-relaxed text-secondary">
           The assistant joins as a visible participant named <strong>{botName}</strong>. Tell the
           participants before you start: it cannot post a notice in the meeting chat.
         </p>
       )}
-      <label className="flex items-start gap-2 rounded-lg bg-accent-soft px-3 py-2.5 text-sm text-accent-ink">
+      <label className="flex items-start gap-3 rounded-xl border border-accent-line bg-accent-soft px-4 py-3 text-sm leading-normal text-accent-ink">
         <input type="checkbox" checked={consent} required disabled={pending}
-          onChange={(event) => setConsent(event.target.checked)} className="mt-1" />
+          onChange={(event) => setConsent(event.target.checked)} className="mt-1 h-4 w-4 accent-[#2457f5]" />
         Participants have been informed and consent to transcription and AI draft generation.
       </label>
       <button
         type="submit"
         disabled={pending}
-        className="self-start rounded-lg bg-brand px-5 py-2.5 text-sm font-medium text-white hover:bg-brand-strong disabled:opacity-60"
+        className="btn btn-primary self-start"
       >
         {pending ? "Starting…" : "Start capture"}
       </button>

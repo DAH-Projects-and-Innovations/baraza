@@ -136,25 +136,25 @@ export function TranscriptPanel({
   return (
     <section
       aria-labelledby="transcript-title"
-      className="rounded-xl border border-line bg-surface p-4 sm:p-5"
+      className="card p-6 sm:p-8"
     >
-      <h2 id="transcript-title" className="mb-4 flex items-center gap-2 text-sm font-semibold">
+      <h2 id="transcript-title" className="mb-5 flex items-center gap-2 font-display text-lg font-bold">
         Transcript
         {live && (
-          <span className="rounded-full bg-brand-soft px-2 py-0.5 text-xs font-medium text-brand-ink">
+          <span className="chip bg-foreground text-white">
             live
           </span>
         )}
       </h2>
       {canRename && unnamed.size > 0 && (
-        <p className="mb-4 rounded-lg bg-accent-soft p-3 text-sm text-accent-ink">
+        <p className="mb-4 rounded-xl border border-accent-line bg-accent-soft p-4 text-sm text-accent-ink">
           {unnamed.size === 1 ? "One speaker was" : `${unnamed.size} speakers were`} not named by
           the capture. If you know who it is, name them: the name is applied to every line and to
           the owners in the minutes.
         </p>
       )}
       {error && (
-        <p role="alert" className="mb-3 text-sm text-red-600 dark:text-red-400">
+        <p role="alert" className="mb-3 text-sm text-red-700">
           {live ? "Cannot load the transcript. Retrying…" : "Cannot load the transcript."}{" "}
           <button type="button" onClick={() => setRefresh((value) => value + 1)} className="underline">Try again</button>
         </p>
@@ -166,7 +166,7 @@ export function TranscriptPanel({
       ) : (
         <ol className="flex flex-col gap-4">
           {segments.map((segment, index) => (
-            <li id={`segment-${index}`} key={segment.segment_id} className="flex scroll-mt-6 gap-3 target:rounded-lg target:bg-accent-soft">
+            <li id={`segment-${index}`} key={segment.segment_id} className="flex scroll-mt-6 gap-3 target:rounded-xl target:bg-accent-soft">
               <span
                 aria-hidden="true"
                 className={`flex h-8 w-8 flex-none items-center justify-center rounded-full text-xs font-semibold ${styles.get(segment.speaker) ?? UNKNOWN_STYLE}`}
@@ -182,7 +182,7 @@ export function TranscriptPanel({
                       type="button"
                       onClick={() => startNaming(segment.speaker)}
                       aria-label={`Name ${segment.speaker}`}
-                      className="min-h-8 text-xs font-medium text-brand underline"
+                      className="min-h-8 text-xs font-semibold text-brand underline"
                     >
                       Name this speaker
                     </button>
@@ -191,7 +191,7 @@ export function TranscriptPanel({
                 {editing === segment.speaker && (
                   <form
                     onSubmit={(event) => onSubmit(event, segment.speaker)}
-                    className="my-2 flex flex-col gap-2 rounded-lg border border-line bg-background p-3"
+                    className="my-2 flex flex-col gap-2 rounded-xl border border-line bg-background p-3"
                     aria-label={`Name ${segment.speaker}`}
                   >
                     <label className="flex flex-col gap-1 text-sm font-medium">
@@ -201,7 +201,7 @@ export function TranscriptPanel({
                         value={name}
                         onChange={(event) => setName(event.target.value)}
                         maxLength={200}
-                        className="w-full rounded-lg border border-line bg-surface px-3 py-2 text-sm font-normal text-foreground"
+                        className="field min-h-10 text-sm font-normal"
                       />
                     </label>
                     {knownNames(segments, segment.speaker).length > 0 && (
@@ -221,7 +221,7 @@ export function TranscriptPanel({
                       </div>
                     )}
                     {renameError && (
-                      <p role="alert" className="text-sm text-red-600 dark:text-red-400">
+                      <p role="alert" className="text-sm text-red-700">
                         {renameError}
                       </p>
                     )}
@@ -229,7 +229,7 @@ export function TranscriptPanel({
                       <button
                         type="submit"
                         disabled={renaming}
-                        className="rounded-lg bg-brand px-3 py-1.5 text-sm font-medium text-white hover:bg-brand-strong disabled:opacity-60"
+                        className="btn btn-primary min-h-10 px-4 text-sm"
                       >
                         {renaming ? "Saving…" : "Apply to all lines"}
                       </button>
@@ -237,7 +237,7 @@ export function TranscriptPanel({
                         type="button"
                         onClick={() => setEditing(null)}
                         disabled={renaming}
-                        className="rounded-lg border border-line px-3 py-1.5 text-sm font-medium"
+                        className="btn btn-secondary min-h-10 px-4 text-sm"
                       >
                         Cancel
                       </button>

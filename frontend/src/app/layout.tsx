@@ -1,22 +1,29 @@
 import type { Metadata } from "next";
+import { Inter, Newsreader, Plus_Jakarta_Sans } from "next/font/google";
 import { AuthGate, AuthProvider } from "@/components/AuthProvider";
-import { Header } from "@/components/layout/Header";
+import { AppShell } from "@/components/layout/AppShell";
 import "./globals.css";
+
+const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
+const jakarta = Plus_Jakarta_Sans({ subsets: ["latin"], variable: "--font-jakarta" });
+const newsreader = Newsreader({ subsets: ["latin"], variable: "--font-newsreader" });
 
 export const metadata: Metadata = {
   title: "Baraza",
-  description: "Open source meeting minutes",
+  description: "Meeting minutes your team can trust",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="en" className="h-full antialiased">
-      <body className="min-h-full flex flex-col font-sans">
+    <html
+      lang="en"
+      className={`h-full antialiased ${inter.variable} ${jakarta.variable} ${newsreader.variable}`}
+    >
+      <body className="min-h-full font-sans">
         <AuthProvider>
-          <Header />
-          <main className="flex flex-1 flex-col">
+          <AppShell>
             <AuthGate>{children}</AuthGate>
-          </main>
+          </AppShell>
         </AuthProvider>
       </body>
     </html>

@@ -8,9 +8,6 @@ import { safeNext, waitMessage } from "@/lib/auth";
 import { USE_MOCK_API } from "@/lib/config";
 import { useAuth } from "./AuthProvider";
 
-const INPUT =
-  "w-full rounded-lg border border-line bg-background px-3 py-2.5 text-base text-foreground";
-
 export function LoginForm() {
   const router = useRouter();
   const { user, checked, setUser } = useAuth();
@@ -52,15 +49,15 @@ export function LoginForm() {
 
   if (USE_MOCK_API) {
     return (
-      <p className="rounded-lg bg-accent-soft p-3 text-sm text-accent-ink">
+      <p className="rounded-xl bg-accent-soft p-3 text-sm text-accent-ink">
         The browser simulation has no accounts. Open the app from the home page.
       </p>
     );
   }
 
   return (
-    <form onSubmit={onSubmit} className="flex flex-col gap-4" noValidate>
-      <label className="flex flex-col gap-1.5 text-sm font-medium">
+    <form onSubmit={onSubmit} className="flex flex-col gap-5" noValidate>
+      <label className="flex flex-col gap-2 text-sm font-semibold">
         Work email
         <input
           type="email"
@@ -69,12 +66,12 @@ export function LoginForm() {
           required
           value={email}
           onChange={(event) => setEmail(event.target.value)}
-          className={INPUT}
+          className="field min-h-13 rounded-[14px] px-4 text-base"
         />
       </label>
-      <label className="flex flex-col gap-1.5 text-sm font-medium">
+      <label className="flex flex-col gap-2 text-sm font-semibold">
         Password
-        <span className="flex items-center rounded-lg border border-line bg-background pr-1">
+        <span className="flex min-h-13 items-center rounded-[14px] border border-line-strong bg-surface px-4 focus-within:border-brand focus-within:shadow-[0_0_0_4px_rgba(36,87,245,0.14)]">
           <input
             type={showPassword ? "text" : "password"}
             name="password"
@@ -82,27 +79,27 @@ export function LoginForm() {
             required
             value={password}
             onChange={(event) => setPassword(event.target.value)}
-            className="min-w-0 flex-1 bg-transparent px-3 py-2.5 text-base text-foreground outline-none"
+            className="min-w-0 flex-1 bg-transparent text-base text-foreground outline-none"
           />
           <button
             type="button"
             onClick={() => setShowPassword((shown) => !shown)}
             aria-pressed={showPassword}
-            className="min-h-11 min-w-14 rounded-md px-2 text-sm font-medium text-brand"
+            className="min-h-11 min-w-12 text-sm font-semibold text-brand"
           >
             {showPassword ? "Hide" : "Show"}
           </button>
         </span>
       </label>
       {error && (
-        <p role="alert" className="text-sm text-red-600 dark:text-red-400">
+        <p role="alert" className="text-sm text-red-700">
           {error}
         </p>
       )}
       <button
         type="submit"
         disabled={pending}
-        className="min-h-12 rounded-lg bg-brand px-4 py-2.5 text-base font-medium text-white hover:bg-brand-strong disabled:opacity-60"
+        className="btn btn-primary min-h-13.5 text-base"
       >
         {pending ? "Signing in…" : "Sign in"}
       </button>

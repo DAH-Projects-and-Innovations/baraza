@@ -11,15 +11,14 @@ import {
   type MinutesDoc,
 } from "@/lib/api/meetings";
 import type { Correction, Minutes, RevisionSummary, SourceRef } from "@/lib/api/types";
+import { exportFileName, minutesToMarkdown } from "@/lib/export";
 import { actorLabel, countGaps, removeAt, replaceAt, sameMinutes, toOptional } from "@/lib/minutes";
 
 const NOT_SPECIFIED = "Not specified";
 const POLL_INTERVAL_MS = 3000;
 
-const INPUT =
-  "w-full rounded-lg border border-line bg-background px-3 py-2 text-sm text-foreground";
+const INPUT = "field min-h-11 text-[15px]";
 const INPUT_EMPTY = "border-dashed border-accent";
-const BUTTON = "rounded-lg px-4 py-2 text-sm font-medium disabled:opacity-60";
 
 function formatDateTime(iso: string) {
   return new Date(iso).toLocaleString("en-GB", {
@@ -33,10 +32,16 @@ function formatDateTime(iso: string) {
 export function MinutesPanel({
   meetingId,
   ready,
+  title,
+  meta,
   reloadKey = 0,
 }: {
   meetingId: string;
   ready: boolean;
+  /** Shown as the heading of the minutes. */
+  title: string;
+  /** One line under the heading: date, duration, people. */
+  meta: string;
   /** Changes when something outside the panel changed the minutes (a speaker was named). */
   reloadKey?: number;
 }) {
@@ -184,34 +189,22 @@ export function MinutesPanel({
     setDraft((current) => (current ? change(current) : current));
   }
 
+  const dot = (tone: "accent" | "brand") => (
+    <span aria-hidden="true" className={`mt-1.5 h-2.5 w-2.5 flex-none rounded-full ${tone === "accent" ? "bg-accent" : "bg-brand"}`} />
+  );
+
   return (
     <section aria-labelledby="minutes-title" className="flex flex-col gap-4">
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <h2 id="minutes-title" className="text-lg font-semibold tracking-tight">
-          Minutes
-        </h2>
-        {validated && state ? (
-          <span className="rounded-full bg-brand-soft px-3 py-1 text-xs font-medium text-brand-ink">
-            Validated by {actorLabel(state.validated_by ?? "")}
-            {state.validated_at && ` · ${formatDateTime(state.validated_at)}`}
-          </span>
-        ) : (
-          <span className="rounded-full bg-accent-soft px-3 py-1 text-xs font-medium text-accent-ink">
-            AI draft, to review
-          </span>
-        )}
-      </div>
+      <h2 id="minutes-title" className="sr-only">Minutes</h2>
 
       {loadError && (
-        <p role="alert" className="text-sm text-red-600 dark:text-red-400">
-          Cannot load the minutes. Retrying…
-        </p>
+        <p role="alert" className="text-sm text-red-700">Cannot load the minutes. Retrying…</p>
       )}
       {notice && (
-        <div role="alert" className="flex flex-wrap items-center gap-3 rounded-xl border border-red-300 bg-red-50 p-3 text-sm text-red-800 dark:border-red-900 dark:bg-red-950 dark:text-red-300">
+        <div role="alert" className="flex flex-wrap items-center gap-3 rounded-2xl border border-red-300 bg-red-50 p-4 text-sm text-red-800">
           <span>{notice.message}</span>
           {notice.reload && (
-            <button type="button" onClick={() => void reload()} className="font-medium underline">
+            <button type="button" onClick={() => void reload()} className="font-semibold underline">
               Reload the latest version
             </button>
           )}
@@ -219,58 +212,66 @@ export function MinutesPanel({
       )}
 
       {!shown || !state ? (
-        <p className="rounded-xl border border-line bg-surface p-4 text-sm text-muted">
-          Generating the minutes…
-        </p>
+        <p className="card p-6 text-[15px] text-muted">Generating the minutes…</p>
       ) : (
-        <>
-          {validated && (
-            <p className="rounded-xl border border-line bg-brand-soft p-3 text-sm text-brand-ink">
-              These minutes are validated and locked. Nothing is shared until you choose.
-            </p>
-          )}
-          {!REVIEW_AVAILABLE && (
-            <p className="rounded-xl border border-line bg-surface p-3 text-sm text-muted">
-              Editing and validating need the real backend. This is the browser simulation.
-            </p>
-          )}
-          {state.corrections.length > 0 && <CorrectionsNote corrections={state.corrections} />}
+        <div className="flex flex-wrap items-start gap-8">
+          <article className="card flex min-w-0 flex-[3_1_480px] flex-col gap-8 p-6 shadow-[0_1px_2px_rgba(14,20,36,0.04)] sm:rounded-[28px] sm:p-12">
+            <header className="flex flex-col gap-2.5">
+              <span className="text-sm text-muted">{meta}</span>
+              <h3 className="font-serif text-[40px] leading-[1.1] font-medium tracking-[-0.015em] sm:text-5xl">{title}</h3>
+              <span className="flex flex-wrap gap-2">
+                {validated ? (
+                  <span className="chip-validated">
+                    Validated by {actorLabel(state.validated_by ?? "")}
+                    {state.validated_at && ` · ${formatDateTime(state.validated_at)}`}
+                  </span>
+                ) : (
+                  <span className="chip-draft gap-2">
+                    <span className="h-1.75 w-1.75 rounded-full bg-accent" />
+                    Draft written by the assistant · not yet validated
+                  </span>
+                )}
+              </span>
+              {editable ? (
+                <textarea
+                  aria-label="Summary"
+                  rows={3}
+                  className={`${INPUT} font-serif text-xl leading-relaxed`}
+                  value={shown.summary}
+                  onChange={(event) => patch((m) => ({ ...m, summary: event.target.value }))}
+                />
+              ) : (
+                <p className="font-serif text-[21px] leading-relaxed text-secondary">{shown.summary}</p>
+              )}
+            </header>
 
-          <Card title="Summary">
-            {editable ? (
-              <textarea
-                aria-label="Summary"
-                rows={3}
-                className={INPUT}
-                value={shown.summary}
-                onChange={(event) => patch((m) => ({ ...m, summary: event.target.value }))}
-              />
-            ) : (
-              <p>{shown.summary}</p>
+            {state.corrections.length > 0 && <CorrectionsNote corrections={state.corrections} />}
+            {!REVIEW_AVAILABLE && (
+              <p className="rounded-xl bg-background p-3 text-sm text-muted">
+                Editing and validating need the real backend. This is the browser simulation.
+              </p>
             )}
-          </Card>
 
-          {shown.topics.length > 0 && (
-            <Card title="Topics">
-              <ul className="flex flex-col gap-2">
-                {shown.topics.map((t, i) => (
-                  <li key={i}>
-                    <span className="font-medium">{t.title}</span>
-                    <span className="text-muted"> — {t.summary}</span>
-                  </li>
-                ))}
-              </ul>
-            </Card>
-          )}
+            {shown.topics.length > 0 && (
+              <Block title="Topics">
+                <ul className="flex flex-col gap-3">
+                  {shown.topics.map((t, i) => (
+                    <li key={i} className="font-serif text-xl leading-snug">
+                      <span className="font-semibold">{t.title}</span>
+                      <span className="text-secondary"> — {t.summary}</span>
+                    </li>
+                  ))}
+                </ul>
+              </Block>
+            )}
 
-          <div className="grid gap-4 sm:grid-cols-2">
-            <Card title="Decisions" tone="brand">
+            <Block title="Decisions">
               {shown.decisions.length === 0 ? (
                 <Missing />
               ) : (
-                <ul className="flex flex-col gap-3">
+                <ul className="flex flex-col gap-3.5">
                   {shown.decisions.map((d, i) => (
-                    <li key={i} className="flex flex-col gap-1">
+                    <li key={i} className="flex flex-col gap-1.5 border-b border-line pb-3.5 last:border-b-0 last:pb-0">
                       {editable ? (
                         <div className="flex gap-2">
                           <input
@@ -290,20 +291,20 @@ export function MinutesPanel({
                           />
                         </div>
                       ) : (
-                        <span>{d.text}</span>
+                        <span className="font-serif text-[22px] leading-snug">{d.text}</span>
                       )}
                       <Sources source={d.source} />
                     </li>
                   ))}
                 </ul>
               )}
-            </Card>
+            </Block>
 
-            <Card title="Actions" tone="accent">
+            <Block title="Actions">
               {shown.actions.length === 0 ? (
                 <Missing />
               ) : (
-                <ul className="flex flex-col gap-4">
+                <ul className="flex flex-col gap-5">
                   {shown.actions.map((a, i) => (
                     <li key={i} className="flex flex-col gap-2">
                       {editable ? (
@@ -353,149 +354,153 @@ export function MinutesPanel({
                           </div>
                         </>
                       ) : (
-                        <>
-                          <p>{a.text}</p>
-                          <p className="text-xs text-muted">
-                            <Field label="Owner" value={a.owner} /> · <Field label="Due" value={a.due_date} />
-                          </p>
-                        </>
+                        <div className="flex items-start gap-3.5">
+                          <span aria-hidden="true" className="mt-1.5 h-5.5 w-5.5 flex-none rounded-[7px] border-[1.5px] border-faint" />
+                          <div className="flex flex-col gap-2">
+                            <p className="font-serif text-[21px] leading-snug">{a.text}</p>
+                            <span className="flex flex-wrap gap-2">
+                              <Pill value={a.owner} missing="Owner not specified" />
+                              <Pill value={a.due_date} missing="Deadline not specified" />
+                            </span>
+                          </div>
+                        </div>
                       )}
                       <Sources source={a.source} />
                     </li>
                   ))}
                 </ul>
               )}
-            </Card>
-          </div>
+            </Block>
 
-          <Card title="Open points">
-            {shown.open_points.length === 0 ? (
-              <Missing />
-            ) : (
-              <ul className="flex flex-col gap-3">
-                {shown.open_points.map((p, i) => (
-                  <li key={i} className="flex flex-col gap-1">
-                    {editable ? (
-                      <div className="flex gap-2">
-                        <input
-                          aria-label={`Open point ${i + 1}`}
-                          className={INPUT}
-                          value={p.text}
-                          onChange={(event) =>
-                            patch((m) => ({
-                              ...m,
-                              open_points: replaceAt(m.open_points, i, { ...p, text: event.target.value }),
-                            }))
-                          }
-                        />
-                        <RemoveButton
-                          label={`Remove open point ${i + 1}`}
-                          onClick={() => patch((m) => ({ ...m, open_points: removeAt(m.open_points, i) }))}
-                        />
-                      </div>
-                    ) : (
-                      <span>{p.text}</span>
-                    )}
-                    <Sources source={p.source} />
-                  </li>
-                ))}
-              </ul>
-            )}
-          </Card>
+            <Block title="Open points">
+              {shown.open_points.length === 0 ? (
+                <Missing />
+              ) : (
+                <ul className="flex flex-col gap-3">
+                  {shown.open_points.map((p, i) => (
+                    <li key={i} className="flex flex-col gap-1">
+                      {editable ? (
+                        <div className="flex gap-2">
+                          <input
+                            aria-label={`Open point ${i + 1}`}
+                            className={INPUT}
+                            value={p.text}
+                            onChange={(event) =>
+                              patch((m) => ({
+                                ...m,
+                                open_points: replaceAt(m.open_points, i, { ...p, text: event.target.value }),
+                              }))
+                            }
+                          />
+                          <RemoveButton
+                            label={`Remove open point ${i + 1}`}
+                            onClick={() => patch((m) => ({ ...m, open_points: removeAt(m.open_points, i) }))}
+                          />
+                        </div>
+                      ) : (
+                        <span className="font-serif text-[21px] leading-snug">{p.text}</span>
+                      )}
+                      <Sources source={p.source} />
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </Block>
+          </article>
 
-          {editable && (
-            <div className="flex flex-col gap-3 rounded-xl border border-line bg-surface p-4">
-              {confirming ? (
-                <div className="flex flex-col gap-3" role="group" aria-label="Confirm the validation">
-                  <h3 className="text-base font-semibold">Validate these minutes?</h3>
-                  <ul className="text-sm text-muted">
-                    <li>{doc!.minutes.decisions.length} decisions · {doc!.minutes.actions.length} actions</li>
-                    {gaps.ownerMissing > 0 && (
-                      <li>{gaps.ownerMissing} without an owner: they stay “{NOT_SPECIFIED}”.</li>
-                    )}
-                    {gaps.dueMissing > 0 && (
-                      <li>{gaps.dueMissing} without a deadline: they stay “{NOT_SPECIFIED}”.</li>
-                    )}
-                  </ul>
-                  <p className="text-sm text-muted">
-                    Validated minutes are locked and recorded under your name. Nothing is shared
-                    until you choose.
-                  </p>
-                  <label className="flex items-start gap-2 text-sm">
-                    <input
-                      type="checkbox"
-                      checked={confirmed}
-                      onChange={(event) => setConfirmed(event.target.checked)}
-                      className="mt-1"
-                    />
-                    I read the minutes and checked the decisions against the transcript.
-                  </label>
-                  <div className="flex flex-wrap gap-2">
-                    <button
-                      type="button"
-                      onClick={() => void onValidate()}
-                      disabled={!confirmed || busy !== null}
-                      className={`${BUTTON} bg-foreground text-background`}
-                    >
+          <aside className="flex min-w-65 max-w-full flex-[1_1_280px] flex-col gap-4 lg:max-w-90">
+            {validated ? (
+              <div className="card flex flex-col gap-3 bg-brand-soft p-6">
+                <span className="font-display text-lg font-bold text-brand-ink">Validated and locked</span>
+                <span className="text-sm leading-normal text-secondary">
+                  These minutes are recorded under a person&apos;s name. Nothing is shared until you choose.
+                </span>
+              </div>
+            ) : editable ? (
+              <div className="card flex flex-col gap-3.5 border-accent-line p-6 shadow-[0_8px_24px_rgba(255,122,47,0.1)]">
+                {confirming ? (
+                  <div className="flex flex-col gap-3.5" role="group" aria-label="Confirm the validation">
+                    <h3 className="font-display text-lg font-bold">Validate these minutes?</h3>
+                    <ul className="flex flex-col gap-1 text-sm text-secondary">
+                      <li>{doc!.minutes.decisions.length} decisions · {doc!.minutes.actions.length} actions</li>
+                      {gaps.ownerMissing > 0 && <li>{gaps.ownerMissing} without an owner: they stay “{NOT_SPECIFIED}”.</li>}
+                      {gaps.dueMissing > 0 && <li>{gaps.dueMissing} without a deadline: they stay “{NOT_SPECIFIED}”.</li>}
+                    </ul>
+                    <p className="text-sm leading-normal text-muted">
+                      Validated minutes are locked and recorded under your name. Nothing is shared until you choose.
+                    </p>
+                    <label className="flex items-start gap-3 text-sm leading-normal text-secondary">
+                      <input
+                        type="checkbox"
+                        checked={confirmed}
+                        onChange={(event) => setConfirmed(event.target.checked)}
+                        className="mt-0.5 h-4.5 w-4.5 accent-[#2457f5]"
+                      />
+                      I read the minutes and checked the decisions against the transcript.
+                    </label>
+                    <button type="button" onClick={() => void onValidate()} disabled={!confirmed || busy !== null} className="btn btn-dark min-h-13">
                       {busy === "validate" ? "Validating…" : "Validate the minutes"}
                     </button>
-                    <button
-                      type="button"
-                      onClick={() => setConfirming(false)}
-                      disabled={busy !== null}
-                      className={`${BUTTON} border border-line`}
-                    >
+                    <button type="button" onClick={() => setConfirming(false)} disabled={busy !== null} className="btn btn-secondary">
                       Keep editing
                     </button>
                   </div>
-                </div>
-              ) : (
-                <div className="flex flex-wrap items-center gap-2">
-                  <button
-                    type="button"
-                    onClick={() => void onSave()}
-                    disabled={!dirty || busy !== null}
-                    className={`${BUTTON} bg-brand text-white hover:bg-brand-strong`}
-                  >
-                    {busy === "save" ? "Saving…" : "Save changes"}
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => doc && setDraft(doc.minutes)}
-                    disabled={!dirty || busy !== null}
-                    className={`${BUTTON} border border-line`}
-                  >
-                    Discard changes
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setConfirming(true)}
-                    disabled={dirty || busy !== null}
-                    className={`${BUTTON} border border-foreground sm:ml-auto`}
-                  >
-                    Validate…
-                  </button>
-                  {dirty && <p className="w-full text-xs text-muted">Save your changes before validating.</p>}
-                </div>
-              )}
-            </div>
-          )}
+                ) : (
+                  <>
+                    <span className="font-display text-lg font-bold">Before you validate</span>
+                    {gaps.dueMissing > 0 && (
+                      <div className="flex items-start gap-3 text-sm leading-normal text-secondary">{dot("accent")}{gaps.dueMissing} {gaps.dueMissing === 1 ? "action has" : "actions have"} no deadline</div>
+                    )}
+                    {gaps.ownerMissing > 0 && (
+                      <div className="flex items-start gap-3 text-sm leading-normal text-secondary">{dot("accent")}{gaps.ownerMissing} {gaps.ownerMissing === 1 ? "action has" : "actions have"} no owner</div>
+                    )}
+                    <div className="flex items-start gap-3 text-sm leading-normal text-secondary">{dot("brand")}Every item links to the transcript</div>
+                    {dirty && <p className="text-xs text-muted">Save your changes before validating.</p>}
+                    <button type="button" onClick={() => void onSave()} disabled={!dirty || busy !== null} className="btn btn-primary">
+                      {busy === "save" ? "Saving…" : "Save changes"}
+                    </button>
+                    {dirty && (
+                      <button type="button" onClick={() => doc && setDraft(doc.minutes)} disabled={busy !== null} className="btn btn-secondary">
+                        Discard changes
+                      </button>
+                    )}
+                    <button type="button" onClick={() => setConfirming(true)} disabled={dirty || busy !== null} className="btn btn-dark min-h-13">
+                      Validate the minutes
+                    </button>
+                    <span className="text-center text-[13px] leading-normal text-muted">
+                      Not specified stays not specified. You can validate with open items.
+                    </span>
+                  </>
+                )}
+              </div>
+            ) : null}
 
-          {revisions.length > 0 && (
-            <details className="rounded-xl border border-line bg-surface p-4 text-sm">
-              <summary className="cursor-pointer font-medium">History ({revisions.length})</summary>
-              <ol className="mt-3 flex flex-col gap-2 text-muted">
-                {[...revisions].reverse().map((r) => (
-                  <li key={r.version}>
-                    Version {r.version} · {actorLabel(r.saved_by)} · {formatDateTime(r.saved_at)}
-                    {r.status === "validated" && " · validated"}
-                  </li>
-                ))}
-              </ol>
-              <p className="mt-3 text-xs text-faint">Version 1 is always the assistant&apos;s original.</p>
-            </details>
-          )}
-        </>
+            <ExportCard title={title} minutes={doc!.minutes} validated={validated} />
+
+            <div className="card flex flex-col gap-2.5 p-6">
+              <span className="font-display text-lg font-bold">Source</span>
+              <span className="text-sm leading-normal text-secondary">
+                Transcribed by the assistant from Google Meet.
+              </span>
+              <a href="#transcript-title" className="text-sm font-semibold text-brand">Read the full transcript</a>
+            </div>
+
+            {revisions.length > 0 && (
+              <details className="card p-6 text-sm">
+                <summary className="cursor-pointer font-display text-lg font-bold">History ({revisions.length})</summary>
+                <ol className="mt-3 flex flex-col gap-2 text-muted">
+                  {[...revisions].reverse().map((r) => (
+                    <li key={r.version}>
+                      Version {r.version} · {actorLabel(r.saved_by)} · {formatDateTime(r.saved_at)}
+                      {r.status === "validated" && " · validated"}
+                    </li>
+                  ))}
+                </ol>
+                <p className="mt-3 text-xs text-faint">Version 1 is always the assistant&apos;s original.</p>
+              </details>
+            )}
+          </aside>
+        </div>
       )}
     </section>
   );
@@ -511,7 +516,7 @@ const CORRECTION_LABEL: Record<Correction["kind"], string> = {
 /** What the backend refused to present as a fact, so the reviewer knows it was left out. */
 function CorrectionsNote({ corrections }: { corrections: Correction[] }) {
   return (
-    <details className="rounded-xl border border-line bg-surface p-4 text-sm">
+    <details className="rounded-2xl border border-line bg-background p-4 text-sm">
       <summary className="cursor-pointer font-medium">
         Checks applied to this draft ({corrections.length})
       </summary>
@@ -536,28 +541,20 @@ function RemoveButton({ label, onClick }: { label: string; onClick: () => void }
       type="button"
       aria-label={label}
       onClick={onClick}
-      className="flex h-10 w-10 flex-none items-center justify-center rounded-lg border border-line text-muted hover:text-foreground"
+      className="flex h-11 w-11 flex-none items-center justify-center rounded-xl border border-line-strong bg-surface text-muted hover:text-foreground"
     >
       <span aria-hidden="true">×</span>
     </button>
   );
 }
 
-function Field({ label, value }: { label: string; value: string | null }) {
-  return value ? (
-    <span>
-      {label}: <span className="text-foreground">{value}</span>
-    </span>
-  ) : (
-    <span className="italic text-faint">
-      {label}: {NOT_SPECIFIED.toLowerCase()}
-    </span>
-  );
+function Pill({ value, missing }: { value: string | null; missing: string }) {
+  return value ? <span className="chip-validated">{value}</span> : <span className="chip-missing">{missing}</span>;
 }
 
 function Sources({ source }: { source: SourceRef }) {
   return (
-    <span className="text-xs text-brand">
+    <span className="text-[13px] font-semibold text-brand">
       {[...new Set(source.segment_indices)].map((index) => (
         <a
           key={index}
@@ -573,24 +570,57 @@ function Sources({ source }: { source: SourceRef }) {
 }
 
 function Missing() {
-  return <p className="italic text-faint">{NOT_SPECIFIED}</p>;
+  return <span className="chip-missing self-start">{NOT_SPECIFIED}</span>;
 }
 
-function Card({
-  title,
-  tone,
-  children,
-}: {
-  title: string;
-  tone?: "brand" | "accent";
-  children: ReactNode;
-}) {
-  const titleColor =
-    tone === "brand" ? "text-brand-ink" : tone === "accent" ? "text-accent-ink" : "text-muted";
+function Block({ title, children }: { title: string; children: ReactNode }) {
   return (
-    <div className="rounded-xl border border-line bg-surface p-4 sm:p-5">
-      <h3 className={`mb-2 text-xs font-semibold uppercase tracking-wide ${titleColor}`}>{title}</h3>
+    <section className="flex flex-col gap-4">
+      <h3 className="eyebrow">{title}</h3>
       {children}
+    </section>
+  );
+}
+
+function ExportCard({ title, minutes, validated }: { title: string; minutes: Minutes; validated: boolean }) {
+  const [copied, setCopied] = useState(false);
+  const markdown = () => minutesToMarkdown(title, minutes);
+
+  function download() {
+    const url = URL.createObjectURL(new Blob([markdown()], { type: "text/markdown;charset=utf-8" }));
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = exportFileName(title);
+    link.click();
+    URL.revokeObjectURL(url);
+  }
+
+  async function copy() {
+    try {
+      await navigator.clipboard.writeText(markdown());
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      setCopied(false);
+    }
+  }
+
+  return (
+    <div className="card flex flex-col gap-3 p-6">
+      <span className="font-display text-lg font-bold">Share and export</span>
+      {validated ? (
+        <>
+          <span className="text-sm leading-normal text-secondary">Take the validated minutes with you.</span>
+          <button type="button" onClick={download} className="btn btn-secondary">Download as Markdown</button>
+          <button type="button" onClick={() => void copy()} className="btn btn-secondary">
+            {copied ? "Copied" : "Copy as text"}
+          </button>
+        </>
+      ) : (
+        <span className="text-sm leading-normal text-secondary">
+          Available after validation. A draft cannot be shared or exported.
+        </span>
+      )}
     </div>
   );
 }

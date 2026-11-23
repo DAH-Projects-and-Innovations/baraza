@@ -88,38 +88,39 @@ export function MeetingStatus({ captureId }: { captureId: string }) {
   }
 
   if (missing) return (
-    <div className="flex flex-col gap-4">
-      <h1 className="text-xl font-semibold">Meeting not found</h1>
-      <p role="alert">This meeting is unavailable. Check the link or start a new capture.</p>
-      <Link href="/meetings/new" className="text-brand underline">New meeting</Link>
+    <div className="card flex max-w-lg flex-col items-start gap-4 p-8">
+      <h1 className="font-display text-2xl font-extrabold">Meeting not found</h1>
+      <p role="alert" className="text-[15px] text-secondary">This meeting is unavailable. Check the link or start a new capture.</p>
+      <Link href="/meetings/new" className="btn btn-primary">New meeting</Link>
     </div>
   );
+
+  const title = details?.title ?? "Meeting";
+  const live = status === "waiting_admission" || status === "capturing";
 
   return (
     <div className="flex flex-col gap-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="text-xl font-semibold tracking-tight">{details?.title ?? "Meeting"}</h1>
-          <p className="text-xs text-muted">
-            Capture <code>{captureId}</code>
-          </p>
-        </div>
+        <Link href="/meetings" className="inline-flex items-center gap-1.5 text-sm font-semibold text-brand">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <path d="M15 6l-6 6 6 6" />
+          </svg>
+          Meetings
+        </Link>
         <div className="flex items-center gap-3">
           <StatusBadge status={status} />
           {canStop && (
-            <button
-              type="button"
-              onClick={onStop}
-              disabled={stopping}
-              className="rounded-lg border border-accent px-3 py-1.5 text-sm font-medium text-accent-strong hover:bg-accent-soft disabled:opacity-60"
-            >
+            <button type="button" onClick={onStop} disabled={stopping} className="btn btn-secondary min-h-10 border-accent px-4 text-sm text-accent-ink">
               {stopping ? "Stopping…" : "Stop capture"}
             </button>
           )}
         </div>
       </div>
+      {live && (
+        <h1 className="font-serif text-4xl leading-tight font-medium">{title}</h1>
+      )}
       {details?.simulated && (
-        <p className="rounded-lg bg-accent-soft p-3 text-sm text-accent-ink">
+        <p className="rounded-xl border border-accent-line bg-accent-soft p-3 text-sm text-accent-ink">
           Simulated capture: no bot joins Meet. The transcript is fictional.
         </p>
       )}
@@ -127,29 +128,37 @@ export function MeetingStatus({ captureId }: { captureId: string }) {
       {details?.stop_requested && status !== "done" && status !== "failed" && (
         <p role="status" className="text-sm text-muted">Stop requested. Waiting for the final transcript and draft.</p>
       )}
-      {details?.error && <p role="alert" className="text-sm text-red-600">{details.error}</p>}
+      {details?.error && <p role="alert" className="text-sm text-red-700">{details.error}</p>}
       {status === "failed" && (
         details?.can_retry ? (
-          <button onClick={onRetry} disabled={stopping} className="self-start rounded-lg border border-brand px-3 py-2 text-brand disabled:opacity-60">
+          <button onClick={onRetry} disabled={stopping} className="btn btn-secondary self-start">
             {stopping ? "Retrying…" : "Retry generation"}
           </button>
-        ) : <Link href="/meetings/new" className="text-brand underline">Start a new capture</Link>
+        ) : <Link href="/meetings/new" className="btn btn-primary self-start">Start a new capture</Link>
       )}
-      {error && (
-        <p role="alert" className="text-sm text-red-600 dark:text-red-400">
-          {error}
-        </p>
+      {error && <p role="alert" className="text-sm text-red-700">{error}</p>}
+      {live ? (
+        <TranscriptPanel
+          meetingId={meetingId}
+          live
+          onSpeakerRenamed={() => setMinutesReload((n) => n + 1)}
+        />
+      ) : (
+        <>
+          <MinutesPanel
+            meetingId={meetingId}
+            ready={status === "processing" || status === "done"}
+            title={title}
+            meta={`Capture ${captureId}`}
+            reloadKey={minutesReload}
+          />
+          <TranscriptPanel
+            meetingId={meetingId}
+            live={false}
+            onSpeakerRenamed={() => setMinutesReload((n) => n + 1)}
+          />
+        </>
       )}
-      <TranscriptPanel
-        meetingId={meetingId}
-        live={status === "waiting_admission" || status === "capturing"}
-        onSpeakerRenamed={() => setMinutesReload((n) => n + 1)}
-      />
-      <MinutesPanel
-        meetingId={meetingId}
-        ready={status === "processing" || status === "done"}
-        reloadKey={minutesReload}
-      />
     </div>
   );
 }
